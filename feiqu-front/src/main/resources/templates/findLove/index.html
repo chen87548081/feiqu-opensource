@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<%include("/common/_head.html"){}%>
+    <title>寻找 -飞趣</title>
+<style>
+
+    .c-content {
+        float: left;
+    }
+
+    .rule-list {
+        margin: 10px 0;
+        padding-bottom: 10px;
+    }
+    .videos {
+        line-height: 40px;
+    }
+</style>
+</head>
+<body>
+<%
+var user = c.currentUser(request, servlet.response);
+var isLogin = false;
+if(user != null){
+isLogin=true;
+}
+include("/common/_headwithlogin.html",{user:user,isLogin:isLogin}){}
+%>
+<div class="layui-container topToFix">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md8">
+            <div class="c-panel">
+                <div class="c-panel-title">
+                    小视频专区（默认存放一个月）
+                </div>
+                <div class="c-panel-body">
+                    <form class="layui-form">
+                        <div class="layui-form-item">
+                            <input id="videoTitle" type="text" class="layui-input" name="title" placeholder="小视频标题" maxlength="40">
+                        </div>
+                        <div class="layui-form-item">
+                            <div id="uploadContainer">
+                                <button type="button" class="layui-btn" id="shortVideo"><i class="layui-icon"></i>上传视频</button>
+                                <button id="postfiles" class="layui-btn">确认上传</button>
+                                <div id="videoProgress"></div>
+                            </div>
+                            <div id="uploadedVideo">
+                            </div>
+                        </div>
+                    </form>
+                    <div class="videos">
+                        <ul class="">
+                        <%for(var video in shortVideos){%>
+                        <li style="border-bottom: 1px dotted #e2e2e2;">
+                            <div><a href="/u/${video.userId}/peopleIndex">看看谁上传的</a>( ${video.title})<time>${printTime(video.createTime)}</time></div>
+                            <div>
+                                <a data-video="${video.url}" href="#" class="video-list">点击播放</a>
+                                <a href="#" class="video-hide">收起</a>
+                            </div>
+                            <div class="media-box"></div>
+                        </li>
+                        <%}%>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div id="love" class="c-panel">
+                <div class="c-panel-title">活跃度相关规则（以月为单位）</div>
+                <div class="rule-list">
+                <table class="layui-table" lay-even="" lay-skin="nob">
+                    <colgroup>
+                        <col width="150">
+                        <col width="200">
+                        <col>
+                    </colgroup>
+                    <thead>
+                    <tr>
+                        <th>相关操作</th>
+                        <th>增加的活跃度</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>发表文章</td>
+                        <td>+20</td>
+                    </tr>
+                    <tr>
+                        <td>上传小视频</td>
+                        <td>+20</td>
+                    </tr>
+                    <tr>
+                        <td>发表想法</td>
+                        <td>+5</td>
+                    </tr>
+                    <tr>
+                        <td>发表评论</td>
+                        <td>+2</td>
+                    </tr>
+                    <tr>
+                        <td>签到</td>
+                        <td>+2</td>
+                    </tr>
+                    <tr>
+                        <td>更新背景图片</td>
+                        <td>+2</td>
+                    </tr>
+                    <tr>
+                        <td>更新头像</td>
+                        <td>+2</td>
+                    </tr>
+                    <tr>
+                        <td>点赞</td>
+                        <td>+1</td>
+                    </tr>
+                    </tbody>
+                </table>
+                </div>
+            </div>
+            <div id="pagesplit">
+            </div>
+        </div>
+        <div class="layui-col-md4">
+            <div class="c-panel">
+                <div class="c-panel-title">
+                    <span>本月活跃达人（最多显示5人）</span>
+                </div>
+                <div class="c-panel-body">
+                <%if(has(thisMonthActiveUsers)){%>
+                    <ul class="rank-list">
+                    <%for(var u in thisMonthActiveUsers){%>
+                    <li>
+                        <div class="rank-list-item">
+                            <%if(u.rank <= 3){%>
+                            <span class="c-list-num rank-red">${u.rank}</span>
+                            <%}else{%>
+                            <span class="c-list-num">${u.rank}</span>
+                            <%}%>
+                            <div class="icon-wrap">
+                                <a href="/u/${u.userId}/peopleIndex">
+                                    <div class="icon-container"><img src="${u.icon}"/></div>
+                                </a>
+                            </div>
+                            <div class="c-content">
+                                <div class="content-nick">
+                                    <a href="/u/${u.userId}/peopleIndex">${u.name}</a>
+                                </div>
+                                <div class="rank-data">
+                                    <span>活跃度+${u.score}</span><span>(${u.city!})</span>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <%}%>
+                    </ul>
+                <%}%>
+                </div>
+            </div>
+            <div class="c-panel ">
+                <div class="c-panel-title">
+                    <span>上个月活跃达人（最多显示5人）</span>
+                </div>
+                <div class="c-panel-body">
+                <%if(has(lastMonthActiveUsers)){%>
+                <ul class="rank-list">
+                    <%for(var u in lastMonthActiveUsers){%>
+                    <li>
+                        <div class="rank-list-item">
+                            <%if(u.rank <= 3){%>
+                            <span class="c-list-num rank-red">${u.rank}</span>
+                            <%}else{%>
+                            <span class="c-list-num">${u.rank}</span>
+                            <%}%>
+                            <div class="icon-wrap">
+                                <a href="/u/${u.userId}/peopleIndex">
+                                    <div class="icon-container"><img src="${u.icon}"/></div>
+                                </a>
+                            </div>
+                            <div class="c-content">
+                                <div class="content-nick">
+                                    <a href="/u/${u.userId}/peopleIndex">${u.name}</a>
+                                </div>
+                                <div class="rank-data">
+                                    <span>活跃度+${u.score}</span><span>(${u.city!})</span>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <%}%>
+                </ul>
+                <%}%>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<%include("/common/_footor.html"){}%>
+</body>
+<%include("/common/_scripts.html",{user:user}){}%>
+<script src="${ctxPath}/js/plupload.full.min.js"></script>
+<script>
+    layui.cache.page = 'shortVideo';
+</script>
+</html>

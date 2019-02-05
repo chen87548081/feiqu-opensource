@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%include("/common/_head.html"){}%>
+    <title> API 接口文档介绍 -飞趣</title>
+    <link rel="stylesheet" href="${ctxPath}/css/api-doc.css?v=${VERSION}">
+</head>
+<body>
+<%
+var user = c.currentUser(request, servlet.response);
+var isLogin = false;
+if(user != null){
+isLogin=true;
+}
+include("/common/_headwithlogin.html",{user:user,isLogin:isLogin}){}
+%>
+<div class="api-doc-nav api-doc-index layui-container">
+    <div class="layui-row layui-col-space10">
+        <div class="layui-col-md3">
+            <%include("/common/_api_doc_menu.html",{user:user}){}%>
+        </div>
+        <div class="layui-col-md9">
+            <div class="c-panel">
+                <div class="c-panel-title">
+                    <span class="layui-breadcrumb" lay-separator="-">
+                      <a href="#">项目</a>
+                      <a href="">模块</a>
+                      <a href="">接口</a>
+                        <a class="c-fly-link" href="javascript:;" id="LAY_apiDocHelp">API接口文档使用说明</a>
+                    </span>
+                    <div class="bdsharebuttonbox c-position-rt"><a href="#" class="bds_more" data-cmd="more"></a><a href="#" class="bds_qzone" data-cmd="qzone" title="分享到QQ空间"></a><a href="#" class="bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a><a href="#" class="bds_tqq" data-cmd="tqq" title="分享到腾讯微博"></a><a href="#" class="bds_renren" data-cmd="renren" title="分享到人人网"></a><a href="#" class="bds_weixin" data-cmd="weixin" title="分享到微信"></a></div>
+                    <script>window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"0","bdSize":"16"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];</script>
+                </div>
+                <div class="c-panel-body">
+                    <ul class="layui-timeline">
+                        <li class="layui-timeline-item">
+                            <i class="layui-icon layui-timeline-axis">&#xe63f;</i>
+                            <div class="layui-timeline-content layui-text">
+                                <h3 class="layui-timeline-title">1月17日</h3>
+                                <p>
+                                   开发完用户邀请
+                                </p>
+                            </div>
+                        </li>
+                        <li class="layui-timeline-item">
+                            <i class="layui-icon layui-timeline-axis">&#xe63f;</i>
+                            <div class="layui-timeline-content layui-text">
+                                <h3 class="layui-timeline-title">1月16日</h3>
+                                <p>
+                                   简单介绍：我们创建一个项目，项目可以有多个模块，一个模块可以有多个接口。
+                                </p>
+                            </div>
+                        </li>
+                        <li class="layui-timeline-item">
+                            <i class="layui-icon layui-timeline-axis">&#xe63f;</i>
+                            <div class="layui-timeline-content layui-text">
+                                <h3 class="layui-timeline-title">1月15日</h3>
+                                <p>
+                                    API接口文档初步完成
+                                    <br>我准备最近上线，接下来这个页面就用来写这个项目的进展
+                                </p>
+                            </div>
+                        </li>
+                        <li class="layui-timeline-item">
+                            <i class="layui-icon layui-timeline-axis">&#xe63f;</i>
+                            <div class="layui-timeline-content layui-text">
+                                <div class="layui-timeline-title">过去</div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<%include("/common/_footor.html"){}%>
+</body>
+<%include("/common/_scripts.html",{user:user}){}%>
+<script>
+    layui.use(['fly','table'], function(){
+        var fly=layui.fly,table=layui.table,device=layui.device,form=layui.form;
+        $('#LAY_apiDocHelp').on('click', function(){
+            layer.open({
+                type: 1
+                ,title: 'API接口文档说明'
+                ,area: '300px'
+                ,shade: 0.8
+                ,shadeClose: true
+                ,content: ['<div class="layui-text" style="padding: 20px;">'
+                    ,'<blockquote class="layui-elem-quote">该文档用来记录接口，方便前后端联调</blockquote>'
+                    ,'<table class="layui-table">'
+                    ,'<thead>'
+                    ,'<tr><th>用户等级</th><th>可创建项目数</th></tr>'
+                    ,'</thead>'
+                    ,'<tbody>'
+                    ,'<tr><td>1级</td><td>1</td></tr>'
+                    ,'<tr><td>2级</td><td>3</td></tr>'
+                    ,'<tr><td>3级</td><td>5</td></tr>'
+                    ,'<tr><td>4级</td><td>8</td></tr>'
+                    ,'<tr><td>5级</td><td>10</td></tr>'
+                    ,'</tbody>'
+                    ,'</table>'
+                    ,'<li style="color: #FF5722;">后续在使用过程中会不断迭代</li>'
+                    ,'</ul>'
+                    ,'</div>'].join('')
+            });
+        });
+    });
+</script>
+</html>

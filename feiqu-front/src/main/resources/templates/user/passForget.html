@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<%include("/common/_head.html"){}%>
+    <title>忘记密码 -飞趣</title>
+<style>
+    .layui-form{
+        margin: 20px 0 0 10px;
+    }
+    .nav-ul li{
+        padding: 0 1.5rem;
+    }
+    .layui-input-block input{
+        width: 20rem;
+    }
+    .aside a{
+        color: #1E9FFF;
+    }
+
+    .intro {
+        padding: 10px 0;
+        text-align: center;
+    }
+</style>
+</head>
+<body>
+<%
+var user = c.currentUser(request, servlet.response);
+var isLogin = false;
+if(user != null){
+isLogin=true;
+}
+include("/common/_headwithlogin.html",{user:user,isLogin:isLogin}){}
+%>
+<div class="layui-container topToFix">
+    <div class="layui-row c-panel">
+        <div class="layui-md layui-col-md6 ">
+        <form class="layui-form">
+            <p class="intro">找回你的密码</p>
+            <div class="layui-form-item">
+                <label class="layui-form-label">邮箱</label>
+                <div class="layui-input-block">
+                    <input type="text" name="username" required   lay-verify="email" placeholder="请输入邮箱" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">验证码</label>
+                <div class="layui-input-block">
+                    <input type="text" name="verifyCode" required  lay-verify="required" placeholder="请输入验证码" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-input-block"><img id="captchaImg" src="${ctxPath}/captcha"/></div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-input-block">
+                    <button class="layui-btn" lay-submit lay-filter="formDemo">提交</button>
+                </div>
+            </div>
+        </form>
+        </div>
+        <div class="layui-col-md4 layui-col-md-offset2">
+        </div>
+    </div>
+</div>
+<%include("/common/_footor.html"){}%>
+</body>
+<%include("/common/_scripts.html"){}%>
+<script>
+    //Demo
+    layui.use('form', function(){
+        var form = layui.form;
+
+        //监听提交
+        form.on('submit(formDemo)', function(data){
+            var username = data.field.username
+            $.ajax({
+                url:"${ctxPath}/u/forget",
+                type:"post",
+                data:data.field,
+                dataType:"json",
+                success:function (result) {
+                    console.log(result)
+                    if(result.code == '0000'){
+                        layer.msg("密码重置邮件发送成功！")
+                        setTimeout(function () {
+                            location.reload()
+                        },500)
+                    }else {
+                        layer.msg(result.message||"登录失败",{icon:5})
+                    }
+                }
+            });
+            return false;
+        });
+
+        $("#captchaImg").click(function () {
+            var time = new Date().getTime()
+            $(this).attr('src','${ctxPath}/captcha?time='+time)
+        })
+    });
+</script>
+</html>

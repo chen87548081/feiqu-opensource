@@ -1,0 +1,305 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.feiqu.system.mapper.CMessageMapper">
+  <resultMap id="BaseResultMap" type="com.feiqu.system.model.CMessage">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="content" jdbcType="VARCHAR" property="content" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="post_user_id" jdbcType="INTEGER" property="postUserId" />
+    <result column="received_user_id" jdbcType="INTEGER" property="receivedUserId" />
+    <result column="del_flag" jdbcType="INTEGER" property="delFlag" />
+    <result column="type" jdbcType="INTEGER" property="type" />
+  </resultMap>
+  <resultMap id="WithUserResultMap" extends="BaseResultMap" type="com.feiqu.system.pojo.response.MessageUserDetail">
+    <result column="postNickname" jdbcType="VARCHAR" property="postNickname" />
+    <result column="postIcon" jdbcType="VARCHAR" property="postIcon" />
+    <result column="receivedNickname" jdbcType="VARCHAR" property="receivedNickname" />
+    <result column="receivedIcon" jdbcType="VARCHAR" property="receivedIcon" />
+  </resultMap>
+
+  <resultMap id="UserDialog" type="com.feiqu.system.pojo.response.Dialog">
+    <result column="post_user_id" jdbcType="INTEGER" property="userId" />
+    <result column="content" jdbcType="VARCHAR" property="content" />
+    <result column="postNickname" jdbcType="VARCHAR" property="nickname" />
+    <result column="postIcon" jdbcType="VARCHAR" property="icon" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="time" />
+    <result column="type" jdbcType="INTEGER" property="type" />
+  </resultMap>
+
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    id, content, create_time, post_user_id, received_user_id, del_flag, type, is_read
+  </sql>
+  <select id="selectByExample" parameterType="com.feiqu.system.model.CMessageExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from c_message
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+
+  <select id="selectDialogsByUserId" parameterType="Integer" resultMap="UserDialog">
+    select dd.content,dd.create_time,dd.postIcon,dd.postNickname,dd.post_user_id,dd.type from (select
+    aa.content, aa.create_time, aa.post_user_id, aa.type,aa.del_flag, u1.nickname AS postNickname,u1.icon as postIcon
+    from c_message aa LEFT JOIN fq_user u1 on aa.post_user_id = u1.id LEFT JOIN fq_user u2 ON aa.received_user_id = u2.id
+    where aa.received_user_id = #{id,jdbcType=INTEGER} and aa.post_user_id != -1 GROUP BY aa.post_user_id ORDER BY aa.create_time desc)
+    dd where dd.del_flag = 0 and dd.type != 1
+  </select>
+
+  <!--查看对话详情-->
+  <select id="selectDialogDetail" parameterType="java.util.HashMap" resultMap="WithUserResultMap">
+    select
+      aa.id, aa.content, aa.create_time, aa.post_user_id, aa.received_user_id,aa.type,u1.nickname AS postNickname,u1.icon as postIcon,
+                                                                                      u2.nickname as receivedNickname,u2.icon as receivedIcon
+    from c_message aa LEFT JOIN fq_user u1 on aa.post_user_id = u1.id LEFT JOIN fq_user u2 ON aa.received_user_id = u2.id
+    where aa.post_user_id = #{myUserId,jdbcType=INTEGER} and aa.received_user_id = #{friendUserId,jdbcType=INTEGER} and aa.del_flag = 0
+    or (post_user_id  = #{friendUserId,jdbcType=INTEGER} and received_user_id =#{myUserId,jdbcType=INTEGER})
+    ORDER  BY aa.create_time ${dialogOrder}
+  </select>
+
+  <select id="selectMyMsgsByMessage" parameterType="com.feiqu.system.model.CMessageExample" resultMap="WithUserResultMap">
+    select
+    aa.id, aa.content, aa.create_time, aa.post_user_id, aa.received_user_id,aa.type,u1.nickname AS postNickname,u1.icon as postIcon,
+    u2.nickname as receivedNickname,u2.icon as receivedIcon
+    from c_message aa LEFT JOIN fq_user u1 on aa.post_user_id = u1.id LEFT JOIN fq_user u2 ON aa.received_user_id = u2.id
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from c_message
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from c_message
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.feiqu.system.model.CMessageExample">
+    delete from c_message
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.feiqu.system.model.CMessage">
+    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into c_message (content, create_time, post_user_id, 
+      received_user_id, del_flag, type, 
+      is_read)
+    values (#{content,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{postUserId,jdbcType=INTEGER}, 
+      #{receivedUserId,jdbcType=INTEGER}, #{delFlag,jdbcType=INTEGER}, #{type,jdbcType=INTEGER}, 
+      #{isRead,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertSelective" parameterType="com.feiqu.system.model.CMessage">
+    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into c_message
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="content != null">
+        content,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="postUserId != null">
+        post_user_id,
+      </if>
+      <if test="receivedUserId != null">
+        received_user_id,
+      </if>
+      <if test="delFlag != null">
+        del_flag,
+      </if>
+      <if test="type != null">
+        type,
+      </if>
+      <if test="isRead != null">
+        is_read,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="content != null">
+        #{content,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="postUserId != null">
+        #{postUserId,jdbcType=INTEGER},
+      </if>
+      <if test="receivedUserId != null">
+        #{receivedUserId,jdbcType=INTEGER},
+      </if>
+      <if test="delFlag != null">
+        #{delFlag,jdbcType=INTEGER},
+      </if>
+      <if test="type != null">
+        #{type,jdbcType=INTEGER},
+      </if>
+      <if test="isRead != null">
+        #{isRead,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.feiqu.system.model.CMessageExample" resultType="java.lang.Long">
+    select count(*) from c_message
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update c_message
+    <set>
+      <if test="record.id != null">
+        id = #{record.id,jdbcType=INTEGER},
+      </if>
+      <if test="record.content != null">
+        content = #{record.content,jdbcType=VARCHAR},
+      </if>
+      <if test="record.createTime != null">
+        create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.postUserId != null">
+        post_user_id = #{record.postUserId,jdbcType=INTEGER},
+      </if>
+      <if test="record.receivedUserId != null">
+        received_user_id = #{record.receivedUserId,jdbcType=INTEGER},
+      </if>
+      <if test="record.delFlag != null">
+        del_flag = #{record.delFlag,jdbcType=INTEGER},
+      </if>
+      <if test="record.type != null">
+        type = #{record.type,jdbcType=INTEGER},
+      </if>
+      <if test="record.isRead != null">
+        is_read = #{record.isRead,jdbcType=INTEGER},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update c_message
+    set id = #{record.id,jdbcType=INTEGER},
+      content = #{record.content,jdbcType=VARCHAR},
+      create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      post_user_id = #{record.postUserId,jdbcType=INTEGER},
+      received_user_id = #{record.receivedUserId,jdbcType=INTEGER},
+      del_flag = #{record.delFlag,jdbcType=INTEGER},
+      type = #{record.type,jdbcType=INTEGER},
+      is_read = #{record.isRead,jdbcType=INTEGER}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.feiqu.system.model.CMessage">
+    update c_message
+    <set>
+      <if test="content != null">
+        content = #{content,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="postUserId != null">
+        post_user_id = #{postUserId,jdbcType=INTEGER},
+      </if>
+      <if test="receivedUserId != null">
+        received_user_id = #{receivedUserId,jdbcType=INTEGER},
+      </if>
+      <if test="delFlag != null">
+        del_flag = #{delFlag,jdbcType=INTEGER},
+      </if>
+      <if test="type != null">
+        type = #{type,jdbcType=INTEGER},
+      </if>
+      <if test="isRead != null">
+        is_read = #{isRead,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.feiqu.system.model.CMessage">
+    update c_message
+    set content = #{content,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      post_user_id = #{postUserId,jdbcType=INTEGER},
+      received_user_id = #{receivedUserId,jdbcType=INTEGER},
+      del_flag = #{delFlag,jdbcType=INTEGER},
+      type = #{type,jdbcType=INTEGER},
+      is_read = #{isRead,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

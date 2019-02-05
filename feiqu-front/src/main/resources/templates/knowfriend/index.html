@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%include("/common/_head.html"){}%>
+    <title>趣友互识 -飞趣</title>
+    <style type="text/css">
+        .fq-rich-poster-container {
+            margin: 0 auto;
+            padding: 20px 0 0;
+            text-align: left;
+        }
+        .fq-rich-poster-container .fq-rich-poster{
+            position: relative;
+            margin:0 20px;
+        }
+        .poster-body .poster-title{
+            padding-bottom: 10px;
+
+        }
+        .poster-body .poster-content{
+            padding-bottom: 10px;
+        }
+        .poster-body .poster-submit{
+            padding-bottom: 20px;
+        }
+        .poster-tip{
+            padding-bottom: 10px;
+        }
+
+        .up-block {
+            padding-bottom: 10px;
+        }
+        .up-block h2{
+            display: inline-block;
+        }
+        .up-block .title-href{
+            color: #2d64b3;
+        }
+        .up-block .author-info{
+            position: relative;
+            width: 160px;
+            float: right;
+            color: #999;
+        }
+        .up-block .author-info .time{
+            float: right;
+        }
+        .reply-block {
+            position: absolute;
+            left: 15px;
+            top:15px;
+        }
+        .reply-block .comment-num{
+            display: inline-block;
+            width: 50px;
+            height: 30px;
+            line-height: 26px;
+            margin-right: 20px;
+            text-align: center;
+            background: url(//tb2.bdstatic.com/tb/img/f_reply_bg_89030dc.png) no-repeat;
+        }
+        .layui-textarea{
+            min-height: 15rem;
+        }
+        .ab-icon{
+            position:absolute;  left: 0; height: 100px;
+            line-height: 20px; margin-top: -100px; color: #fff; border-radius: 2px;
+        }
+
+        .t-area {
+            padding: 0 10px;
+            margin-left: 1rem;
+        }
+        .del-theme{
+            position: absolute;
+            right: 0;
+        }
+        .detail-body{
+            min-height: 0;
+        }
+        .detail-body img{
+            max-height: 90px;
+            padding-right: 10px;
+        }
+    </style>
+</head>
+<body>
+<%
+var user = c.currentUser(request, servlet.response);
+var isLogin = false;
+if(user != null){
+isLogin=true;
+}
+include("/common/_headwithlogin.html",{user:user,isLogin:isLogin}){}
+%>
+<div class="layui-container topToFix">
+    <div class="layui-row layui-col-space15">
+        <p><a class="layui-btn tucaoBtn" href="javascript:void(0);">撰写主题</a></p>
+        <p><a href="${ctxPath}/knowfriend/index"><span class="layui-badge-rim">全部</span></a>
+            <%for(var label in labelList){%>
+            <a href="${ctxPath}/knowfriend/index?label=${label.name}"><span class="layui-badge-rim">${label.name}</span></a>
+            <%}%></p>
+        <div class="layui-col-md12">
+            <div class="c-panel">
+                <div class="c-panel-title">
+                    <span class="title-first">排序规则</span>
+                    <span class="c-mid"></span>
+                    <a href="${ctxPath}/knowfriend/index?order=time&label=${label!}">最新的</a>
+                    <span class="c-mid"></span>
+                    <a href="${ctxPath}/knowfriend/index?order=comment&label=${label!}">评论最多</a>
+                </div>
+                <div class="c-panel">
+                    <ul class="c-list">
+                        <%for(var theme in themes){%>
+                        <li lay-data="${theme.id}"><div class="reply-block"><span title="回复/浏览" class="comment-num">${theme.commentCount!0}/${theme.seeCount!0}</span></div>
+                            <div class="up-block">
+                                <h2><span class="layui-badge-rim">${theme.label}</span><a target="_blank" title="${theme.title}" class="title-href" href="${ctxPath}/knowfriend/themeDetail/${theme.id}"> ${theme.title}</a><span class="layui-badge layui-bg-orange t-area">${theme.area!'中国'}</span></h2>
+                                <div class="author-info"><span lay-data="${theme.icon}" class="author-info-name"><a class="c-fly-link" href="${ctxPath}/u/${theme.userId}/peopleIndex"> ${theme.nickname}</a></span> <span class="time">${printTime(theme.createTime)} </span></div>
+                            </div>
+                            <%if(isLogin){%> ${user.role==1?"<button class=\"layui-btn del-theme\">删除帖子</button>"}<%}%>
+                            <div lay-data="${theme.id}" class="detail-body photos">${theme.content}
+                            </div>
+                        </li>
+                        <%}%>
+                    </ul>
+                </div>
+                <div id="pagesplit">
+                </div>
+                <div class="fq-rich-poster-container">
+                    <div class="fq-rich-poster">
+                        <div class="poster-tip"><i class="layui-icon">&#xe642;</i>撰写主题</div>
+                        <div class="poster-body ">
+                            <form class="layui-form" action="${ctxPath}/knowfriend/pubTheme">
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">标题</label>
+                                    <div class="poster-title layui-input-block">
+                                        <input lay-verify="required" class="layui-input" type="text" name="title" placeholder="请填写标题">
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <div class="layui-inline">
+                                        <label class="layui-form-label">标签</label>
+                                        <div class="poster-title layui-input-inline">
+                                            <select name="label">
+                                                <option value="">请选择一个标签</option>
+                                                <%for(var label in labelList){%>
+                                                <option value="${label.name}">${label.name}</option>
+                                                <%}%>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="layui-inline">
+                                        <label class="layui-form-label">征友区域</label>
+                                        <div class="poster-title layui-input-inline">
+                                            <select name="area">
+                                                <option value="">请选择一个区域</option>
+                                                <%for(var area in areas){%>
+                                                <option value="${area.name}">${area.name}</option>
+                                                <%}%>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="poster-content layui-form-item">
+                                    <textarea lay-verify="required"  name="content" class="layui-textarea fly-editor" placeholder="撰写主题"></textarea>
+                                </div>
+                                <div class="poster-submit layui-form-item">
+                                    <button lay-submit lay-filter="bbsform" id="poster-btn" class="layui-btn">发表</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<%include("/common/_footor.html"){}%>
+</body>
+<%include("/common/_scripts.html",{user:user}){}%>
+<script>
+    layui.use(['fly','layer', 'form','laypage','face'], function(){
+        var layer = layui.layer
+            ,form = layui.form
+            ,laypage=layui.laypage
+            ,fly=layui.fly,face=layui.face;
+        $('.detail-body').each(function(){
+            var othis = $(this), html = othis.html();
+            othis.html(fly.content(html));
+        });
+
+        <%if(isLogin && user.role == 1){%>
+            $('.del-theme').css({"position":"absolute","right":"10px","top":"40px"})
+        $('.del-theme').click(function () {
+            console.log('sss')
+            var themeId = $(this).parent().attr('lay-data')
+            console.log(themeId)
+            fly.json('${ctxPath}/knowfriend/theme/delete/'+themeId,{},function (res) {
+                if(res.code == '0000'){
+                    layer.msg('删除帖子成功')
+                    setTimeout(function () {
+                        location.reload()
+                    },500)
+                }else {
+                    layer.msg(res.message||'删除帖子失败')
+                }
+            })
+
+        })
+        <%}%>
+        $('.author-info-name').on('mouseenter', function(){
+            var imgUrl =$(this).attr('lay-data')
+            var img = $('<img class="ab-icon" src="'+imgUrl+'"/>');
+            $(this).parent().append(img)
+        })
+
+        $('.author-info-name').on('mouseleave', function(){
+            $(this).parent().find('img').remove()
+        })
+        form.on('submit(bbsform)', function(data){
+            var action = $(data.form).attr('action');
+            fly.json(action, data.field, function(res){
+                if(res.code == '0000'){
+                    layer.msg('撰写主题成功',{icon:6})
+                    setTimeout(function () {
+                        location.reload()
+                    },500)
+                }else {
+                    layer.msg(res.message,{icon:5})
+                }
+            });
+            return false;
+        });
+
+        laypage.render({
+            elem: 'pagesplit'
+            ,curr:${page}
+            ,count: ${count}
+            ,limit:${pageSize}
+            ,layout: ['count', 'prev', 'page', 'next', 'skip']
+            ,jump: function(obj,first){
+                if(!first){
+                    location.href = "${ctxPath}/knowfriend/index/"+obj.curr+"?order=${order!}&label=${label!}"
+                }
+            }
+        });
+        $(".tucaoBtn").click(function () {
+            $('html,body').animate({scrollTop:$(".fq-rich-poster-container").offset().top}, 800);
+            $("input[name='title']").focus()
+        })
+
+    });
+</script>
+</html>

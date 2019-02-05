@@ -1,0 +1,432 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.feiqu.system.mapper.FqUserMapper">
+  <resultMap id="BaseResultMap" type="com.feiqu.system.model.FqUser">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="username" jdbcType="VARCHAR" property="username" />
+    <result column="password" jdbcType="VARCHAR" property="password" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="nickname" jdbcType="VARCHAR" property="nickname" />
+    <result column="icon" jdbcType="VARCHAR" property="icon" />
+    <result column="create_ip" jdbcType="VARCHAR" property="createIp" />
+    <result column="city" jdbcType="VARCHAR" property="city" />
+    <result column="sex" jdbcType="INTEGER" property="sex" />
+    <result column="is_single" jdbcType="INTEGER" property="isSingle" />
+    <result column="is_mail_bind" jdbcType="INTEGER" property="isMailBind" />
+    <result column="sign" jdbcType="VARCHAR" property="sign" />
+    <result column="qudou_num" jdbcType="INTEGER" property="qudouNum" />
+    <result column="birth" jdbcType="VARCHAR" property="birth" />
+    <result column="education" jdbcType="VARCHAR" property="education" />
+    <result column="school" jdbcType="VARCHAR" property="school" />
+    <result column="role" jdbcType="INTEGER" property="role" />
+    <result column="level" jdbcType="INTEGER" property="level" />
+    <result column="status" jdbcType="INTEGER" property="status" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    id, username, password, create_time, nickname, icon, create_ip, city, sex, is_single, 
+    is_mail_bind, sign, qudou_num, birth, education, school, role, level, status
+  </sql>
+  <select id="selectByExample" parameterType="com.feiqu.system.model.FqUserExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from fq_user
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from fq_user
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from fq_user
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.feiqu.system.model.FqUserExample">
+    delete from fq_user
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.feiqu.system.model.FqUser">
+    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into fq_user (username, password, create_time, 
+      nickname, icon, create_ip, 
+      city, sex, is_single, 
+      is_mail_bind, sign, qudou_num, 
+      birth, education, school, 
+      role, level, status
+      )
+    values (#{username,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, 
+      #{nickname,jdbcType=VARCHAR}, #{icon,jdbcType=VARCHAR}, #{createIp,jdbcType=VARCHAR}, 
+      #{city,jdbcType=VARCHAR}, #{sex,jdbcType=INTEGER}, #{isSingle,jdbcType=INTEGER}, 
+      #{isMailBind,jdbcType=INTEGER}, #{sign,jdbcType=VARCHAR}, #{qudouNum,jdbcType=INTEGER}, 
+      #{birth,jdbcType=VARCHAR}, #{education,jdbcType=VARCHAR}, #{school,jdbcType=VARCHAR}, 
+      #{role,jdbcType=INTEGER}, #{level,jdbcType=INTEGER}, #{status,jdbcType=INTEGER}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.feiqu.system.model.FqUser">
+    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into fq_user
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="username != null">
+        username,
+      </if>
+      <if test="password != null">
+        password,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="nickname != null">
+        nickname,
+      </if>
+      <if test="icon != null">
+        icon,
+      </if>
+      <if test="createIp != null">
+        create_ip,
+      </if>
+      <if test="city != null">
+        city,
+      </if>
+      <if test="sex != null">
+        sex,
+      </if>
+      <if test="isSingle != null">
+        is_single,
+      </if>
+      <if test="isMailBind != null">
+        is_mail_bind,
+      </if>
+      <if test="sign != null">
+        sign,
+      </if>
+      <if test="qudouNum != null">
+        qudou_num,
+      </if>
+      <if test="birth != null">
+        birth,
+      </if>
+      <if test="education != null">
+        education,
+      </if>
+      <if test="school != null">
+        school,
+      </if>
+      <if test="role != null">
+        role,
+      </if>
+      <if test="level != null">
+        level,
+      </if>
+      <if test="status != null">
+        status,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="username != null">
+        #{username,jdbcType=VARCHAR},
+      </if>
+      <if test="password != null">
+        #{password,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="nickname != null">
+        #{nickname,jdbcType=VARCHAR},
+      </if>
+      <if test="icon != null">
+        #{icon,jdbcType=VARCHAR},
+      </if>
+      <if test="createIp != null">
+        #{createIp,jdbcType=VARCHAR},
+      </if>
+      <if test="city != null">
+        #{city,jdbcType=VARCHAR},
+      </if>
+      <if test="sex != null">
+        #{sex,jdbcType=INTEGER},
+      </if>
+      <if test="isSingle != null">
+        #{isSingle,jdbcType=INTEGER},
+      </if>
+      <if test="isMailBind != null">
+        #{isMailBind,jdbcType=INTEGER},
+      </if>
+      <if test="sign != null">
+        #{sign,jdbcType=VARCHAR},
+      </if>
+      <if test="qudouNum != null">
+        #{qudouNum,jdbcType=INTEGER},
+      </if>
+      <if test="birth != null">
+        #{birth,jdbcType=VARCHAR},
+      </if>
+      <if test="education != null">
+        #{education,jdbcType=VARCHAR},
+      </if>
+      <if test="school != null">
+        #{school,jdbcType=VARCHAR},
+      </if>
+      <if test="role != null">
+        #{role,jdbcType=INTEGER},
+      </if>
+      <if test="level != null">
+        #{level,jdbcType=INTEGER},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.feiqu.system.model.FqUserExample" resultType="java.lang.Long">
+    select count(*) from fq_user
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update fq_user
+    <set>
+      <if test="record.id != null">
+        id = #{record.id,jdbcType=INTEGER},
+      </if>
+      <if test="record.username != null">
+        username = #{record.username,jdbcType=VARCHAR},
+      </if>
+      <if test="record.password != null">
+        password = #{record.password,jdbcType=VARCHAR},
+      </if>
+      <if test="record.createTime != null">
+        create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.nickname != null">
+        nickname = #{record.nickname,jdbcType=VARCHAR},
+      </if>
+      <if test="record.icon != null">
+        icon = #{record.icon,jdbcType=VARCHAR},
+      </if>
+      <if test="record.createIp != null">
+        create_ip = #{record.createIp,jdbcType=VARCHAR},
+      </if>
+      <if test="record.city != null">
+        city = #{record.city,jdbcType=VARCHAR},
+      </if>
+      <if test="record.sex != null">
+        sex = #{record.sex,jdbcType=INTEGER},
+      </if>
+      <if test="record.isSingle != null">
+        is_single = #{record.isSingle,jdbcType=INTEGER},
+      </if>
+      <if test="record.isMailBind != null">
+        is_mail_bind = #{record.isMailBind,jdbcType=INTEGER},
+      </if>
+      <if test="record.sign != null">
+        sign = #{record.sign,jdbcType=VARCHAR},
+      </if>
+      <if test="record.qudouNum != null">
+        qudou_num = #{record.qudouNum,jdbcType=INTEGER},
+      </if>
+      <if test="record.birth != null">
+        birth = #{record.birth,jdbcType=VARCHAR},
+      </if>
+      <if test="record.education != null">
+        education = #{record.education,jdbcType=VARCHAR},
+      </if>
+      <if test="record.school != null">
+        school = #{record.school,jdbcType=VARCHAR},
+      </if>
+      <if test="record.role != null">
+        role = #{record.role,jdbcType=INTEGER},
+      </if>
+      <if test="record.level != null">
+        level = #{record.level,jdbcType=INTEGER},
+      </if>
+      <if test="record.status != null">
+        status = #{record.status,jdbcType=INTEGER},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update fq_user
+    set id = #{record.id,jdbcType=INTEGER},
+      username = #{record.username,jdbcType=VARCHAR},
+      password = #{record.password,jdbcType=VARCHAR},
+      create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      nickname = #{record.nickname,jdbcType=VARCHAR},
+      icon = #{record.icon,jdbcType=VARCHAR},
+      create_ip = #{record.createIp,jdbcType=VARCHAR},
+      city = #{record.city,jdbcType=VARCHAR},
+      sex = #{record.sex,jdbcType=INTEGER},
+      is_single = #{record.isSingle,jdbcType=INTEGER},
+      is_mail_bind = #{record.isMailBind,jdbcType=INTEGER},
+      sign = #{record.sign,jdbcType=VARCHAR},
+      qudou_num = #{record.qudouNum,jdbcType=INTEGER},
+      birth = #{record.birth,jdbcType=VARCHAR},
+      education = #{record.education,jdbcType=VARCHAR},
+      school = #{record.school,jdbcType=VARCHAR},
+      role = #{record.role,jdbcType=INTEGER},
+      level = #{record.level,jdbcType=INTEGER},
+      status = #{record.status,jdbcType=INTEGER}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.feiqu.system.model.FqUser">
+    update fq_user
+    <set>
+      <if test="username != null">
+        username = #{username,jdbcType=VARCHAR},
+      </if>
+      <if test="password != null">
+        password = #{password,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="nickname != null">
+        nickname = #{nickname,jdbcType=VARCHAR},
+      </if>
+      <if test="icon != null">
+        icon = #{icon,jdbcType=VARCHAR},
+      </if>
+      <if test="createIp != null">
+        create_ip = #{createIp,jdbcType=VARCHAR},
+      </if>
+      <if test="city != null">
+        city = #{city,jdbcType=VARCHAR},
+      </if>
+      <if test="sex != null">
+        sex = #{sex,jdbcType=INTEGER},
+      </if>
+      <if test="isSingle != null">
+        is_single = #{isSingle,jdbcType=INTEGER},
+      </if>
+      <if test="isMailBind != null">
+        is_mail_bind = #{isMailBind,jdbcType=INTEGER},
+      </if>
+      <if test="sign != null">
+        sign = #{sign,jdbcType=VARCHAR},
+      </if>
+      <if test="qudouNum != null">
+        qudou_num = #{qudouNum,jdbcType=INTEGER},
+      </if>
+      <if test="birth != null">
+        birth = #{birth,jdbcType=VARCHAR},
+      </if>
+      <if test="education != null">
+        education = #{education,jdbcType=VARCHAR},
+      </if>
+      <if test="school != null">
+        school = #{school,jdbcType=VARCHAR},
+      </if>
+      <if test="role != null">
+        role = #{role,jdbcType=INTEGER},
+      </if>
+      <if test="level != null">
+        level = #{level,jdbcType=INTEGER},
+      </if>
+      <if test="status != null">
+        status = #{status,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.feiqu.system.model.FqUser">
+    update fq_user
+    set username = #{username,jdbcType=VARCHAR},
+      password = #{password,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      nickname = #{nickname,jdbcType=VARCHAR},
+      icon = #{icon,jdbcType=VARCHAR},
+      create_ip = #{createIp,jdbcType=VARCHAR},
+      city = #{city,jdbcType=VARCHAR},
+      sex = #{sex,jdbcType=INTEGER},
+      is_single = #{isSingle,jdbcType=INTEGER},
+      is_mail_bind = #{isMailBind,jdbcType=INTEGER},
+      sign = #{sign,jdbcType=VARCHAR},
+      qudou_num = #{qudouNum,jdbcType=INTEGER},
+      birth = #{birth,jdbcType=VARCHAR},
+      education = #{education,jdbcType=VARCHAR},
+      school = #{school,jdbcType=VARCHAR},
+      role = #{role,jdbcType=INTEGER},
+      level = #{level,jdbcType=INTEGER},
+      status = #{status,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

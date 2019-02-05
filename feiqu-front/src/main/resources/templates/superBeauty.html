@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<%include("/common/_head.html"){}%>
+    <title>美颜达人 一起看看俊男靓女吧 -飞趣</title>
+<style>
+    .art-item {
+        position: relative;
+        padding: 16px 20px;
+        display: inline-block;
+    }
+    .card {
+        overflow: hidden;
+        border-radius: 2px;
+        -webkit-box-shadow: 0 1px 3px rgba(0,0,0,.1);
+        box-shadow: 0 1px 3px rgba(0,0,0,.1);
+        -webkit-box-sizing: border-box;
+        box-sizing: border-box;
+    }
+    .upload-form-div {
+        padding: 1rem;
+    }
+    .c-img-list {
+        width: 100%;
+        margin-top: 15px;
+        font-size: 0;
+    }
+    .c-img-list li{
+        width: 31%;
+        margin: 0 15px 15px 0;
+        padding: 15px 16px 5px 17px;
+        display: inline-block;
+        vertical-align: middle;
+        font-size: 14px;
+        background-color: #fff;
+        box-shadow: 3px 3px 3px #ccc;
+    }
+    .upload-img {
+        width: 100%;
+    }
+    .img-info {
+        position: relative;
+        margin: 10px 0 0;
+        padding: 10px 65px 0 45px;
+        border-top: 1px dotted #eee;
+    }
+    .img-info .layui-btn {
+        position: absolute;
+        right: 0;
+        top: 15px;
+        padding: 0 15px;
+    }
+    .img-info p{
+        height: 24px;
+        line-height: 24px;
+    }
+    .beauty-icon {
+        position: absolute;
+        left: 0;
+        top: 15px;
+        width: 35px;
+        height: 35px;
+    }
+    .img-info .c-nav-icon img{
+        margin-left: 0 !important;
+    }
+    .upload-tip {
+        padding: 15px 15px;
+        border-bottom: 1px solid #1b6d85;
+        border-bottom: 1px dotted #E9E9E9;
+    }
+    .img-brief{
+        position: relative;
+        display: block;
+    }
+    .img-brief .layui-btn{
+        display: none;
+        position: absolute;
+        bottom: 20px;
+        left: 50%;
+        margin-left: -29px;
+    }
+    body .demo-class .layui-layer-title{background:#5b5b63; color:#fff; border: none;}
+
+    .category_a {
+        display: inline-block;
+        height: 28px;
+        line-height: 40px;
+        margin: 5px;
+        padding: 0 10px;
+        font-size: 14px;
+        white-space: nowrap;
+        border-radius: 3px;
+        color: #333;
+    }
+</style>
+</head>
+<body>
+<%
+var user = c.currentUser(request, servlet.response);
+var isLogin = false;
+if(user != null){
+isLogin=true;
+}
+include("/common/_headwithlogin.html",{user:user,isLogin:isLogin}){}
+%>
+<div class="layui-container topToFix">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md8">
+            <div class="c-panel">
+                <div class="c-panel-title">
+                    <a class="layui-btn uploadBtn" href="javascript:void(0);">上传一张美图</a>
+                </div>
+            </div>
+            <div class="c-panel">
+                <div class="c-panel-title">
+                    <span class="title-first">排序规则</span>
+                    <span class="c-mid"></span>
+                    <a href="/beauty/index?order=time">时间</a>
+                    <span class="c-mid"></span>
+                    <a href="/beauty/index?order=zan">点赞数</a>
+                </div>
+                <div class="c-panel-body">
+                    <a class="category_a" href="/beauty/index">全部</a>
+                    <%for(var category in girlCategories){%>
+                    <a class="category_a" href="/beauty/category/${category.key}">${category.value}</a>
+                    <%}%>
+                </div>
+            </div>
+            <div id="imgContain" class="">
+                <ul class="c-img-list">
+                <%for(var beauty in list){%>
+                <li class="art-item card">
+                    <a class="img-brief" href="${ctxPath}/beauty/${beauty.id}" target="_blank">
+                        <img alt="${beauty.title!}" class="upload-img" lay-src="${beauty.imgUrl}">
+                        <cite class="layui-btn layui-btn-primary layui-btn-small">查看详情</cite>
+                    </a>
+                    <h3 style="text-align: center;padding-top: 10px">${beauty.title}</h3>
+                    <p style="text-align: center;padding-top: 10px">${printTime(beauty.createTime)}</p>
+                    <div class="img-info">
+                        <a href="${ctxPath}/u/${beauty.uploadUserId}/peopleIndex" class="c-nav-icon beauty-icon"><img src="${beauty.icon!}"></a>
+                        <p><span style="color: #666">${beauty.nickname}</span></p>
+                        <p>获得<span style="color: #01AAED;font-size: 16px;padding: 0 3px">${beauty.likeCount!0}</span>个赞</p>
+                        <button  onclick="likeThis(${beauty.id})" class="layui-btn layui-btn-primary c-case-active" data-type="praise">点赞</button>
+                    </div>
+                </li>
+                <%}%>
+                </ul>
+                <div id="pagesplit">
+                </div>
+            </div>
+        </div>
+        <div class="layui-col-md4">
+            <div class="c-panel">
+                <div class="c-panel-title">推荐图片</div>
+                <div class="c-panel-body">
+                    <%if(isEmpty(recommendList)){%>
+                    <p>暂无推荐图片</p>
+                    <%}else{%>
+                    <ul>
+                        <%for(var ha in recommendList){%>
+                        <li><a title="${ha.title}" href="${ctxPath}/beauty/${ha.id}"><div>${ha.title}</div><img src="${ha.imgUrl!}"/></a><em>${ha.seeCount}查看</em></li>
+                        <%}%>
+                    </ul>
+                    <%}%>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="upload-id" class="layui-hide">
+    <br>
+    <div class="upload-form-div">
+    <form class="layui-form" action="">
+        <div class="layui-form-item">
+            <label class="layui-form-label">图片说明</label>
+            <div class="layui-input-block">
+                <input type="text" name="title" required autofocus placeholder="图片说明" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">分类</label>
+            <div class="layui-input-block">
+               <select name="category">
+                   <%for(var category in girlCategories){%>
+                   <option value="${category.key}">${category.value}</option>
+                   <%}%>
+               </select>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">图片链接</label>
+            <div class="layui-input-block">
+                <input type="text" name="imgUrl" required  placeholder="图片链接(支持（jpg、png、gif、bmp、jpeg）)" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+            <div class="layui-upload-drag" id="beautyUpload">
+                <i class="layui-icon"></i>
+                <p>点击上传，或将文件拖拽到此处</p>
+            </div>
+            </div>
+        </div>
+        <input type="hidden" id="uploadImgUrl" value="">
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button id="uploadBtn" class="layui-btn" lay-submit lay-filter="formDemo">分享你的图片吧</button>
+            </div>
+        </div>
+    </form>
+    </div>
+</div>
+<%include("/common/_footor.html"){}%>
+</body>
+<%include("/common/_scripts.html",{user:user}){}%>
+<script>
+    var category = '${category!}';
+    $(function () {
+        $(".img-brief").hover(function (aa) {
+            $(this).children('cite').show()
+        },function (bb) {
+            $(this).children('cite').hide()
+        })
+    })
+    function likeThis(tid) {
+        $.ajax({
+            url:'${ctxPath}/beauty/like?beautyId='+tid,
+            method:'post',
+            dataType:'json',
+            success:function (result) {
+                if(result && result.code === '0000'){
+                    layer.msg('点赞成功')
+                }else {
+                    layer.msg(result.message||'点赞失败')
+                }
+            }
+        })
+    }
+
+    var uploadIndex = 0;
+
+    //一般直接写在一个js文件中
+    layui.use(['layer', 'form','laypage','flow','upload','fly'], function(){
+        var layer = layui.layer
+            ,form = layui.form
+            ,laypage=layui.laypage
+            ,flow = layui.flow
+            ,upload = layui.upload,fly=layui.fly,device=layui.device;
+
+        var uploadImgUrl='';
+        var loadIndex ;
+
+        $('.uploadBtn').on('click',function () {
+            var $uploadDiv = $("#upload-id");
+            $uploadDiv.removeClass("layui-hide");
+            uploadIndex = layer.open({
+                skin: 'demo-class',
+                area: (device.ios || device.android) ? ($(window).width() + 'px') : '660px',
+                title:"输入图片链接地址或者上传图片",
+                type: 1,
+                content: $uploadDiv,
+                yes: function(index, layero){
+                    layer.close(index);
+                },
+                cancel: function(index, layero){
+                    layer.close(index)
+                    return false;
+                },
+                end:function () {
+                    $uploadDiv.addClass("layui-hide");
+                }
+            });
+        })
+
+        //拖拽上传
+        upload.render({
+            elem: '#beautyUpload'
+            ,url: '/api/upload/'
+            ,size: 800
+            ,before:function (obj) {
+                loadIndex = layer.load(2, {shade: 0.8})
+            }
+            ,done: function(res){
+                layer.close(loadIndex);
+                if(res.code === '0000'){
+                    uploadImgUrl = res.data;
+                    $('input[name="imgUrl"]').val(uploadImgUrl)
+                } else {
+                    layer.msg(res.message, {icon: 5});
+                }
+            }
+            ,error: function(index, upload){
+                layer.close(loadIndex);
+            }
+        });
+
+        flow.lazyimg();
+
+        form.on('submit(formDemo)', function(data){
+            var imgUrl = data.field.imgUrl;
+            fly.json("${ctxPath}/beauty/uploadImg",data.field,function (result) {
+                var data = result.data;
+                layer.msg("上传成功！")
+                $('input[name="imgUrl"]').val('')
+                var contentH = '<li class="art-item card">' +
+                    '<a class="img-brief" href="/beauty/'+data.id+'"><img class="upload-img" src="'+data.imgUrl+'"></a>'+
+                        ' <h2 style="text-align: center;padding-top: 10px">'+data.title+'</h2>'+
+                        '<p style="text-align: center;padding-top: 10px">刚刚</p>'+
+                    '<div class="img-info"><a href="/u/${user.id!}/peopleIndex" class="c-nav-icon beauty-icon"><img src="${user.icon!}"></a>'+
+                    '<p><span style="color: #666">${user.nickname!}</span></p>'+
+                    '<p>获得<span style="color: #01AAED;font-size: 16px;padding: 0 3px">0</span>个赞</p>'+
+                '<button onclick="likeThis('+data.id+',this)" class="layui-btn layui-btn-primary c-case-active" data-type="praise">点赞</button>'+
+                '</div></li>'
+                $(".c-img-list").prepend(contentH);
+                $('input[name="imgUrl"]').val('')
+                $('input[name="title"]').val('')
+                layer.close(uploadIndex)
+            });
+            return false;
+        });
+
+        laypage.render({
+            elem: 'pagesplit'
+            ,count: ${count}
+            ,curr:${pageIndex}
+            ,limit:${pageSize}
+            ,jump: function(obj,first){
+                if(!first){
+                    if(category){
+                        location.href = "${ctxPath}/beauty/category/"+category+"?pageIndex="+obj.curr+"&pageSize="+obj.limit
+                    }else {
+                        location.href = "${ctxPath}/beauty/index?pageIndex="+obj.curr+"&pageSize="+obj.limit
+                    }
+                }
+            }
+        });
+    });
+</script>
+</html>

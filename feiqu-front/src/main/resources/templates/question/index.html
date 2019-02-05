@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<%include("/common/_head.html"){}%>
+    <title>问题反馈 -飞趣</title>
+<style>
+    .c-panel {
+        background-color: #fff;
+    }
+    .c-list li {
+        position: relative;
+        line-height: 22px;
+        padding: 15px 15px 15px 75px;
+        border-bottom: 1px dotted #e2e2e2;
+        overflow: hidden;
+    }
+    .c-box {
+        padding: 20px;
+    }
+    .desc {
+        height: 100px;
+    }
+
+    .q-content {
+        height: 100%;
+    }
+    .q-content img{
+
+    }
+    .c-panel{
+        min-height: 500px;
+    }
+
+    .no-advice {
+        position: absolute;
+        left: 50%;
+        top:40%;
+        font-size: 18px;
+    }
+    .reply_time{
+        padding-left: 3rem;
+    }
+</style>
+</head>
+<body>
+<%
+var user = c.currentUser(request, servlet.response);
+var isLogin = false;
+if(user != null){
+isLogin=true;
+}
+include("/common/_headwithlogin.html",{user:user,isLogin:isLogin}){}
+%>
+<div class="layui-container topToFix">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md8">
+            <div class="c-panel">
+                <ul class="c-list">
+                    <%if(isEmpty(list)){%>
+<p class="no-advice">暂无反馈</p>
+                    <%}else{%>
+                    <%for(var q in list){%>
+                    <li class="q-single">
+                        <a href="${ctxPath}/u/${q.userId}/peopleIndex" class="fly-avatar">
+                            <img src="${q.icon}">
+                        </a>
+                        <div>${q.nickname}<span class="reply_time">${printTime(q.createtime)}</span></div>
+                        <div class="q-content">${q.queContent}</div>
+                    </li>
+                    <%}%>
+                    <%}%>
+                </ul>
+                <div id="pagesplit">
+
+                </div>
+            </div>
+        </div>
+        <div class="layui-col-md4">
+            <p class="text-danger">${error!}</p>
+            <div class="c-panel c-box">
+                <div class="desc">如若你有什么更好的建议或者发现什么问题，请输入您的反馈，帮助这个平台越做越好~</div>
+                <form class="layui-form"  action="${ctxPath}/question" method="post">
+                    <div class="layui-form-item">
+                        <textarea autofocus name="queContent" class="layui-textarea fly-editor" placeholder="问题或建议"></textarea>
+                    </div>
+                    <input type="hidden" name="userId" value="${user.id!0}">
+                    <div class="layui-form-item">
+                        <button class="layui-btn" lay-submit lay-filter="formDemo">反馈</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<%include("/common/_footor.html"){}%>
+</body>
+<%include("/common/_scripts.html",{user:user}){}%>
+<script>
+    //Demo
+    layui.use(['form','fly'], function(){
+        var form = layui.form,fly=layui.fly;
+
+        $(".fly-editor").focus()
+
+        //监听提交
+        form.on('submit(formDemo)', function(data){
+            var userId = data.field.userId;
+            if(userId == 0){
+                layer.msg('请先登录，再来反馈哦~')
+                return false
+            }
+
+            data.field.queContent = fly.content(data.field.queContent)
+            $.ajax({
+                url:'${ctxPath}/question',
+                type:'post',
+                data:JSON.stringify(data.field),
+                contentType:'application/json',
+                dataType:'json',
+                success:function (result) {
+                    console.log(result)
+                    if(result.code == '0000'){
+                        layer.msg("反馈成功")
+                        location.reload()
+                    }else {
+                        layer.msg("反馈失败")
+                    }
+                }
+            });
+            return false
+        });
+    });
+</script>
+</html>

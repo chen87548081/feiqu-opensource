@@ -1,0 +1,17 @@
+<ul class="layui-nav layui-nav-tree layui-inline" lay-filter="demo" style="margin-right: 10px;">
+    <li class="layui-nav-item"><a href="${ctxPath}/u/upLevel"><i class="layui-icon layui-icon-snowflake"></i>升级之路</a></li>
+    <li class="layui-nav-item"><a href="${ctxPath}/u/center"><i class="layui-icon">&#xe612;</i>用户中心</a></li>
+    <li class="layui-nav-item"><a href="${ctxPath}/u/set"><i class="layui-icon">&#xe614;</i>基本设置</a></li>
+    <li class="layui-nav-item"><a href="${ctxPath}/timeline/list"><i class="layui-icon">&#xe600;</i>时光轴</a></li>
+    <li class="layui-nav-item"><a href="${ctxPath}/message/dialogs"><i class="layui-icon">&#xe611;</i>私信</a></li>
+    <%if(user.role == 1){%>
+    <li class="layui-nav-item"><a href="${ctxPath}/article/manage"><i class="layui-icon layui-icon-list"></i>文章管理</a></li>
+    <li class="layui-nav-item"><a href="${ctxPath}/u/manage"><i class="layui-icon layui-icon-list"></i>用户管理</a></li>
+    <li class="layui-nav-item"><a href="${ctxPath}/blackList/manage"><i class="layui-icon layui-icon-list"></i>REDIS管理</a></li>
+    <li class="layui-nav-item"><a href="${ctxPath}/beauty/manage"><i class="layui-icon layui-icon-list"></i>图片管理</a></li>
+    <li class="layui-nav-item"><a href="${ctxPath}/websiteDir/manage"><i class="layui-icon layui-icon-list"></i>网址管理</a></li>
+    <li class="layui-nav-item"><a href="${ctxPath}/fqFriendLink/manage"><i class="layui-icon layui-icon-list"></i>友链管理</a></li>
+    <%}%>
+</ul>
+<div class="site-tree-mobile layui-hide"><i class="layui-icon">&#xe602;</i></div>
+<div class="site-mobile-shade"></div>

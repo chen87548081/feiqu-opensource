@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%include("/common/_head.html"){}%>
+    <title>更换背景图片 -飞趣</title>
+    <style>
+        .site-mobile .c-user-main>.layui-nav{left:0}
+        .home-main{margin-left:200px}
+        .detail-box{min-height: 500px;}
+        .recommend-backImgs li{
+            float: left;
+            margin: 20px;
+            border: 5px solid #fff;
+        }
+        .recommend-backImgs li img{
+            max-width: 250px;
+        }
+        .confirm-block{
+            text-align: center;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+<%
+var user = c.currentUser(request, servlet.response);
+var isLogin = false;
+if(user != null){
+isLogin=true;
+}
+include("/common/_headwithlogin.html",{user:user,isLogin:isLogin}){}
+%>
+<div class="layui-container layui-clear topToFix home-all">
+    <%include("/common/_home_nav.html",{user:user}){}%>
+    <div class="home-main layui-row layui-col-space15">
+        <div class="layui-col-md12">
+            <div class="c-panel detail-box">
+                <a class="layui-btn layui-btn-sm" href="javascript:;" id="recommendToOfficial">向官方推荐自己的背景图片</a>
+                <a class="layui-btn layui-btn-sm" href="https://www.zhihu.com/question/301773532/answer/535108073" id="" target="_blank">素材地址</a>
+                <hr class="layui-bg-green">
+                <form class="layui-form" action="${ctxPath}/bgImg/update" method="post">
+                    <div id="ossfile">你的浏览器不支持flash,Silverlight或者HTML5！</div>
+                    <div class="layui-upload-drag" id="uploadContainer">
+                        <a id="selectfiles" href="javascript:void(0);" class="layui-btn layui-btn-normal">选择背景图片</a>
+                        <a id="postfiles" href="javascript:void(0);" class="layui-btn">开始上传</a>
+                        <button class="layui-btn" lay-submit lay-filter="bgImgForm">确认使用</button>
+                    </div>
+                    <div>
+                        <img  class="layui-upload-img" id="picUrl" src="">
+                    </div>
+                    <input name="picUrl" type="hidden" value="">
+                </form>
+                <hr class="layui-bg-green">
+                <blockquote class="layui-elem-quote">或者选择以下推荐的背景图片</blockquote>
+                <hr class="layui-bg-green">
+                <div class="recommend-backImgs layui-clear">
+                    <ul>
+                        <%for(var img in imgList){%>
+                        <li>
+                            <img lay-src="${img.imgUrl}">
+                        </li>
+                        <%}%>
+                    </ul>
+                </div>
+                <div class="confirm-block">
+                    <input type="hidden" id="recommend-img-url" value="">
+                    <button class="recommend-confirm-btn layui-btn">确认使用</button>
+                </div>
+                <div id="pagesplit">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="site-tree-mobile layui-hide"><i class="layui-icon">&#xe602;</i></div>
+<div class="site-mobile-shade"></div>
+<%include("/common/_footor.html"){}%>
+</body>
+<script src="${ctxPath}/js/plupload.full.min.js"></script>
+<script src="${ctxPath}/js/pic_upload_oss.js?v=${VERSION}"></script>
+<%include("/common/_scripts.html",{user:user}){}%>
+<script>
+    layui.use(['layer', 'laypage','fly','upload','form','flow'], function(){
+        var layer = layui.layer,form=layui.form,fly=layui.fly,flow=layui.flow;
+        flow.lazyimg();
+        form.on('submit(bgImgForm)', function(data){
+            var action = $(data.form).attr('action');
+            fly.json(action, data.field, function(res){
+                layer.msg('背景更新成功')
+                $('.c-skin-container').css('background-image','url('+res.data+')')
+            });
+            return false;
+        });
+        $('.recommend-backImgs li').on('click',function () {
+            $(this).siblings('li').css({'border':'none'})
+            $(this).css({'border':'5px solid #82b9dc'})
+            $('#recommend-img-url').val($(this).children('img').attr('src'))
+        })
+        $('.recommend-confirm-btn').on('click',function () {
+            var imgUrl = $('#recommend-img-url').val()
+            if(!imgUrl){
+                layer.msg('请先选择一张背景图片')
+                return
+            }
+            fly.json('/bgImg/update', {'picUrl':imgUrl}, function(res){
+                layer.msg('背景更新成功')
+                $('.c-skin-container').css('background-image','url('+imgUrl+')')
+            });
+        })
+        $('#recommendToOfficial').on('click',function () {
+            fly.json('/bgImg/recommend',{}, function(res){
+                layer.msg('消息已经发送给官方人员，待官方人员回复')
+            });
+        })
+    });
+</script>
+</html>

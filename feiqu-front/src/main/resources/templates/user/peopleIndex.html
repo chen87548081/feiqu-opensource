@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<%include("/common/_head.html"){}%>
+    <title>${oUser.nickname!"未知用户"} 的个人主页 -飞趣</title>
+<style>
+    .c-user-main>.layui-nav{position:absolute;left:0;top:0;z-index:1000;height:100%;padding:10px 0}
+    .userinfo{position: relative;
+        padding: 30px 0 30px;
+        text-align: center;}
+    .userinfo h1{font-size:26px;line-height:30px;margin-top:10px}
+    .userinfo h1 .icon-nan{color:#4EBBF9}
+    .userinfo img{width:120px;height:120px;border-radius:100%;}
+    .detail div{color:#878a7c}
+    .messageDiv button{width:7rem}
+    .box-username{display:-webkit-box;display:-ms-flexbox;display:flex;height:36px;-webkit-box-align:center;-ms-flex-align:center;align-items:center;font-weight:700;line-height:36px;margin-bottom:10px}
+    .goBtnDiv{text-align:center}
+    .emotion{margin:5px 0}
+    .emotion .qudou{padding-left:1rem}
+    .qudou img{position:relative;left:0;width:20px;height:20px;padding-right:5px}
+    .city{margin:10px 0}
+    .user-act{padding:10px 0;border-radius:10px;position:relative}
+    .c-panel{margin-left:0 !important}
+    .layui-tab-card{min-height:500px;margin:0 10px}
+    .c-t-list{}
+    .c-t-list img{max-width:100%}
+    .c-t-list li{position:relative;line-height:22px;padding:15px 15px 15px 10px;border-bottom:1px dotted #e2e2e2}
+    .c-t-list li i{font-size:12px;color:#999;font-style:normal}
+    .c-t-list .art-title{font-size:16px;max-width:70%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600}
+    .user-att{padding-top:10px;position:relative}
+    .user-desc{margin-top:20px}
+    #comments{padding:10px 15px;line-height:1.7}
+    #pagesplit-c{padding:10px 25px}
+    .home-comment{margin-top:10px;padding:10px 15px;background-color:#d8d8e4;border-radius:5px;word-wrap:break-word}
+    .home-da li{margin-bottom:20px;line-height:24px}
+    .c-list li{min-height:50px}
+</style>
+</head>
+<body>
+<%
+var user = c.currentUser(request, servlet.response);
+var isLogin = false;
+if(user != null){
+isLogin=true;
+}
+include("/common/_headwithlogin.html",{user:user,isLogin:isLogin}){}
+%>
+<div class="layui-container topToFix">
+    <div class="c-panel userinfo">
+        <img src="${oUser.icon!}">
+        <div class="detail fly-detail-user">
+            <h1>${oUser.nickname!}
+                <%if(oUser.role == 1){%>
+                <span class="staff">官方人员</span>
+                <%}%>
+                ${decode(user.sex,1,"<i class=\"iconfont icon-nan\"></i>",2,"<i class=\"iconfont icon-nv\"></i>","<i class='iconfont  icon-wenda'></i>")}
+            </h1>
+            <div class="emotion">情感状态：<%select{
+                case oUser.isSingle == 1:print("单身");break;
+                case oUser.isSingle == 0:print("恋爱中");break;
+                case oUser.isSingle == 2:print("已婚");break;
+                default:print("未知");break;
+                }%><span class="qudou"><img alt="趣豆" title="趣豆" src="${ctxPath}/img/qd3.png">${oUser.qudouNum!0}趣豆</span>
+            </div>
+            <div class="city"><i class="iconfont icon-chengshi"></i>${oUser.city!'未知'}&nbsp;&nbsp;&nbsp;
+                <i class="layui-icon">&#xe60e;</i>${oUser.createTime,'yyyy-MM-dd'}加入</div>
+            <div class="emotion"><span>生日：${oUser.birth!'无'}</span><span class="qudou">学历：${oUser.education!'无'}</span><span class="qudou">学校：${oUser.school!'无'}</span></div>
+            <div class="city">（${isEmpty(oUser.sign)?'此人暂无签名':user.sign}）</div>
+            <div class="city">等级：${oUser.level!1}级</div>
+            <div class="messageDiv">
+                <button id="sxBtn" class="layui-btn layui-btn-normal"><i class="layui-icon">&#xe63a;</i>发私信</button>
+                <%if(follow){%>
+                <button id="unfollowBtn" class="layui-btn layui-btn-primary">已关注</button>
+                <button id="followBtn" class="layui-btn  layui-btn-primary layui-hide"><i class="layui-icon">&#xe654;</i>关注${oUser.sex! ==1?"他":"她"}</button>
+                <%}else{%>
+                <button id="unfollowBtn" class="layui-btn layui-btn-primary layui-hide">已关注</button>
+                <button id="followBtn" class="layui-btn  layui-btn-primary"><i class="layui-icon">&#xe654;</i>关注${oUser.sex! ==1?"他":"她"}</button>
+                <%}%>
+            </div>
+        </div>
+    </div>
+    <div class="layui-row layui-col-space15 user-desc">
+        <div class="layui-col-md6">
+            <div class="c-panel user-act">
+                <div class="layui-tab layui-tab-card" lay-filter="user-center-tab">
+                    <ul class="layui-tab-title">
+                        <li class="layui-this" lay-id="thoughts">说的想法</li>
+                        <li lay-id="articles">发表的文章</li>
+                        <li lay-id="follow">${oUser.sex! ==1?"他":"她"}的关注</li>
+                    </ul>
+                    <div class="layui-tab-content">
+                        <div class="layui-tab-item layui-show">
+                            <ul class="c-t-list">
+                                <%for(var t in thoughts){%>
+                                <li><a href="${ctxPath}/thought/${t.id}"><div class="th-detail">${t.thoughtContent}</div></a> <i>${printTime(t.createTime)}</i></li>
+                                <%}%>
+                            </ul>
+                        </div>
+                        <div class="layui-tab-item">
+                            <ul class="c-t-list">
+                                <%for(var article in articles){%>
+                                <li><a class="art-title" href="${ctxPath}/article/${article.id}"> ${article.articleTitle}</a>
+                                    <i>${printTime(article.createTime)}</i>
+                                </li>
+                                <%}%>
+                            </ul>
+                        </div>
+                        <div class="layui-tab-item">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="layui-col-md6">
+            <div class="c-panel user-att">
+                <div class="c-panel-title">
+                    ${oUser.nickname} 最近的回复
+                </div>
+                <div id="comments">
+                </div>
+                <div id="pagesplit-c">
+                </div>
+            </div>
+        </div>
+    </div>
+<div id="msgBox" class="layui-hide">
+    <div class="detail-box">
+        <span class="box-username">${oUser.nickname!}</span>
+        <form class="layui-form" >
+            <div class="layui-form-item layui-form-text">
+                <textarea id="msgContent" name="content" placeholder="私信内容" class="layui-textarea"></textarea>
+            </div>
+            <input type="hidden" name="receivedUserId" value="${oUser.id!}">
+            <div class="layui-form-item goBtnDiv">
+                <button class="layui-btn" lay-submit lay-filter="formDemo">发送</button>
+            </div>
+        </form>
+    </div>
+</div>
+<%include("/common/_footor.html"){}%>
+</body>
+<%include("/common/_scripts.html"){}%>
+<script>
+    function follow() {
+        $.ajax({
+            url:'${ctxPath}/follow/${oUser.id}/followers',
+            type:'post',
+            dataType:'json',
+            success:function (result) {
+                if(result && result.code === '0000'){
+                    layer.msg("关注成功！",{icon:6})
+                }else {
+                    layer.msg("关注失败！",{icon:5})
+                }
+            }
+        });
+    }
+    function unfollow() {
+        $.ajax({
+            url:'${ctxPath}/follow/${oUser.id}/followers',
+            type:'delete',
+            dataType:'json',
+            success:function (result) {
+                if(result && result.code == '0000'){
+                    layer.msg("取消关注成功！",{icon:6})
+                    that.html('<i class="layui-icon">&#xe654;</i>关注${oUser.sex! ==1?"他":"她"}')
+                }else {
+                    layer.msg("取消关注失败！",{icon:5})
+                }
+            }
+        });
+    }
+
+    function getFollowees(index) {
+        var html = ''
+        $.ajax({
+            url:'${ctxPath}/follow/${oUser.id}/followees',
+            method:'get',
+            dataType:'json',
+            success:function (result) {
+                if(result && result.code == '0000'){
+                    $.each(result.data,function (i,obj) {
+                        html += '<li>' +
+                            '<a href="/u/'+obj.followedUserId+'/peopleIndex" class="fly-avatar">' +
+                            '<img src="'+obj.icon+'">' +
+                            '</a>' +
+                            '<div class="thought-content"></div>' +
+                            '<div class="c-list-info">' +
+                            '<cite>'+obj.nickname+'</cite>' +
+                            '</div>' +
+                            '</li>'
+                    })
+                    html = '<ul class="c-list">'+html+'</ul>'
+                    $('.layui-tab-item:nth-child('+parseInt(++index)+')').html(html)
+                }else {
+                    layer.msg(result.message||'获取关注失败')
+                }
+            }
+        })
+    }
+
+    layui.use(['layer','form','element','laypage','fly','face'], function() {
+        var $ = layui.jquery, layer = layui.layer,form=layui.form,
+            element=layui.element,laypage=layui.laypage,fly=layui.fly,face=layui.face,device = layui.device();
+        $('.th-detail').each(function(){
+            var othis = $(this), html = othis.html();
+            othis.html(fly.content(html));
+        });
+        var layerIndex;
+        element.on('tab(user-center-tab)', function(e){
+            if (this.getAttribute('lay-id') == 'follow'){
+                getFollowees(e.index)
+            }
+            location.hash = 'user-center-tab='+ this.getAttribute('lay-id');
+        });
+        var layid = location.hash.replace(/^#user-center-tab=/, '');
+        if (layid == 'follow'){
+            getFollowees(2)
+        }
+        element.tabChange('user-center-tab', layid);
+        form.on('submit(formDemo)', function(data){
+           fly.json('${ctxPath}/u/postMsg',data.field,function (result) {
+               layer.close(layerIndex)
+               layer.msg("私信成功！",{icon:6})
+               $("#msgContent").val("");
+            });
+            return false;
+        });
+
+        $("#sxBtn").click(function (e) {
+            $("#msgBox").removeClass("layui-hide")
+            layerIndex = layer.open({
+                title:'私信',
+                area: (device.ios || device.android) ? ($(window).width() + 'px') : '660px',
+                shade: [0.8, '#393D49'],
+                type: 1,
+                content: $('#msgBox'), //这里content是一个DOM，注意：最好该元素要存放在body最外层，否则可能被其它的相对元素所影响
+                end:function () {
+                    $("#msgBox").addClass("layui-hide")
+                }
+            });
+        });
+
+        $("#followBtn").click(function () {
+            follow()
+            $(this).addClass('layui-hide')
+            $(this).prev().removeClass('layui-hide')
+        })
+
+        $('#unfollowBtn').hover(function () {
+            $(this).html('取消关注')
+        },function () {
+            $(this).html('已关注')
+        })
+        $('#unfollowBtn').click(function () {
+            unfollow()
+            $(this).addClass('layui-hide')
+            $(this).next().removeClass('layui-hide')
+        })
+
+        function getComments(p) {
+            $.ajax({
+                url:'${ctxPath}/comment/list/${oUser.id}?p='+p,
+                type:'get',
+                dataType:'json',
+                success:function (result) {
+                    if(result && result.code == '0000'){
+                        curr = result.data.pageIndex
+                        count = result.data.total
+                        limit = result.data.pageSize
+                        laypage.render({
+                            elem: 'pagesplit-c'
+                            , curr:p
+                            , limit:limit
+                            , count: count
+                            , layout: ['count', 'prev', 'page', 'next']
+                            , jump: function (obj, first) {
+                                if (!first) {
+                                    getComments(obj.curr)
+                                }else {
+                                    var data = result.data.list;
+                                    var str = '<ul class="home-da">'
+                                    $.each(data,function (index,item) {
+                                        str+='<li><p>在'+item.createTime+'回复</p><div class="home-comment">'+fly.content(item.content)+'</div></li>'
+                                    })
+                                    str+='</ul>'
+                                    $("#comments").html(str)
+                                }
+                            }
+                        });
+                    }
+                }
+            });
+        }
+        var curr,count,limit;
+        getComments(1)
+    });
+</script>
+</html>

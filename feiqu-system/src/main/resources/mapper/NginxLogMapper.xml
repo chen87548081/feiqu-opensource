@@ -1,0 +1,360 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.feiqu.system.mapper.NginxLogMapper">
+  <resultMap id="BaseResultMap" type="com.feiqu.system.model.NginxLog">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="ip" jdbcType="VARCHAR" property="ip" />
+    <result column="local_time" jdbcType="VARCHAR" property="localTime" />
+    <result column="method" jdbcType="VARCHAR" property="method" />
+    <result column="url" jdbcType="VARCHAR" property="url" />
+    <result column="http" jdbcType="VARCHAR" property="http" />
+    <result column="status" jdbcType="VARCHAR" property="status" />
+    <result column="bytes" jdbcType="VARCHAR" property="bytes" />
+    <result column="referer" jdbcType="VARCHAR" property="referer" />
+    <result column="xforward" jdbcType="VARCHAR" property="xforward" />
+    <result column="request_time" jdbcType="DOUBLE" property="requestTime" />
+    <result column="user_agent" jdbcType="VARCHAR" property="userAgent" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="spider_type" jdbcType="INTEGER" property="spiderType" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    id, ip, local_time, method, url, http, status, bytes, referer, xforward, request_time, 
+    user_agent, create_time, spider_type
+  </sql>
+  <select id="selectByExample" parameterType="com.feiqu.system.model.NginxLogExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from nginx_log
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from nginx_log
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from nginx_log
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.feiqu.system.model.NginxLogExample">
+    delete from nginx_log
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.feiqu.system.model.NginxLog">
+    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into nginx_log (ip, local_time, method, 
+      url, http, status, 
+      bytes, referer, xforward, 
+      request_time, user_agent, create_time, 
+      spider_type)
+    values (#{ip,jdbcType=VARCHAR}, #{localTime,jdbcType=VARCHAR}, #{method,jdbcType=VARCHAR}, 
+      #{url,jdbcType=VARCHAR}, #{http,jdbcType=VARCHAR}, #{status,jdbcType=VARCHAR}, 
+      #{bytes,jdbcType=VARCHAR}, #{referer,jdbcType=VARCHAR}, #{xforward,jdbcType=VARCHAR}, 
+      #{requestTime,jdbcType=DOUBLE}, #{userAgent,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, 
+      #{spiderType,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertSelective" parameterType="com.feiqu.system.model.NginxLog">
+    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into nginx_log
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="ip != null">
+        ip,
+      </if>
+      <if test="localTime != null">
+        local_time,
+      </if>
+      <if test="method != null">
+        method,
+      </if>
+      <if test="url != null">
+        url,
+      </if>
+      <if test="http != null">
+        http,
+      </if>
+      <if test="status != null">
+        status,
+      </if>
+      <if test="bytes != null">
+        bytes,
+      </if>
+      <if test="referer != null">
+        referer,
+      </if>
+      <if test="xforward != null">
+        xforward,
+      </if>
+      <if test="requestTime != null">
+        request_time,
+      </if>
+      <if test="userAgent != null">
+        user_agent,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="spiderType != null">
+        spider_type,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="ip != null">
+        #{ip,jdbcType=VARCHAR},
+      </if>
+      <if test="localTime != null">
+        #{localTime,jdbcType=VARCHAR},
+      </if>
+      <if test="method != null">
+        #{method,jdbcType=VARCHAR},
+      </if>
+      <if test="url != null">
+        #{url,jdbcType=VARCHAR},
+      </if>
+      <if test="http != null">
+        #{http,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=VARCHAR},
+      </if>
+      <if test="bytes != null">
+        #{bytes,jdbcType=VARCHAR},
+      </if>
+      <if test="referer != null">
+        #{referer,jdbcType=VARCHAR},
+      </if>
+      <if test="xforward != null">
+        #{xforward,jdbcType=VARCHAR},
+      </if>
+      <if test="requestTime != null">
+        #{requestTime,jdbcType=DOUBLE},
+      </if>
+      <if test="userAgent != null">
+        #{userAgent,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="spiderType != null">
+        #{spiderType,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.feiqu.system.model.NginxLogExample" resultType="java.lang.Long">
+    select count(*) from nginx_log
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <select id="countUvByExample" parameterType="com.feiqu.system.model.NginxLogExample" resultType="java.lang.Long">
+    SELECT count(aa.ip) FROM (
+    SELECT DISTINCT ip FROM nginx_log
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>) aa
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update nginx_log
+    <set>
+      <if test="record.id != null">
+        id = #{record.id,jdbcType=INTEGER},
+      </if>
+      <if test="record.ip != null">
+        ip = #{record.ip,jdbcType=VARCHAR},
+      </if>
+      <if test="record.localTime != null">
+        local_time = #{record.localTime,jdbcType=VARCHAR},
+      </if>
+      <if test="record.method != null">
+        method = #{record.method,jdbcType=VARCHAR},
+      </if>
+      <if test="record.url != null">
+        url = #{record.url,jdbcType=VARCHAR},
+      </if>
+      <if test="record.http != null">
+        http = #{record.http,jdbcType=VARCHAR},
+      </if>
+      <if test="record.status != null">
+        status = #{record.status,jdbcType=VARCHAR},
+      </if>
+      <if test="record.bytes != null">
+        bytes = #{record.bytes,jdbcType=VARCHAR},
+      </if>
+      <if test="record.referer != null">
+        referer = #{record.referer,jdbcType=VARCHAR},
+      </if>
+      <if test="record.xforward != null">
+        xforward = #{record.xforward,jdbcType=VARCHAR},
+      </if>
+      <if test="record.requestTime != null">
+        request_time = #{record.requestTime,jdbcType=DOUBLE},
+      </if>
+      <if test="record.userAgent != null">
+        user_agent = #{record.userAgent,jdbcType=VARCHAR},
+      </if>
+      <if test="record.createTime != null">
+        create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.spiderType != null">
+        spider_type = #{record.spiderType,jdbcType=INTEGER},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update nginx_log
+    set id = #{record.id,jdbcType=INTEGER},
+      ip = #{record.ip,jdbcType=VARCHAR},
+      local_time = #{record.localTime,jdbcType=VARCHAR},
+      method = #{record.method,jdbcType=VARCHAR},
+      url = #{record.url,jdbcType=VARCHAR},
+      http = #{record.http,jdbcType=VARCHAR},
+      status = #{record.status,jdbcType=VARCHAR},
+      bytes = #{record.bytes,jdbcType=VARCHAR},
+      referer = #{record.referer,jdbcType=VARCHAR},
+      xforward = #{record.xforward,jdbcType=VARCHAR},
+      request_time = #{record.requestTime,jdbcType=DOUBLE},
+      user_agent = #{record.userAgent,jdbcType=VARCHAR},
+      create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      spider_type = #{record.spiderType,jdbcType=INTEGER}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.feiqu.system.model.NginxLog">
+    update nginx_log
+    <set>
+      <if test="ip != null">
+        ip = #{ip,jdbcType=VARCHAR},
+      </if>
+      <if test="localTime != null">
+        local_time = #{localTime,jdbcType=VARCHAR},
+      </if>
+      <if test="method != null">
+        method = #{method,jdbcType=VARCHAR},
+      </if>
+      <if test="url != null">
+        url = #{url,jdbcType=VARCHAR},
+      </if>
+      <if test="http != null">
+        http = #{http,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null">
+        status = #{status,jdbcType=VARCHAR},
+      </if>
+      <if test="bytes != null">
+        bytes = #{bytes,jdbcType=VARCHAR},
+      </if>
+      <if test="referer != null">
+        referer = #{referer,jdbcType=VARCHAR},
+      </if>
+      <if test="xforward != null">
+        xforward = #{xforward,jdbcType=VARCHAR},
+      </if>
+      <if test="requestTime != null">
+        request_time = #{requestTime,jdbcType=DOUBLE},
+      </if>
+      <if test="userAgent != null">
+        user_agent = #{userAgent,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="spiderType != null">
+        spider_type = #{spiderType,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.feiqu.system.model.NginxLog">
+    update nginx_log
+    set ip = #{ip,jdbcType=VARCHAR},
+      local_time = #{localTime,jdbcType=VARCHAR},
+      method = #{method,jdbcType=VARCHAR},
+      url = #{url,jdbcType=VARCHAR},
+      http = #{http,jdbcType=VARCHAR},
+      status = #{status,jdbcType=VARCHAR},
+      bytes = #{bytes,jdbcType=VARCHAR},
+      referer = #{referer,jdbcType=VARCHAR},
+      xforward = #{xforward,jdbcType=VARCHAR},
+      request_time = #{requestTime,jdbcType=DOUBLE},
+      user_agent = #{userAgent,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      spider_type = #{spiderType,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

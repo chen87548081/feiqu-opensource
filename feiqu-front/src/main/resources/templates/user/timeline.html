@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<%include("/common/_head.html"){}%>
+    <title>时光轴 -飞趣</title>
+<style>
+    .clear{clear:both}
+    .container{margin:15px auto;width:1140px;position:relative}
+    .timeline-box{background:#fff;padding:15px;position:relative;min-height:90vh;margin:0 0 10px 215px}
+    .timeline-main{position:relative;min-height:85vh}
+    .timeline-main > h1{font-size:34px;background:#fff;z-index:1;position:relative;color:#009688;margin-left:17%;margin-left:-moz-calc(18% - 16px);margin-left:-webkit-calc(18% - 16px);margin-left:calc(18% - 16px)}
+    .timeline-main > h1 > i{padding-right:10px;font-size:36px}
+    .timeline-main h2 > i{padding-left:5px}
+    .timeline-main h2,.timeline-main h3{width:16%;text-align:right}
+    .timeline-main h2,.timeline-main h2 > a{font-size:32px;margin:5px 0;color:#1E9FFF}
+    .timeline-main h3,.timeline-main h3 > a{font-size:24px;margin:2px 0;color:#FF5722}
+    .timeline-month > ul > li{padding:10px 0}
+    .timeline-month > ul > li .h4{display:inline-block;width:16%;text-align:right;float:left}
+    .date{display:inline-block;padding:2px 5px;color:#009688}
+    .dot-circle{color:#009688;width:4%;text-align:center;font-size:22px;z-index:1;position:relative;background:#fff;float:left}
+    .content{max-width:70%;float:left;padding:10px;margin-left:10px;position:relative;z-index:1;background:#009688;color:#fff}
+    .content::before{position:absolute;left:-20px;top:6px;height:0;width:0;content:'';border:10px solid rgba(255,255,255,0.00);border-top:6px solid rgba(255,255,255,0.00);border-bottom:6px solid rgba(255,255,255,0.00);border-right-color:#009688}
+    .timeline-line{position:absolute;left:18%;top:0;height:100%;width:2px;background:#009688;z-index:0}
+    .timeline-year{margin:10px 0}
+</style>
+</head>
+<body>
+<%
+var user = c.currentUser(request, servlet.response);
+var isLogin = false;
+if(user != null){
+isLogin=true;
+}
+include("/common/_headwithlogin.html",{user:user,isLogin:isLogin}){}
+%>
+<div class="layui-container topToFix c-user-main">
+    <%include("/common/_user_menu.html",{user:user}){}%>
+    <div class="timeline-box shadow c-panel fly-panel-user">
+        <form class="layui-form layui-form-pane" action="">
+            <div class="layui-form-item">
+                <label class="layui-form-label">总结</label>
+                <div class="layui-input-block">
+                    <input type="text" name="content" required  lay-verify="required" placeholder="请输入今天的总结，每天总结一波，做最强的自己" autocomplete="off" class="layui-input">
+                    <input type="hidden" name="userId" value="${user.id}">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-input-block">
+                    <button class="layui-btn" lay-submit lay-filter="formDemo">总结一波</button>
+                </div>
+            </div>
+        </form>
+        <div class="timeline-main">
+            <h1><i class="fa fa-clock-o"></i>时光轴 —— 记录生活点点滴滴</h1>
+            <div class="timeline-line"></div>
+            <div class="timeline-year">
+                <h2><a class="yearToggle" href="javascript:;">2018年</a><i class="fa fa-caret-down fa-fw"></i></h2>
+                <div class="timeline-month">
+                    <%
+                    for(entry in map){
+                    var key = entry.key;
+                    var value = entry.value;
+                    var splitStr = strutil.split(key,"-");
+                    %>
+                    <h3><a class="monthToggle" href="javascript:;">${splitStr[1]}月</a><i class="fa fa-caret-down fa-fw"></i></h3>
+                    <ul>
+                        <%for(var line in value){%>
+                        <li>
+                            <div class="h4">
+                                <p class="date">${line.createTime,'MM月dd日'}</p>
+                            </div>
+                            <p class="dot-circle"><i class="fa fa-dot-circle-o"></i></p>
+                            <p class="content">${line.content}
+                            </p>
+                            <div class="clear"></div>
+                        </li>
+                        <%}%>
+                    </ul>
+                    <%}%>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+<%include("/common/_footor.html"){}%>
+</body>
+<%include("/common/_scripts.html"){}%>
+<script>
+    $(function () {
+        $('.monthToggle').click(function () {
+            $(this).parent('h3').next().slideToggle('slow');
+            $(this).siblings('i').toggleClass('fa-caret-down fa-caret-right');
+        });
+        $('.yearToggle').click(function () {
+            $(this).parent('h2').siblings('.timeline-month').slideToggle('slow');
+            $(this).siblings('i').toggleClass('fa-caret-down fa-caret-right');
+        });
+    });
+
+    layui.use(['layer','form'], function() {
+        var $ = layui.jquery
+            , form = layui.form
+            , layer = layui.layer
+        form.on('submit(formDemo)', function(data){
+            console.log(data)
+            if(!data.field.content){
+                layer.msg("内容不能为空")
+                return false
+            }
+            $.ajax({
+                url:'${ctxPath}/timeline/postTimeline',
+                data:data.field,
+                dataType:'json',
+                type:'post',
+                success:function (result) {
+                    console.log(result)
+                    if(result&&result.code == '0000'){
+                        layer.msg('总结成功~')
+                        location.reload()
+                    }else {
+                        layer.msg(result.message||'总结失败~')
+                    }
+                }
+            })
+            return false;
+        });
+    });
+</script>
+</html>

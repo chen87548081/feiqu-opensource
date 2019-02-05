@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%include("/common/_head.html"){}%>
+    <title>对话详情 -飞趣</title>
+    <style>
+        .timeline-box {
+            background: #fff;
+            padding: 15px;
+            position: relative;
+            min-height: 90vh;
+            margin: 0 0 10px 215px
+        }
+        .msgSingle {
+            position: relative;
+        }
+        .msgSingle img{
+            max-width: 100%;
+        }
+        .msgSingle .sysdetail{
+            display: inline-block;
+            padding: 15px;
+            border-bottom: 1px dotted #e2e2e2;
+        }
+        .msgSingle .detail {
+            display: inline-block;
+            padding: 15px 15px 15px 75px;
+            border-bottom: 1px dotted #e2e2e2;
+            width: 80%;
+        }
+
+        .msgSingle .u-icon {
+            display: inline-block;
+            position: absolute;
+            left: 12px;
+            top: 24px;
+        }
+        .msgSingle .u-me-icon {
+            display: inline-block;
+            position: absolute;
+            right: 12px;
+            top: 24px;
+        }
+        .msgSingle .detail .c-fly-link{
+            padding-right: 50px;
+        }
+        .u-icon img {
+            width: 40px;
+        }
+        .u-me-icon img{
+            width: 40px;
+        }
+        .detail .msgcontent {
+            margin-top: 5px;
+            background-color: #61b776;
+            padding: 10px;
+            border-radius: 6px;
+            letter-spacing: 1px;
+            position: relative;
+            width: 45%;
+        }
+        .detail .msgcontent:after {
+            ontent: '';
+            position: absolute;
+            left: -10px;
+            top: 13px;
+            width: 0;
+            height: 0;
+            border-style: solid dashed dashed;
+            border-color: #e2e2e2 transparent transparent;
+            overflow: hidden;
+            border-width: 10px;
+        }
+        #clearBtn {
+            margin-left: 10px;
+        }
+        .c-reply{
+            text-align: right;
+        }
+        .c-reply span{
+            padding-right: 0!important;
+        }
+        .layui-textarea{
+            margin-top: 10px;
+        }
+        .thierBack {
+            background-color: #ECEEEE !important;
+        }
+    </style>
+</head>
+<body>
+<%
+var user = c.currentUser(request, servlet.response);
+var isLogin = false;
+if(user != null){
+isLogin=true;
+}
+include("/common/_headwithlogin.html",{user:user,isLogin:isLogin}){}
+%>
+<div class="layui-container topToFix c-user-main">
+    <%include("/common/_user_menu.html",{user:user}){}%>
+    <div class="timeline-box shadow c-panel fly-panel-user">
+        <div class="c-panel-title">
+            <a class="" href="${ctxPath}/message/dialog/${postUserId}?order=asc">升序</a>
+            <span class="c-mid"></span>
+            <a class="" href="${ctxPath}/message/dialog/${postUserId}?order=desc">降序</a>
+            </div>
+        <%if(isEmpty(messages)){%>
+        <p>暂无消息</p>
+        <%}else{%>
+            <%
+            for(var m in messages){
+            %>
+            <div class="msgSingle" data-id="${m.postUserId}">
+                <%if(m.type == 1){%>
+                <div class="sysdetail">${m.content}</div>
+                <%}else{%>
+                    <%if(m.postUserId == user.id){%>
+                    <div class="u-me-icon">
+                        <a href="${ctxPath}/u/${m.postUserId}/peopleIndex"><img src="${m.postIcon}"></a>
+                    </div>
+                    <%}else{%>
+                    <div class="u-icon">
+                        <a href="${ctxPath}/u/${m.postUserId}/peopleIndex"><img src="${m.postIcon}"></a>
+                    </div>
+                    <%}%>
+                <div class="detail">
+                    <%if(m.postUserId == user.id){%>
+                    <div class="fq-text-right">
+                        <a class="c-fly-link" href="${ctxPath}/u/${m.postUserId}/peopleIndex">${m.postNickname}</a>
+                        <span class="reply_time">${m.createTime,dateFormat='yyyy-MM-dd HH:mm:ss'}</span>
+                    </div>
+                    <div class="msgcontent fq-right">${m.content}</div>
+                    <%}else{%>
+                    <div>
+                        <a class="c-fly-link" href="${ctxPath}/u/${m.postUserId}/peopleIndex">${m.postNickname}</a>
+                        <span class="reply_time">${m.createTime,dateFormat='yyyy-MM-dd HH:mm:ss'}</span>
+                    </div>
+                    <div class="msgcontent thierBack">${m.content}</div>
+                    <div class="c-reply">
+                        <a href="javascript:void(0);" name="reply">回复</a>
+                    </div>
+                    <%}%>
+                </div>
+                <%}%>
+            </div>
+            <%}%>
+            <div id="pagesplit">
+            </div>
+        <%}%>
+    </div>
+</div>
+<%include("/common/_footor.html"){}%>
+</body>
+<%include("/common/_scripts.html"){}%>
+<script>
+    layui.use(['layer', 'laypage','fly','form'], function () {
+        var layer = layui.layer
+            , laypage = layui.laypage,fly=layui.fly
+            ,form=layui.form;
+        var device = layui.device();
+        laypage.render({
+            elem: 'pagesplit'
+            , curr:${pageIndex}
+            , count: ${count}
+            , limit:${pageSize}
+            , layout: ['count', 'prev', 'page', 'next', 'skip']
+            , jump: function (obj, first) {
+                if (!first) {
+                    location.href = "${ctxPath}/message/dialog/${postUserId}?pageIndex=" + obj.curr;
+                }
+            }
+        });
+        var msgAdmin = {
+            reply:function (div) {
+                var postUserId = div.data('id');
+                var postUserName = div.find('.c-fly-link').html()
+                layer.open({
+                    type:1
+                    ,title:'回复'
+                    ,id: 'FQ_reply'
+                    ,area: (device.ios || device.android) ? ($(window).width() + 'px') : '660px'
+                    ,content:['<div class="detail-box">',
+                    '<span class="box-username">',postUserName,'</span>',
+                        '<form class="layui-form" >',
+                        '<div class="layui-form-item layui-form-text">',
+                        '<textarea id="msgContent" name="content" placeholder="回复内容" class="layui-textarea"></textarea>',
+                        '</div>',
+                        '<input type="hidden" name="receivedUserId" value="'+postUserId+'">',
+                        '<div class="layui-form-item goBtnDiv">',
+                        '<button class="layui-btn" lay-submit lay-filter="msgForm">发送</button>',
+                        '</div>',
+                        '</form>',
+                        '</div>'].join('')
+                    ,success: function(layero, index){
+                        console.log(layero)
+                        form.on('submit(msgForm)',function (data) {
+                            fly.json('/u/postMsg', data.field, function(res){
+                                layer.close(index);
+                                layer.msg('回复成功',{icon:6})
+                            });
+                            return false;
+                        })
+                    }
+                })
+            }
+        }
+
+        $('.c-reply a').on('click',function () {
+            var othis = $(this),name=othis.attr('name'),div=othis.parents('.msgSingle');
+            msgAdmin[name].call(this,div)
+        })
+    })
+</script>
+</html>

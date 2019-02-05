@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%include("/common/_head.html"){}%>
+    <link href="${ctxPath}/quill/quill.snow.css" rel="stylesheet">
+    <title>文章编辑 -飞趣</title>
+    <style>
+        #fq-editor {
+            height: 500px;
+        }
+    </style>
+    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+</head>
+<body>
+<%
+var user = c.currentUser(request, servlet.response);
+var isLogin = false;
+if(user != null){
+isLogin=true;
+}
+include("/common/_headwithlogin.html",{user:user,isLogin:isLogin}){}
+%>
+<div class="layui-container topToFix c-panel">
+    <div class="layui-row c-panel-body">
+        <form class="layui-form layui-form-pane" action="${ctxPath}/article/doEdit" method="post">
+            <div class="layui-form-item">
+                <div class="layui-col-md11">
+                    编辑你的文章
+                </div>
+                <div class="layui-col-md1">
+                    <button lay-submit lay-filter="articleform" class="layui-btn layui-btn-normal postBtn">保存</button>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">标题</label>
+                <div class="layui-input-inline">
+                    <input class="layui-input" type="text" id="articleTitle" name="articleTitle" value="${article.articleTitle}"
+                           placeholder="请输入标题">
+                </div>
+                <label class="layui-form-label">标签</label>
+                <div class="layui-input-inline">
+                    <select name="label" lay-verify="">
+                        <option value="">请选择一个标签</option>
+                        <%for(var label in labels){%>
+                        <option value="${label.id}" ${label.id==article.label?'selected':''}>${label.name}</option>
+                        <%}%>
+                    </select>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label">匿名发表</label>
+                    <div class="layui-input-inline">
+                        <input type="checkbox" name="anonymousSwitch" lay-skin="switch" lay-text="ON|OFF" value="${article.anonymousSwitch!0}">
+                    </div>
+                </div>
+            </div>
+
+            <input type="hidden" name="id" value="${article.id!0}">
+            <div id="fq-editor">
+                ${article.articleContent}
+            </div>
+        </form>
+    </div>
+</div>
+<%include("/common/_footor.html"){}%>
+</body>
+<%include("/common/_scripts.html",{user:user}){}%>
+<script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+<script>
+    layui.use(['layer', 'form', 'fly'], function () {
+        var layer = layui.layer
+            , form = layui.form
+            , fly = layui.fly;
+        var anonymousSwitch = ${article.anonymousSwitch!0};
+        if(anonymousSwitch === 0){
+            $('input[name="anonymousSwitch"]').val('off');
+        }else {
+            $('input[name="anonymousSwitch"]').val('on');
+        }
+        form.render('input');
+        var quill = new Quill('#fq-editor', {
+            modules: {
+                toolbar: [
+                    [{ header: [1, 2, false] }],
+                    ['bold', 'italic', 'underline'],
+                    ['image', 'code-block']
+                ]
+            },
+            placeholder: '请开始奋笔疾书吧',
+            theme: 'snow'
+        });
+        form.on('submit(articleform)', function (data) {
+            var action = $(data.form).attr('action');
+            data.field.articleContent = quill.container.firstChild.innerHTML;
+            if(data.field.anonymousSwitch === 'on'){
+                data.field.anonymousSwitch = 1;
+            }else {
+                data.field.anonymousSwitch = 0;
+            }
+            fly.json(action, data.field, function(res){
+                if (res.code == '0000') {
+                    layer.msg("编辑成功~")
+                    setTimeout(function () {
+                        location.href = "${ctxPath}/superGeek"
+                    }, 1000)
+                } else {
+                    layer.msg(res.message)
+                }
+            });
+            return false;
+        })
+    })
+</script>
+</html>

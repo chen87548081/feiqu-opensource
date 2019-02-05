@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<%include("/common/_head.html"){}%>
+    <title>关于本网站 -飞趣</title>
+<style>
+    .nav-ul li{
+        padding: 0 1.5rem;
+    }
+    .content {
+        line-height: 26px;
+        font-size: 16px;
+    }
+</style>
+</head>
+<body>
+<%
+var user = c.currentUser(request, servlet.response);
+var isLogin = false;
+if(user != null){
+isLogin=true;
+}
+include("/common/_headwithlogin.html",{user:user,isLogin:isLogin}){}
+%>
+<div class="layui-container topToFix">
+    <div class="layui-tab layui-tab-card c-panel" >
+        <ul class="layui-tab-title">
+            <li class="layui-this">关于此网站</li>
+            <li>关于作者</li>
+            <li>友链</li>
+        </ul>
+        <div class="layui-tab-content" style="min-height: 550px;">
+            <div class="layui-tab-item layui-show">
+               <div class="content">
+                   飞趣社区 网站的名称 <br>
+                   首先要感谢贤心提供这么好的前端模板 layui 帮助了我很多<br>
+                   另外我一直想写个自己的网站装装逼，然而各种约束一直没有做成，比如钱？别人的眼中认为的无意义，又赚不到钱，做它干什么？<br>
+                   世界本该简单。<br>
+                   <hr>
+                   人如果没有梦想，和咸鱼有什么区别。
+               </div>
+            </div>
+            <div class="layui-tab-item content">
+                <p>93年boy一只</p>
+                <p>java开发者。。</p>
+                <p>工作闲暇搞的第一个作品 为了更好的自己</p>
+                <p>联系方式 </p>
+                <p>邮箱：573047307@qq.com </p>
+                <p>码云：https://gitee.com/lovecwd/events</p>
+            </div>
+            <div class="layui-tab-item">
+                <p>有需要互相加友链的请私信我，或者qq加我好友~</p>
+            </div>
+        </div>
+    </div>
+</div>
+<%include("/common/_footor.html"){}%>
+</body>
+<%include("/common/_scripts.html",{user:user}){}%>
+<script>
+    layui.use(['layer', 'fly'], function () {
+        var layer = layui.layer,fly = layui.fly
+    });
+</script>
+</html>

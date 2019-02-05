@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<%include("/common/_head.html"){}%>
+    <title>注册 -飞趣</title>
+<style>
+    .layui-form{
+        margin: 20px 0 0 10px;
+    }
+    .nav-ul li{
+        padding: 0 1.5rem;
+    }
+    .layui-input-block input{
+        width: 20rem;
+    }
+    .aside {
+        padding-top: 3rem;
+    }
+    .aside a{
+        color: #1E9FFF;
+    }
+</style>
+</head>
+<body>
+<%
+var user = c.currentUser(request, servlet.response);
+var isLogin = false;
+if(user != null){
+isLogin=true;
+}
+include("/common/_headwithlogin.html",{user:user,isLogin:isLogin}){}
+%>
+<div class="layui-container topToFix">
+    <div class="layui-row c-panel">
+        <div class="layui-md layui-col-md6 ">
+        <form class="layui-form"  action="${ctxPath}/u/register" method="post">
+                    <p class="error">${error!}</p>
+            <div class="layui-form-item">
+                <label class="layui-form-label">邮箱</label>
+                <div class="layui-input-block">
+                    <input type="text" name="username" required   lay-verify="email" placeholder="请输入邮箱" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">昵称</label>
+                <div class="layui-input-block">
+                    <input type="text" name="nickname" required lay-verify="required" placeholder="昵称" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">城市</label>
+                <div class="layui-input-block">
+                    <input type="text" name="city" required lay-verify="required" value="${address!''}" placeholder="未获取到您的城市信息,请您手动输入" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">密码</label>
+                <div class="layui-input-block">
+                    <input type="password" name="password" required  lay-verify="required" placeholder="请输入密码" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">验证码</label>
+                <div class="layui-input-block">
+                    <input type="text" name="verifyCode" required  lay-verify="required" placeholder="请输入验证码" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-input-block"><img id="captchaImg" src="${ctxPath}/captcha"/></div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-input-block">
+                    <button class="layui-btn" lay-submit lay-filter="formDemo">注册</button>
+                </div>
+            </div>
+        </form>
+        </div>
+        <div class="layui-col-md4 layui-col-md-offset2">
+            <div class="aside">
+                <p>已有飞趣账号，<a href="${ctxPath}/u/login">直接登录</a> </p>
+            </div>
+        </div>
+    </div>
+</div>
+<%include("/common/_footor.html"){}%>
+</body>
+<%include("/common/_scripts.html"){}%>
+<script>
+    layui.use(['form','fly'], function(){
+        var form = layui.form,fly=layui.fly;
+        form.on('submit(formDemo)', function(data){
+            var password = data.field.password
+            if(!password || password.trim() == ''){
+                layer.msg('密码不能为空')
+                return false
+            }
+            if(password.length <6){
+                layer.msg('密码长度不能少于6位')
+                return false
+            }
+            fly.json("${ctxPath}/u/register",data.field,function (result) {
+                layer.msg("注册成功！")
+                setTimeout(function () {
+                    location.href = "${ctxPath}/"
+                },500)
+            });
+            return false;
+        });
+
+        $("#captchaImg").click(function () {
+            var time = new Date().getTime()
+            $(this).attr('src','${ctxPath}/captcha?time='+time)
+        })
+    });
+</script>
+</html>

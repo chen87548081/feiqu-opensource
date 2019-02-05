@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%include("/common/_head.html"){}%>
+    <title>我发表的文章 -飞趣</title>
+    <style>
+        .detail-body{min-height:50px;}
+        .detail-about .fly-avatar{left:0;top:0}
+        .detail-about{padding:0 0 0 55px;background:none;height: 50px;}
+        .site-mobile .c-user-main>.layui-nav{left:0}
+        .home-main{margin-left:200px}
+        .article-single {margin-bottom: 10px;}
+        .detail-box{min-height: 200px;}
+    </style>
+</head>
+<body>
+<%
+var user = c.currentUser(request, servlet.response);
+var isLogin = false;
+if(user != null){
+isLogin=true;
+}
+include("/common/_headwithlogin.html",{user:user,isLogin:isLogin}){}
+%>
+<div class="layui-container layui-clear topToFix home-all">
+    <%include("/common/_home_nav.html",{user:user}){}%>
+    <div class="home-main layui-row layui-col-space15">
+        <div class="layui-col-md12">
+            <div class="c-panel detail-box">
+                <%for(var article in articles){%>
+                <div class="article-single">
+                    <div class="detail-about">
+                        <a class="fly-avatar" href="${ctxPath}/u/${article.userId}/peopleIndex"> <img src="${article.icon}"></a>
+                        <a class="c-fly-link" href="${ctxPath}/u/${article.userId}/peopleIndex">${article.nickname}</a>
+                        <div>发表于 ${article.createTime,dateFormat='yyyy-MM-dd HH:mm:ss'}</div>
+                        <a href="${ctxPath}/article/edit/${article.id}" class="abs-top-right layui-btn layui-btn-normal">编辑</a>
+                    </div>
+                    <div class="detail-body">
+                        <a href="${ctxPath}/article/${article.id}">
+                                ${article.articleTitle}&nbsp;&nbsp;
+                            <span class="layui-badge layui-bg-orange">${labels[article.label]!'未知'}</span>
+                        </a>
+                    </div>
+                    <div class="c-reply">
+                        <a class="layui-btn layui-btn-normal layui-btn-xs" href="${ctxPath}/article/${article.id}">查看原文</a>
+                    </div>
+                </div>
+                <%}%>
+                <div id="pagesplit">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="site-tree-mobile layui-hide"><i class="layui-icon">&#xe602;</i></div>
+<div class="site-mobile-shade"></div>
+<%include("/common/_footor.html"){}%>
+</body>
+<script src="/js/twemoji.min.js?2.4"></script>
+<%include("/common/_scripts.html",{user:user}){}%>
+<script>
+    // layui.cache.page = 'articles'
+    layui.cache.pageInfo = {curr:${p},count:${count},limit:${pageSize}}
+    layui.use(['layer', 'laypage','fly'], function(){
+        var layer = layui.layer
+            ,laypage=layui.laypage
+        laypage.render({
+            elem: 'pagesplit'
+            ,curr:${p}
+            ,count: ${count}
+            , limit:${pageSize}
+            ,layout: ['count', 'prev', 'page', 'next', 'skip']
+            ,jump: function(obj,first){
+                if(!first){
+                    location.href = "${ctxPath}/article/my?p="+obj.curr
+                }
+            }
+        });
+    });
+</script>
+</html>

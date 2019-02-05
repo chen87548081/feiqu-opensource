@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<%include("/common/_head.html"){}%>
+<title>知识达人 分享你的技术与知识吧 -飞趣</title>
+<style>
+    .art-item {
+        position: relative;
+        padding: 16px 20px;
+    }
+    .card {
+        margin-bottom: 10px;
+        background: #fff;
+        overflow: hidden;
+        border-radius: 2px;
+        -webkit-box-shadow: 0 1px 3px rgba(0,0,0,.1);
+        box-shadow: 0 1px 3px rgba(0,0,0,.1);
+        -webkit-box-sizing: border-box;
+        box-sizing: border-box;
+    }
+    .art-title {
+        font-size: 18px;
+        font-weight: 700;
+        line-height: 1.6;
+        color: #1e1e1e;
+        margin-top: -4px;
+        margin-bottom: 4px;
+        word-wrap: break-word;
+    }
+    .user-info {
+        display: -webkit-box;
+        display: -ms-flexbox;
+        display: flex;
+        margin: auto 0;
+        flex-direction: column;
+        margin-left: 5rem;
+    }
+    .user-info .name{
+        font-size: 15px;
+        line-height: 1.1;
+        font-weight: 100;
+        margin: 10px 0;
+        color: #999;
+    }
+    .user-info .name a{
+        font-size: 14px;
+        color: #999;
+    }
+    #pagesplit{
+        background-color: #fff;
+    }
+    .see-detail {
+        position: absolute;
+        right: 0;
+    }
+    .hot-article {
+        padding: 1rem 1rem;
+        line-height: 1.7;
+    }
+    .hot-article li{position: relative}
+    .hot-article li a{
+        overflow: hidden;
+        max-width: 80%;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        display: inline-block;
+    }
+    .hot-article li em {
+        position: absolute;
+        right: 0;
+        top: 0;
+        font-size: 12px;
+        color: #999;
+        font-style: normal;
+    }
+    .layui-badge{
+        margin-left: 10px;
+    }
+
+    .a-search {
+        width: 218px;
+        position: relative;
+        float: left;
+        height: 28px;
+        margin: 9px 0 0 10px;
+        background-color: #f2f2f5;
+        border: 1px solid #ccc;
+    }
+    .a-search .layui-input{
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 245px;
+        padding: 4px 33px 4px 10px;
+        height: 28px;
+        line-height: 20px;
+        box-shadow: none;
+        border: none;
+        background-color: transparent;
+        color: #808080;
+        outline-style: none;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+    }
+    .search-icon{
+        position: absolute;
+        top: 4px;
+        right: 10px;
+        font-size: 18px;
+        width: 18px;
+    }
+</style>
+</head>
+<body>
+<%
+var user = c.currentUser(request, servlet.response);
+var isLogin = false;
+if(user != null){
+isLogin=true;
+}
+include("/common/_headwithlogin.html",{user:user,isLogin:isLogin}){}
+%>
+<div class="layui-container topToFix">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md4">
+            <a class="layui-btn" href="${ctxPath}/article/goWriteArticle">写一篇文章</a>
+        </div>
+        <div class="layui-col-md8">
+            <div class="a-search">
+                <input id="kewordInput" class="layui-input S-input" name="keyword" placeholder="搜索你想看的文章">
+                <a class="searchSubmit" href="javascript:void(0)"><i class="layui-icon search-icon">&#xe615;</i></a>
+            </div>
+        </div>
+    </div>
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md8">
+            <div class="c-panel">
+                <div class="c-panel-title">
+                    <span class="title-first">排序规则</span>
+                    <span class="c-mid"></span>
+                    <a href="${ctxPath}/superGeek?order=time">时间</a>
+                    <span class="c-mid"></span>
+                    <a href="${ctxPath}/superGeek?order=zan">点赞数</a>
+                    <span class="c-mid"></span>
+                    <a href="${ctxPath}/superGeek?order=comment">评论数</a>
+                </div>
+                <%for(var article in articles){%>
+                <div class="art-item card">
+                    <%if(article.anonymousSwitch == 1){%>
+                    <span><a class="fly-avatar" href="javascript:;"> <img src="http://res.flyfun.site/favicon.ico"></a></span>
+                    <%}else{%>
+                    <span><a class="fly-avatar" href="${ctxPath}/u/${article.userId}/peopleIndex"> <img src="${article.icon}"></a></span>
+                    <%}%>
+                    <div class="user-info">
+                        <a href="${ctxPath}/article/${article.id}" target="_blank">
+                        <h2 class="art-title">
+                            ${article.articleTitle}<span class="layui-badge layui-bg-orange">
+                           ${labels[article.label]!'未知'}</span>
+                        </h2></a>
+                        <div class="name">
+                            <%if(article.anonymousSwitch == 1){%>
+                            <a class="c-fly-link" href="javascript:;">匿名用户</a>
+                            <%}else{%>
+                            <a class="c-fly-link" href="${ctxPath}/u/${article.userId}/peopleIndex">${article.nickname}</a>
+                            <%}%>
+                            &nbsp;&nbsp;&nbsp;&nbsp;${article.createTime,dateFormat='yyyy-MM-dd HH:mm:ss'}</div>
+                        <div class="c-reply">
+                            <span lay-data="${article.id}" class="zan"><i class="fa fa-thumbs-o-up icon-zan" aria-hidden="true" ></i><em>${article.likeCount!0}</em></span>
+                            <span><i title="人气" class="fa fa-eye" aria-hidden="true"></i>${article.browseCount!0}</span>
+                            <span><i title="评论数" class="iconfont icon-pinglun1"></i>${article.commentCount!0}</span>
+                            <a class="see-detail" href="${ctxPath}/article/${article.id}">查看原文</a>
+                        </div>
+                    </div>
+                </div>
+                <%}%>
+                <div id="pagesplit">
+                </div>
+            </div>
+        </div>
+        <div class="layui-col-md4">
+            <div class="c-panel" style="min-height: 5rem">
+                <div class="c-panel-title">推荐文章</div>
+                <div class="hot-article">
+                    <%if(isEmpty(recommendArticles)){%>
+                    <p>暂无推荐文章</p>
+                    <%}else{%>
+                    <ul>
+                        <%for(var ha in recommendArticles){%>
+                        <li><a title="${ha.articleTitle}" href="${ctxPath}/article/${ha.id}">${ha.articleTitle}</a><em>${ha.browseCount}阅</em></li>
+                        <%}%>
+                    </ul>
+                    <%}%>
+                </div>
+            </div>
+            <div class="c-panel" style="min-height: 5rem">
+                <div class="c-panel-title">月热门文章(每半小时更新一次)</div>
+                <div class="hot-article">
+                    <%if(isEmpty(articleList)){%>
+                    <p>暂无热门文章</p>
+                    <%}else{%>
+                    <ul>
+                        <%for(var ha in articleList){%>
+                        <li><a title="${ha.articleTitle}" href="${ctxPath}/article/${ha.id}">${ha.articleTitle}</a><em>${ha.browseCount}阅</em></li>
+                        <%}%>
+                    </ul>
+                    <%}%>
+                </div>
+            </div>
+            <div class="c-panel">
+                <div class="c-panel-title">标签</div>
+                <div class="hot-article">
+                    <%for(var label in labels){%>
+                    <a href="${ctxPath}/superGeek?labelId=${label.key}">
+                        <span class="layui-badge layui-bg-orange">${label.value}</span></a>
+                    <%}%>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<%include("/common/_footor.html"){}%>
+</body>
+<%include("/common/_scripts.html",{user:user}){}%>
+<script>
+    layui.use(['layer', 'laypage','fly'], function(){
+        var layer = layui.layer
+            ,laypage=layui.laypage
+            ,fly=layui.fly;
+        laypage.render({
+            elem: 'pagesplit'
+            ,curr:${pageIndex}
+            ,count: ${count}
+            , limit:${pageSize}
+            ,layout: ['count', 'prev', 'page', 'next', 'skip']
+            ,jump: function(obj,first){
+                if(!first){
+                    location.href = "${ctxPath}/superGeek/"+obj.curr+"?order=${order!}&labelId=${labelId!}"
+                }
+            }
+        });
+        $('.zan').on('click',function () {
+            var id = $(this).attr('lay-data')
+            var zanNum = parseInt($(this).find('em').html()||0)
+            var that = $(this)
+            fly.json('${ctxPath}/article/like?articleId='+id,{},function(result){
+                that.find('em').html(zanNum+1)
+                layer.msg('点赞成功')
+            })
+        })
+        $('.searchSubmit').on('click',function () {
+            var keyword = $('input[name="keyword"]').val();
+            search(keyword);
+        })
+        $('#kewordInput').on('keypress',function (eve) {
+            if(eve.keyCode == 13){
+                search($(this).val());
+            }
+        })
+        var search = function (word) {
+            if(word.replace(/\s/g, '') === ''){
+                layer.msg('关键词不能为空！')
+                return false;
+            }
+            location.href = "${ctxPath}/superGeek?keyword="+word;
+        }
+    });
+</script>
+</html>

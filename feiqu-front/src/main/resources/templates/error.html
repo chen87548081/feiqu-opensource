@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%include("/common/_head.html"){}%>
+    <title>出错啦~ -飞趣</title>
+    <style>
+        .error-content {
+            padding: 10px 10px;
+            min-height: 500px;
+            position: relative;
+        }
+
+        .error-tip {
+            position: absolute;
+            width: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, 50%);
+            -webkit-transform: translate(-50%, 50%);
+            -ms-transform: translate(-50%, 50%);
+            font-size: 22px;
+            text-align: center;
+        }
+
+        .error-tip i {
+            font-size: 22px;
+        }
+    </style>
+</head>
+<body>
+<%
+var user = c.currentUser(request, servlet.response);
+var isLogin = false;
+if(user != null){
+isLogin=true;
+}
+include("/common/_headwithlogin.html",{user:user,isLogin:isLogin}){}
+%>
+<div class="layui-container topToFix">
+    <div class="error-content c-panel">
+        <div class="error-tip">
+            <p class="c-text-center">${error.code!}</p>
+            <p class="">"出错啦~" <i class="layui-icon layui-anim layui-anim-scale">&#xe69c;</i></p>
+        </div>
+    </div>
+</div>
+<%include("/common/_footor.html"){}%>
+</body>
+<%include("/common/_scripts.html",{user:user}){}%>
+<script>
+</script>
+</html>

@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%include("/common/_head.html"){}%>
+    <title> 项目成员 -飞趣</title>
+    <link rel="stylesheet" href="${ctxPath}/css/api-doc.css?v=${VERSION}">
+</head>
+<body>
+<%
+var user = c.currentUser(request, servlet.response);
+var isLogin = false;
+if(user != null){
+isLogin=true;
+}
+include("/common/_headwithlogin.html",{user:user,isLogin:isLogin}){}
+%>
+<div class="api-doc-nav api-doc-index layui-container">
+    <div class="layui-row layui-col-space10">
+        <div class="layui-col-md3">
+            <%include("/common/_api_doc_menu.html",{user:user}){}%>
+        </div>
+        <div class="layui-col-md9">
+            <div class="c-panel">
+                <div class="c-panel-body">
+                    <div>
+                        <form class="layui-form layui-form-pane" action="">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">项目</label>
+                            <div class="layui-input-inline" style="width: 200px;">
+                                <select name="projectId" lay-verify="required">
+                                    <%for(var p in projects){%>
+                                    <option value="${p.key}">${p.value}</option>
+                                    <%}%>
+                                </select>
+                            </div>
+                        </div>
+                        </form>
+                    </div>
+
+                    <div class="searchTable">
+                        <button class="layui-btn" data-type="reload">搜索</button>
+                    </div>
+                    <table class="layui-hide" id="apiDocProjectUserManage" lay-filter="apiDocProjectUser"></table>
+                    <script type="text/html" id="bar">
+                        <!--<a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+                        <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="edit">编辑</a>
+                        <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="debug">调试</a>-->
+                    </script>
+                    <script type="text/html" id="headToolbar">
+                        <div class="layui-btn-container">
+                            <!--<button class="layui-btn layui-btn-sm" lay-event="add">新增接口</button>-->
+                        </div>
+                    </script>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<%include("/common/_footor.html"){}%>
+</body>
+<%include("/common/_scripts.html",{user:user}){}%>
+<script>
+    layui.use(['fly','table'], function(){
+        var fly=layui.fly,table=layui.table,device=layui.device,form=layui.form,$project = $('select[name="projectId"]');
+        form.render('select')
+        var active = {
+            reload: function(){
+                table.reload('apiDocProjectUserReload', {
+                    page: {
+                        curr: 1
+                    }
+                    ,where: {
+                        projectId:$project.val()
+                    }
+                });
+            }
+        }
+        $('.searchTable .layui-btn').on('click', function(){
+            var type = $(this).data('type');
+            active[type] ? active[type].call(this) : '';
+        });
+        table.render({
+            elem: '#apiDocProjectUserManage'
+            ,url:'/apiDocProjectUser/list'
+            ,where: {projectId:$project.val()}
+            ,toolbar: '#headToolbar'
+            ,title: '成员数据表'
+            ,totalRow: true
+            ,cols: [[
+                {field:'id', title:'ID', width:80, fixed: 'left', unresize: true, sort: true},
+                {field:'userId', title:'成员id', width:120, fixed: 'left', unresize: true, sort: true},
+                {field:'projectId', title:'项目ID', width:100, fixed: 'left', unresize: true, sort: true},
+                {field:'createTime', title:'创建时间', width:160, fixed: 'left', unresize: false, sort: true},
+                {fixed: 'right', width:200, align:'center', toolbar: '#bar'}
+            ]]
+            ,page: true
+            ,response: {
+                statusCode: '0000',
+                msgName: 'message'
+            }
+            ,id: 'apiDocProjectUserReload'
+            ,parseData: function(res){
+                return {
+                    "code": res.code,
+                    "msg": res.message,
+                    "count": res.data.total,
+                    "data": res.data.list
+                };
+            }
+        });
+        table.on('toolbar(apiDocProjectUser)', function(obj){
+            switch(obj.event){
+                case 'add':
+                    location.href = '/apiDocInterface/apiDocInterfaceAdd/?projectId='+$project.val()
+                    break;
+            };
+        });
+        table.on('tool(apiDocInterface)', function(obj){
+
+        });
+    });
+</script>
+</html>

@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<style type="text/css">
+    .left-section {
+        background: #FAFBFC;
+    }
+    .post-title {
+        height: 50px;
+        line-height: 50px;
+        background: #fff;
+        border-bottom: 1px solid #BBBDBF;
+        position: relative;
+    }
+    .tc_post {
+        border: 0;
+        border-left: 1px solid #E5E5E5;
+        border-bottom: 1px solid #E1E4E6;
+        background: #fafbfc;
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        float: left;
+    }
+    .tc_post .author{
+        padding: 15px 0;
+        text-align: center;
+        position: relative;
+    }
+    .tc_post .main{
+        position: relative;
+        padding: 0 0 8px 20px;
+        background: #fff;
+    }
+    .author .face{
+        position: relative;
+        display: inline-block;
+        zoom: 1;
+        top: 0;
+        left: 0;
+        padding: 4px;
+        margin-top: 2px;
+        cursor: pointer;
+    }
+    .author .a-detail{
+    }
+    .author .a-detail{
+    }
+    .face img{
+        float: left;
+        width: 80px;
+        height: 80px;
+    }
+
+    .face-href {
+        background: none repeat scroll 0 0 #FFF;
+        border: 1px solid #CCC;
+        display: block;
+        height: 80px;
+        padding: 3px;
+        width: 80px;
+    }
+
+    .reply-wrapper {
+        margin-right: 13px;
+        line-height: 28px;
+    }
+
+    .tc-reply {
+    }
+    .tc-reply a{
+        float: right;
+    }
+    .link_fold {
+        border: 1px solid #f0f1f2;
+        border-bottom: 0;
+        color: #1D53BF;
+        cursor: pointer;
+        display: inline-block;
+        height: 28px;
+        line-height: 28px;
+        text-align: center;
+        width: 80px;
+        background: #f7f8fa;
+    }
+
+    .fq-rich-poster-container {
+        margin: 0 auto;
+        padding: 20px 0 0;
+        text-align: left;
+    }
+    .fq-rich-poster-container .fq-rich-poster{
+        position: relative;
+        margin-left: 20px;
+    }
+    .poster-body .poster-title{
+        padding-bottom: 10px;
+
+    }
+    .poster-body .poster-content{
+        padding-bottom: 10px;
+    }
+    .poster-body .poster-submit{
+        padding-bottom: 20px;
+    }
+    .poster-tip{
+        padding-bottom: 10px;
+    }
+
+    .title-text {
+        margin-left: 20px;
+        position: relative;
+        z-index: 10;
+        font-family: "microsoft yahei",simhei,sans-serif;
+        font-weight: 400;
+        font-size: 16px;
+    }
+    .post-list {
+    }
+    .lz_mark {
+    }
+    .reply-input{
+        margin: 10px 10px;
+    }
+    .reply-list {
+        margin: 10px 16px 0 0;
+    }
+    .nickname-href {
+        font-size: 13px;
+        color: #1036be;
+    }
+    .c-list{
+        background-color: aliceblue;;
+    }
+    .c-list .content{
+        word-break: break-all;
+        padding-left: 1rem;
+    }
+
+    .help {
+        line-height: 1.3;
+        padding: 10px 15px;
+    }
+    .c-list li{
+        min-height: 20px;
+    }
+    .my-say{
+        color: #1E9FFF;
+    }
+    .fly-aite{
+        color: #4f99cf;
+    }
+
+    .reply-other {
+        float: right;
+    }
+    .jiathis_style_32x32{
+        position: absolute;
+        right: 0;
+    }
+    span[type=hr]{display:none}
+    span[type=bold]{display:none}
+    span[type=center]{display:none}
+
+    .qd img{
+        width: 20px;
+    }
+    .a-detail li{
+        line-height: 2;
+    }
+</style>
+<head>
+    <%include("/common/_head.html"){}%>
+    <title>${theme.title} -趣友互识 -飞趣</title>
+</head>
+<body>
+<%
+var user = c.currentUser(request, servlet.response);
+var isLogin = false;
+if(user != null){
+isLogin=true;
+}
+include("/common/_headwithlogin.html",{user:user,isLogin:isLogin}){}
+%>
+<div class="layui-container topToFix">
+    <div class="layui-row">
+        <div class="layui-col-md10 left-section">
+            <div class="help layui-clear">查看：${theme.seeCount!0}<span class="c-mid"></span>
+                回复：${theme.commentCount!0}<span class="c-mid"></span>来自主题 - <span class="layui-badge-rim">${theme.label}</span>
+                <%if(user != null && theme.userId == user.id){%><a class="fq-right" href="javascript:;" id="apply-del">申请删除</a><%}%>
+            </div>
+            <div class="post-title"><h2 class="title-text">${theme.title}</h2></div>
+            <div class="post-list">
+                <%if(page == 0|| page == 1){%>
+                <div class="tc_post layui-row">
+                    <div class="author layui-col-md2">
+                        <div class="lz_mark"><span class="layui-badge layui-bg-orange">楼主</span></div>
+                        <div class="a-detail">
+                            <li class="face"><a class="face-href" href="${ctxPath}/u/${louzhu.id}/peopleIndex"><img src="${louzhu.icon}"></a> </li>
+                            <li>${louzhu.nickname}${decode(louzhu.sex,1,"<i class=\"iconfont icon-nan\"></i>",2,"<i class=\"iconfont icon-nv\"></i>","<i class='iconfont  icon-wenda'></i>")}</li>
+                            <li class="qd"><img alt="趣豆" title="趣豆" src="${ctxPath}/img/qd3.png"/>趣豆：${louzhu.qudouNum!0}个</li>
+                            <li>${printTime(louzhu.createTime)}加入</li>
+                        </div>
+                    </div>
+                    <div class="main layui-col-md10">
+                        <div class="detail-body">${theme.content}</div>
+                        <div class="reply-wrapper layui-row">
+                            <div class="layui-col-md2 layui-col-md-offset4">1楼</div>
+                            <div class="layui-col-md4 reply_time">${theme.createTime,'yyyy-MM-dd hh:mm'} </div>
+                            <div class="tc-reply">
+                                <a href="#" class="author-reply">回复</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <%}%>
+                <%for(var comment in comments){%>
+                <div class="tc_post layui-row">
+                    <div class="author layui-col-md2">
+                        <%if(comment.postUserId == theme.userId){%>
+                        <div class="lz_mark"><span class="layui-badge layui-bg-orange">楼主</span></div>
+                        <%}%>
+                        <ul class="a-detail">
+                            <li class="face"><a class="face-href" href="${ctxPath}/u/${comment.postUserId}/peopleIndex"><img src="${comment.postIcon}"></a>
+                                </li>
+                            <li><a class="c-fly-link" href="${ctxPath}/u/${comment.postUserId}/peopleIndex">${comment.postNickname}</a>
+                                ${decode(comment.sex,1,"<i class=\"iconfont icon-nan\"></i>",2,"<i class=\"iconfont icon-nv\"></i>","<i class='iconfont  icon-wenda'></i>")}</li>
+                            <li class="qd"><img alt="趣豆" title="趣豆" src="${ctxPath}/img/qd3.png"/>${comment.qudouNum!0}趣豆</li>
+                            <li>${printTime(comment.utime)}加入</li>
+                            <li></li>
+                        </ul>
+                    </div>
+                    <div class="main layui-col-md10">
+                        <div class="detail-body">${comment.content}</div>
+                        <div class="reply-wrapper layui-row">
+                            <div class="layui-col-md2 layui-col-md-offset4">${page == 0 ? (commentLP.index+1) : ((page-1)*pageSize+commentLP.index)}楼</div>
+                            <div class="layui-col-md4 reply_time">${comment.createTime,'yyyy-MM-dd hh:mm'} </div>
+                            <div class="tc-reply layui-col-md2">
+                                <%if(isEmpty(comment.replyList)){%>
+                                <a href="javascript:void(0)" lay-data="${comment.id}" class="link_unfold">回复</a>
+                                <a href="javascript:void(0)" class="link_fold layui-hide">收起回复</a>
+                                <%}else{%>
+                                <a href="javascript:void(0)" lay-data="${comment.id}" class="link_unfold layui-hide">回复</a>
+                                <a href="javascript:void(0)" class="link_fold">收起回复</a>
+                                <%}%>
+                            </div>
+                        </div>
+                        <div class="layui-row reply-list">
+                            <ul class="c-list"><%
+                                for(var reply in comment.replyList){
+                            %>
+                            <li>
+                                <a href="${ctxPath}/u/${reply.postUserId}/peopleIndex" class="fly-avatar">
+                                    <img src="${reply.icon}">
+                                </a>
+                                <a class="nickname-href" href="${ctxPath}/u/${reply.postUserId}/peopleIndex">${reply.nickname}</a>
+                                <span class="content">${reply.content}</span>
+                                <div class="layui-col-md-offset8 reply_time"> ${reply.createTime,'yyyy-MM-dd hh:mm:ss'}
+                                <span class="reply-other" onclick="replyOther(${comment.id},this,'${reply.nickname}');"><a href="javascript:;">回复</a></span>
+                                </div>
+                            </li>
+                            <%}%>
+                            <%if(isNotEmpty(comment.replyList)){%>
+                            <li><a lay-data="${comment.id}" class="fq-right my-say" href="javascript:;">我也说一句</a></li>
+                            <%}%>
+                            </ul>
+                        </div>
+
+                    </div>
+                </div>
+                <%}%>
+                <div class="layui-clear"></div>
+            </div>
+            <div id="pagesplit">
+
+            </div>
+
+            <div class="fq-rich-poster-container">
+                <div class="fq-rich-poster">
+                    <div class="poster-tip"><i class="layui-icon">&#xe642;</i>发表回复</div>
+                    <div class="poster-body">
+                        <form class="layui-form" action="${ctxPath}/knowfriend/theme/comment">
+                            <input type="hidden"  name="postUserId" value="${user.id!0}">
+                            <input type="hidden" name="topicId" value="${theme.id!0}">
+                            <div class="poster-content">
+                                <textarea  name="content" lay-verify="required" class="layui-textarea fly-editor" placeholder="回复下这个帖子吧~~"></textarea>
+                            </div>
+                            <div class="poster-submit">
+                                <button lay-submit lay-filter="replyLzform" id="poster-btn" class="layui-btn">发表</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="layui-col-md4"></div>
+    </div>
+</div>
+<%include("/common/_footor.html"){}%>
+</body>
+<%include("/common/_scripts.html",{user:user}){}%>
+<script>
+    function replyOther(commentId,me,name) {
+        if ($('#comment-reply')[0]){
+            $('#comment-reply').closest('li').remove()
+        }
+        $(me).closest('.c-list').append('<li>' +
+            '<div class="reply-input layui-row">' +
+            '<div class="layui-col-md10"><input id="comment-reply" class="layui-input" type="text" placeholder="输入评论"></div>' +
+            '<div class="layui-col-md1 layui-col-md-offset1"><a href="javascript:reply('+commentId+');" class="layui-btn">发表</a></div>' +
+            '</div>' +
+            '</li>')
+        layui.focusInsert($('#comment-reply')[0],"@"+name+' ')
+    }
+
+    function reply(commentId) {
+        var replyContent = $('#comment-reply').val()
+        if(!replyContent){
+            layer.msg('回复内容不能为空')
+            return
+        }
+        var postData = {
+            commentId:commentId,
+            content:replyContent,
+            type:6
+        }
+        $.ajax({
+            url:'${ctxPath}/comment/reply',
+            type:'post',
+            data:postData,
+            dataType:'json',
+            success:function (result) {
+                if(result.code == '0000'){
+                    layer.msg("回复成功")
+                    var insertH = '<li><a href="${ctxPath}/u/${user.id!}/peopleIndex" class="fly-avatar">'+
+                        '<img src="${user.icon!}">'+
+                        '</a>'+
+                        '<a class="nickname-href" href="${ctxPath}/u/${user.id!}/peopleIndex">${user.nickname!}</a>'+
+                        '<span class="content">'+replyContent+'</span>'+
+                        '<div class="layui-col-md-offset8 reply_time">'+result.data.createTime+'</div>'+
+                        '</li>';
+                    if ($('#comment-reply').closest('li').prev()[0]){
+                        $('#comment-reply').closest('li').prev().before(insertH)
+                    }else {
+                        $('#comment-reply').closest('li').before(insertH)
+                    }
+
+                    $('#comment-reply').closest('li').remove()
+                }else {
+                    layer.msg(result.message||"回复失败")
+                }
+            }
+        })
+    }
+    layui.use(['layer','form','laypage','fly','face'], function() {
+        var layer = layui.layer
+            , laypage = layui.laypage
+            ,fly=layui.fly
+            ,form=layui.form,face=layui.face;
+        $('.detail-body').each(function(){
+            var othis = $(this), html = othis.html();
+            othis.html(fly.content(html));
+        });
+
+        $(".link_unfold").click(function () {
+            $(this).addClass("layui-hide")
+            $(this).next().removeClass("layui-hide")
+            $(this).closest('.reply-wrapper').next().removeClass('layui-hide')
+
+            var commentId = $(this).attr('lay-data');
+            if ($('#comment-reply')[0]){
+                $('#comment-reply').closest('li').remove()
+            }
+            $(this).closest('.main').find('.c-list').append('<li>' +
+                '<div class="reply-input layui-row">' +
+                '<div class="layui-col-md10"><input id="comment-reply" class="layui-input" type="text" placeholder="输入评论"></div>' +
+                '<div class="layui-col-md1 layui-col-md-offset1"><a href="javascript:reply('+commentId+');" class="layui-btn">发表</a></div>' +
+                '</div>' +
+                '</li>')
+            $('#comment-reply').focus()
+
+        })
+        $(".link_fold").click(function () {
+            $(this).addClass("layui-hide")
+            $(this).prev().removeClass("layui-hide")
+            $(this).closest('.reply-wrapper').next().addClass('layui-hide')
+        })
+        var userId = ${user.id!0}
+
+
+        $('.author-reply').click(function () {
+            $('html,body').animate({scrollTop:$(".fq-rich-poster-container").offset().top}, 800);
+            $('textarea[name="content"]').focus()
+        })
+        
+        $('.my-say').click(function () {
+            if ($('#comment-reply')[0]){
+                $('#comment-reply').closest('li').remove()
+            }
+            var commentId = $(this).attr('lay-data');
+            $(this).parent().after('<li>' +
+                '<div class="reply-input layui-row">' +
+                '<div class="layui-col-md10"><input id="comment-reply" class="layui-input" type="text" placeholder="输入评论"></div>' +
+                '<div class="layui-col-md1 layui-col-md-offset1"><a href="javascript:reply('+commentId+');" class="layui-btn">发表</a></div>' +
+                '</div>' +
+                '</li>')
+            $('#comment-reply').focus()
+        })
+
+        form.on('submit(replyLzform)', function(data){
+            var action = $(data.form).attr('action');
+            fly.json(action, data.field, function(res){
+                if(res.code == '0000'){
+                    layer.msg('回复成功',{icon:6})
+                    setTimeout(function () {
+                        location.reload()
+                    },500)
+                }else {
+                    layer.msg(res.message,{icon:5})
+                }
+            });
+            return false
+        });
+
+        $('#apply-del').click(function () {
+            fly.json('${ctxPath}/knowfriend/theme/applyToDelete/${theme.id!0}',{},function (res) {
+                layer.msg('申请删除成功，请等待管理员反馈~')
+            })
+        })
+
+        laypage.render({
+            elem: 'pagesplit'
+            ,curr:${page}
+            ,count: ${count}
+            ,limit:${pageSize}
+            ,layout: ['count', 'prev', 'page', 'next', 'skip']
+            ,jump: function(obj,first){
+                if(!first){
+                    location.href = "${ctxPath}/knowfriend/themeDetail/${theme.id}/page/"+obj.curr
+                }
+            }
+        });
+    });
+</script>
+<script type="text/javascript" src="http://v3.jiathis.com/code/jiathis_r.js?move=0" charset="utf-8"></script>
+</html>

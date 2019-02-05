@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%include("/common/_head.html"){}%>
+    <title>调试 -飞趣</title>
+    <link rel="stylesheet" href="${ctxPath}/css/api-doc.css?v=${VERSION}">
+</head>
+<body>
+<%
+var user = c.currentUser(request, servlet.response);
+var isLogin = false;
+if(user != null){
+isLogin=true;
+}
+include("/common/_headwithlogin.html",{user:user,isLogin:isLogin}){}
+%>
+<div class="api-doc-nav api-doc-index layui-container">
+    <div class="layui-row layui-col-space10">
+        <div class="layui-col-md3">
+            <%include("/common/_api_doc_menu.html",{user:user}){}%>
+        </div>
+        <div class="layui-col-md9">
+            <div class="c-panel">
+                <div class="c-panel-title">
+                    <span class="layui-breadcrumb" lay-separator="|">
+                      <a href="${ctxPath}/apiDocProject">项目</a>
+                      <a href="${ctxPath}/apiDocModule">模块</a>
+                      <a href="${ctxPath}/apiDocInterface/edit/${apiDocInterfaceId!0}">编辑接口</a>
+                      <a href="javascript:history.go(-1);"><i class="layui-icon layui-icon-left"></i>返回</a>
+                    </span>
+                </div>
+                <div class="c-panel-body">
+                    <blockquote class="layui-elem-quote tip"></blockquote>
+                    <form class="layui-form layui-form-pane" action="">
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label">接口名称</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" name="interfacename" placeholder="接口名称" autocomplete="off" class="layui-input">
+                                </div>
+                            </div>
+
+                            <div class="layui-inline">
+                                <label class="layui-form-label">模块名</label>
+                                <div class="layui-input-inline">
+                                    <select name="moduleid" class="layui-disabled">
+                                        <%for(var module in modules){%>
+                                        <option value="${module.key}">${module.value}</option>
+                                        <%}%>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-input-inline" style="width: 110px">
+                                <select name="method" lay-verify="required">
+                                    <option value="">请选择</option>
+                                    <option value="POST">POST</option>
+                                    <option value="GET">GET</option>
+                                    <option value="HEAD">HEAD</option>
+                                    <option value="PUT">PUT</option>
+                                    <option value="DELETE">DELETE</option>
+                                </select>
+                            </div>
+                            <div class="layui-input-inline" style="width: 410px">
+                                <input type="text" name="fullurl" placeholder="完整的url（由模块url和接口url组成）" autocomplete="off" class="layui-input">
+                            </div>
+                            <div class="layui-input-inline"><button lay-submit lay-filter="formApiDocInterface" class="layui-btn"><i class="layui-icon layui-icon-release"></i>调试</button></div>
+                        </div>
+                        <div class="layui-form-item layui-form-text">
+
+                        </div>
+                        <div class="layui-form-item layui-form-text">
+                            <label class="layui-form-label layui-clear">请求参数(自定义[ROW])
+                                <div class="fq-right">
+                                    <a href="javascript:;" class="layui-btn layui-btn-xs param-introduce">请求参数说明</a>
+                                    <a href="javascript:;" class="layui-btn layui-btn-xs format-json">格式化</a>
+                                </div>
+                            </label>
+                            <div class="layui-input-block">
+                                <textarea rows="8" name="param" placeholder="请求参数" class="layui-textarea"></textarea>
+                            </div>
+                        </div>
+                        <div class="layui-tab layui-tab-card">
+                            <ul class="layui-tab-title layui-clear">
+                                <li class="layui-this">返回参数</li>
+                                <li>Headers</li>
+                            </ul>
+                            <div class="layui-tab-content">
+                                <div class="layui-tab-item layui-show">
+                                    <textarea rows="10" name="returnParam" placeholder="返回参数" class="layui-textarea"></textarea>
+                                    <div><a href="javascript:;" class="layui-btn layui-btn-xs format-json2">格式化</a></div>
+                                </div>
+                                <div class="layui-tab-item">
+                                    <div class="response-header">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layui-form-item layui-form-text">
+
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<%include("/common/_footor.html"){}%>
+</body>
+<%include("/common/_scripts.html",{user:user}){}%>
+<script>
+    var apiDocInterface = ${apiDocInterface!''};
+    layui.use(['fly','form'], function () {
+        var fly = layui.fly,form=layui.form;
+        var $param = $('textarea[name="param"]'),$returnParam = $('textarea[name="returnParam"]');
+        if(apiDocInterface !== ''){
+            apiDocInterface.param = fly.HTMLDecode(apiDocInterface.param);
+            $('input[name="interfacename"]').val(apiDocInterface.interfacename);
+            $('input[name="url"]').val(apiDocInterface.url);
+            $('input[name="fullurl"]').val(apiDocInterface.fullurl);
+            $('input[name="version"]').val(apiDocInterface.version);
+            $('input[name="sequence"]').val(apiDocInterface.sequence);
+            $('select[name="method"]').val(apiDocInterface.method);
+            $('select[name="moduleid"]').val(apiDocInterface.moduleid);
+            $('select[name="status"]').val(apiDocInterface.status);
+            $('select[name="contenttype"]').val(apiDocInterface.contenttype);
+            $('textarea[name="remark"]').val(apiDocInterface.remark);
+            $('textarea[name="trueexam"]').val(apiDocInterface.trueexam);
+            $('textarea[name="falseexam"]').val(apiDocInterface.falseexam);
+            $param.val(apiDocInterface.param);
+            form.render('select')
+            var tip = '返回参数类型：'+apiDocInterface.contenttype+'，版本号：'+apiDocInterface.version;
+            $('.tip').html(tip);
+        }
+        form.on('submit(formApiDocInterface)', function(data){
+            data.field.id = apiDocInterface.id;
+            fly.json('/apiDocInterface/doDebug', data.field, function(res){
+                layer.msg('调试成功！', {icon: 1});
+                $('.response-header').html(fly.content(res.data.header));
+                $returnParam.val(res.data.body);
+            });
+            return false;
+        })
+        $('.format-json').on('click',function () {
+            $param.val(format($param.val(),true));
+        })
+        $('.format-json2').on('click',function () {
+            $returnParam.val(format($returnParam.val(),true));
+        })
+        $('.param-introduce').on('click',function () {
+            layer.open({
+                type: 1
+                ,title: '参数说明'
+                ,area: '600px'
+                ,shade: 0.8
+                ,shadeClose: true
+                ,content: ['<div style="margin: 20px;">',fly.content(apiDocInterface.remark),'</div>'].join('')
+            });
+        })
+
+        function format(txt, tiperror){
+            try {
+                var txtObj = JSON.parse(txt);
+                return JSON.stringify(txtObj, null, 5);
+            }catch (e){
+                if (tiperror){
+                    layer.msg("格式化异常，请检查json格式是否有误" + e,{ icon: 2, time: 1500, shade: [0.5, '#000'] });
+                }
+                return txt;
+            }
+        }
+    })
+</script>
+</html>

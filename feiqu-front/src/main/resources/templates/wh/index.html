@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<%include("/common/_head.html"){}%>
+<title>网红 -飞趣</title>
+<style>
+    #pagesplit{
+        background-color: #fff;
+    }
+    .hot-article li{position: relative}
+    .hot-article li a{
+        overflow: hidden;
+        max-width: 80%;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        display: inline-block;
+    }
+    .hot-article li em {
+        position: absolute;
+        right: 0;
+        top: 0;
+        font-size: 12px;
+        color: #999;
+        font-style: normal;
+    }
+    .a-search .layui-input{
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 245px;
+        padding: 4px 33px 4px 10px;
+        height: 28px;
+        line-height: 20px;
+        box-shadow: none;
+        border: none;
+        background-color: transparent;
+        color: #808080;
+        outline-style: none;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+    }
+
+    .news-single {
+        margin: 20px 0;
+        padding: 10px 0;
+        border-bottom: 1px solid #B3CC9C;
+        position: relative;
+        min-height: 200px;
+    }
+    .news-single .news-body{
+        width: 100%;
+        color: #0C0C0C !important;
+        padding-bottom: 20px;
+    }
+    .news-single .news-body time{
+        position: absolute;
+        bottom: 0;
+        font-size: 16px;
+    }
+    li{
+        display: inline-block;
+        margin: 3px;
+    }
+</style>
+</head>
+<body>
+<%
+var user = c.currentUser(request, servlet.response);
+var isLogin = false;
+if(user != null){
+isLogin=true;
+}
+include("/common/_headwithlogin.html",{user:user,isLogin:isLogin}){}
+%>
+<div class="layui-container topToFix">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md8">
+            <div class="c-panel">
+                <div class="c-panel-title">
+                    <span class="title-first">讨论话题</span>
+                </div>
+                <div class="c-panel-body">
+                    <%for(var topic in wangHongWans){%>
+                    <div class="news-single">
+                        <a href="/wangHong/${topic.id}" target="_blank">
+                            <div class="news-body">
+                                <span class="c-list-num">${topic.author}</span>
+                                <h2>${topic.content}</h2>
+                                <time>${topic.area}</time>
+                                <div>
+                                    <ul>
+                                        <%for(var img in topic.imgs){%>
+                                        <li><img src="${img}"></li>
+                                        <%}%>
+                                    </ul>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                    <%}%>
+                </div>
+
+                <div id="pagesplit">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<%include("/common/_footor.html"){}%>
+</body>
+<%include("/common/_scripts.html",{user:user}){}%>
+<script>
+    layui.use(['layer', 'laypage','fly'], function(){
+        var layer = layui.layer
+            ,laypage=layui.laypage
+            ,fly=layui.fly;
+        laypage.render({
+            elem: 'pagesplit'
+            ,curr:${pageIndex}
+            ,count: ${count}
+            , limit:${pageSize}
+            ,layout: ['count', 'prev', 'page', 'next', 'skip']
+            ,jump: function(obj,first){
+                if(!first){
+                    location.href = "${ctxPath}/wangHong?p="+obj.curr
+                }
+            }
+        });
+    });
+</script>
+</html>

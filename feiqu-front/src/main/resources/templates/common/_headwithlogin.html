@@ -1,0 +1,63 @@
+<div class="c-head layui-bg-black">
+    <div class="layui-container">
+        <a class="home-logo" href="${ctxPath}/"><img src="${ctxPath}/img/c-logo39.png"></a>
+        <ul class="layui-nav c-nav layui-hide-xs">
+            <li class="layui-nav-item"><a href="${ctxPath}/">首页</a></li>
+            <%if(isLogin){ %>
+            <li class="layui-nav-item"><a href="${ctxPath}/u/${user.id}/home">我的小窝</a></li>
+            <%}%>
+            <li class="layui-nav-item">
+                <a href="javascript:;">资源列表</a>
+                <dl class="layui-nav-child">
+                    <dd><a href="${ctxPath}/fqNews">看看新闻</a></dd>
+                    <dd><a href="${ctxPath}/superGeek">知识达人</a></dd>
+                    <dd><a href="${ctxPath}/fqTopic">话题广场</a></dd>
+                </dl>
+            </li>
+            <li class="layui-nav-item"><a href="${ctxPath}/apiDocProject/introduce">接口管理<span class="layui-badge-dot" style="position: relative; top: -5px; left: 5px;"></span></a></li>
+            <li class="layui-nav-item"><a href="${ctxPath}/websiteDir">网址导航</a></li>
+            <li class="layui-nav-item">
+                <a href="javascript:;">更多功能</a>
+                <dl class="layui-nav-child">
+                    <dd><a href="${ctxPath}/beauty/index">美颜达人</a></dd>
+                    <dd><a href="${ctxPath}/findFriend">寻找朋友</a></dd>
+                    <dd><a href="${ctxPath}/knowfriend/index">趣友互识</a></dd>
+                    <dd><a href="${ctxPath}/music">音乐馆</a></dd>
+                    <dd><a href="${ctxPath}/wangHong">网红</a></dd>
+                </dl>
+            </li>
+        </ul>
+        <ul class="layui-nav cwd-nav-user">
+            <%if(isLogin){ %>
+            <li class="layui-nav-item">
+                <a class="c-nav-icon" href="#">
+                    <cite>${user.nickname}</cite>
+                    <img id="head-user-icon" src="${user.icon}">
+                </a>
+                <dl class="layui-nav-child">
+                    <dd><a href="${ctxPath}/u/set">基本设置</a></dd>
+                    <dd><a href="${ctxPath}/u/center">用户中心</a></dd><hr>
+                    <dd><a href="${ctxPath}/message/dialogs">我的私信</a></dd>
+                    <dd><a href="${ctxPath}/u/myIndex">个人主页</a></dd>
+                    <dd><a href="${ctxPath}/u/logout">登出</a></dd>
+                </dl>
+            </li>
+            <%}else{%>
+            <li class="layui-nav-item layui-hide-xs"> <a href="/sns?t=qq" onclick="layer.msg('正在通过QQ登入', {icon:16, shade: 0.1, time:0})" title="QQ登入" class="iconfont icon-qq"></a> </li>
+            <li class="layui-nav-item layui-hide-xs"> <a href="/sns?t=sina" onclick="layer.msg('正在通过微博登入', {icon:16, shade: 0.1, time:0})" title="微博登入" class="iconfont icon-weibo"></a> </li>
+            <li class="layui-nav-item"> <a href="${ctxPath}/u/login">登录</a></li>
+            <li class="layui-nav-item"><a href="${ctxPath}/u/register">注册</a></li>
+            <%}%>
+        </ul>
+    </div>
+</div>
+<%
+var currentImgUrl = '';
+if(isLogin){
+currentImgUrl = c.currentBgImgUrl(user.id);
+}
+if(currentImgUrl == 'null'){
+currentImgUrl = '';
+}
+%>
+<div class="c-skin-container" style="background-image:url(${currentImgUrl});"></div>

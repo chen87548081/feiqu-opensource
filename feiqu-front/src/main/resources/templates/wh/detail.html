@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%include("/common/_head.html"){}%>
+    <title>${fqTopic.content!} -飞趣</title>
+    <meta name="description" content="${fqTopic.content!}">
+    <style>
+        .art-item{position:relative;}
+        .card{border-radius:2px;-webkit-box-shadow:0 1px 3px rgba(0,0,0,.1);box-shadow:0 1px 3px rgba(0,0,0,.1);-webkit-box-sizing:border-box;box-sizing:border-box}
+        .art-title{font-size:24px;font-weight:700;line-height:1.6;color:#1e1e1e;margin-bottom:20px;text-align:center}
+        .time{color:#999}
+        .user-info{display:-webkit-box;display:-ms-flexbox;display:flex;margin:auto 0;flex-direction:column;}
+        .user-info a{padding-right:10px;font-size:14px}
+        .art-detail img{max-width:100%;}
+        .comment-detail{padding:0 0 0 55px;background:none;position:relative;line-height:20px;font-size:13px;color:#999}
+        .comment-detail .fly-avatar{left:0;top:0}
+        .comment-detail-user{white-space:nowrap;overflow:hidden}
+        .comment-body{margin:25px 0 20px;min-height:0;line-height:24px;font-size:14px}
+        .comment-body a{color:#4f99cf;text-decoration:none;transition:all .5s}
+        .comment-list{margin-bottom:30px}
+        .comment-list li{position:relative;padding:20px 0 10px;border-bottom:1px dotted #DFDFDF}
+        .art-wrap{position:relative;margin-left:1rem;margin-top:35px;width:80%;filter:drop-shadow(0px 0px 15px #bbb)}
+        .art-wrap:before{content:'';display:block;position:absolute;right:-60px;top:0;width:60px;height:50px;background:linear-gradient(42deg,#ddd 30%,rgba(0,0,0,0) 40%)}
+        .art-wrap,.art-detail{padding:50px 0 0 5%;background:#fff;border-radius:20px;text-align:justify;min-height:500px}
+        .art-detail{padding:0 10% 40px 0;width:100%;line-height:26px;font-size:16px}
+        .detail-box p{line-height:2rem}
+        .detail-hits .collect-btn{padding:0 10px}
+        .art-content{color:#262626;word-wrap: break-word;}
+        .art-content a{color:#01AAED}
+        .article-share {
+            position: absolute;
+            bottom: 10px;
+            right: 0;
+        }
+        .c-detail-title {
+            margin: 0 50px
+        }
+    </style>
+</head>
+<body>
+<%
+var user = c.currentUser(request, servlet.response);
+var isLogin = false;
+if(user != null){
+isLogin=true;
+}
+include("/common/_headwithlogin.html",{user:user,isLogin:isLogin}){}
+%>
+<div class="layui-container topToFix">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md8">
+            <div class="c-panel">
+                <div class="art-item card detail-about c-panel-body">
+                    <%if(user.role == 1){%>
+                    <a href="javascript:;" class="del c-list-num">删除</a>
+                    <%}%>
+                    <h2 class="c-detail-title c-text-center"> ${fqTopic.content}</h2>
+                    <div class="user-info">
+                        <div class="detail-hits" id="admin" data-id="${fqTopic.id}">
+                        </div>
+                    </div>
+                    <div class="art-wrap">
+                        <div class="art-detail">
+                            <div class="art-content">${fqTopic.author}|${fqTopic.area}</div>
+                            <div class="layui-carousel" id="album">
+                                <div  id="carousel" carousel-item>
+                                    <%for(var pic in fqTopic.imgs){%>
+                                    <div class="imgs">
+                                        <img alt="unknonw" src="${pic}">
+                                    </div>
+                                    <%}%>
+                                </div>
+                            </div>
+                                <div class="bdsharebuttonbox article-share"><a href="#" class="bds_more" data-cmd="more"></a><a href="#" class="bds_qzone" data-cmd="qzone"></a><a href="#" class="bds_tsina" data-cmd="tsina"></a><a href="#" class="bds_tqq" data-cmd="tqq"></a><a href="#" class="bds_renren" data-cmd="renren"></a><a href="#" class="bds_weixin" data-cmd="weixin"></a></div>
+                            <script>window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdPic":"","bdStyle":"0","bdSize":"16"},"share":{},"image":{"viewList":["qzone","tsina","tqq","renren","weixin"],"viewText":"分享到：","viewSize":"16"},"selectShare":{"bdContainerClass":null,"bdSelectMiniList":["qzone","tsina","tqq","renren","weixin"]}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];</script>
+                        </div>
+                    </div>
+                </div>
+                <div id="pagesplit">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<%include("/common/_footor.html"){}%>
+</body>
+<%include("/common/_scripts.html",{user:user}){}%>
+<script>
+    var role = ${user.role!0}
+    layui.use(['layer', 'form', 'fly','face','carousel'], function () {
+        var layer = layui.layer
+            , form = layui.form
+            , fly = layui.fly,face = layui.face,gather={},carousel=layui.carousel;
+        carousel.render({
+            elem: '#album'
+            ,width: '100%' //设置容器宽度
+            ,height: '660px' //设置容器宽度
+            ,arrow: 'always' //始终显示箭头
+        });
+        <%if(user.role == 1){%>
+        $('.del').on('click',function () {
+            var id = $('#admin').data('id');
+            fly.json('/wangHong/delete?id='+id,function () {
+                layer.msg('删除成功！')
+                location.href='/wangHong'
+            })
+        })
+            <%}%>
+    })
+</script>
+</html>

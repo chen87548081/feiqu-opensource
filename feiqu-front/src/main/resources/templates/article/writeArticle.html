@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%include("/common/_head.html"){}%>
+    <title>写篇文章 -飞趣</title>
+    <style>
+        #fq-editor {
+            height: 500px;
+        }
+    </style>
+    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+</head>
+<body>
+<%
+var user = c.currentUser(request, servlet.response);
+var isLogin = false;
+if(user != null){
+isLogin=true;
+}
+include("/common/_headwithlogin.html",{user:user,isLogin:isLogin}){}
+%>
+<div class="layui-container topToFix c-panel">
+    <div class="layui-row c-panel-body">
+        <form class="layui-form layui-form-pane" action="${ctxPath}/article/writeArticle" method="post" onsubmit="return false">
+            <div class="layui-form-item">
+                <div class="layui-col-md11">
+                    请开始你的表演（写作）
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">标题</label>
+                <div class="layui-input-inline">
+                    <input style="width: 400px;max-width: 100%" type="text" name="articleTitle" required lay-verify="required" placeholder="请输入标题" autocomplete="off" class="layui-input">
+                </div>
+                <button lay-submit lay-filter="articleform" class="layui-btn layui-btn-normal fq-right">发表</button>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label">标签</label>
+                    <div class="layui-input-inline">
+                        <select name="label" lay-verify="">
+                            <option value="">请选择一个标签</option>
+                            <%for(var label in labels){%>
+                            <option value="${label.id}">${label.name}</option>
+                            <%}%>
+                        </select>
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">匿名发表</label>
+                    <div class="layui-input-inline">
+                        <input type="checkbox" name="anonymousSwitch" lay-skin="switch" lay-text="ON|OFF">
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <!--<textarea name="articleContent" class="layui-textarea fly-editor" placeholder="开始你的写作吧~(暂时只支持最多45000个字符)"></textarea>-->
+            </div>
+        </form>
+        <div id="fq-editor">
+        </div>
+        <input id="uploadImg" type="file" style="display:none" accept="image/png, image/jpeg, image/gif" >
+    </div>
+</div>
+<%include("/common/_footor.html"){}%>
+</body>
+<%include("/common/_scripts.html",{user:user}){}%>
+<script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+<script>
+    var fonts = ['sofia', 'slabo', 'roboto', 'inconsolata', 'ubuntu'];
+    var quill = new Quill('#fq-editor', {
+        modules: {
+            toolbar: [
+                [{ 'size': [] }],
+                [ 'bold', 'italic', 'underline', 'strike' ],
+                [{ 'color': [] }, { 'background': [] }],
+                [{ 'script': 'super' }, { 'script': 'sub' }],
+                [{ 'header': '1' }, { 'header': '2' }, 'blockquote', 'code-block' ],
+                [{ 'list': 'ordered' }, { 'list': 'bullet'}, { 'indent': '-1' }, { 'indent': '+1' }],
+                [ 'direction', { 'align': [] }],
+                [ 'link', 'image', 'formula' ],
+                [ 'clean' ]
+            ]
+        },
+        placeholder: '请开始奋笔疾书吧',
+        theme: 'snow'
+    });
+</script>
+<script>
+    layui.use(['layer', 'form', 'fly'], function () {
+        var layer = layui.layer
+            , form = layui.form
+            , fly = layui.fly;
+        var toolbar = quill.getModule('toolbar');
+        toolbar.addHandler('image', function () {
+            var fileInput = this.container.querySelector('input.ql-image[type=file]');
+            if (fileInput === null) {
+                fileInput = document.createElement('input');
+                fileInput.setAttribute('type', 'file');
+                fileInput.setAttribute('accept', 'image/png, image/gif, image/jpeg, image/bmp, image/x-icon');
+                fileInput.classList.add('ql-image');
+                fileInput.addEventListener('change', function () {
+                    if (fileInput.files !== null && fileInput.files[0] !== null) {
+                        var formData = new FormData();
+                        formData.append('file', fileInput.files[0]);
+                        $.ajax({
+                            url: '/api/upload/',
+                            type: 'POST',
+                            cache: false,
+                            data: formData,
+                            processData: false,
+                            contentType: false
+                        }).done(function (res) {
+                            var range = quill.getSelection(true);
+                            quill.insertEmbed(range.index, 'image', res.data);
+                            quill.setSelection(range.index + 1);
+                        }).fail(function (res) {
+                        });
+                    }
+                });
+                this.container.appendChild(fileInput);
+            }
+            fileInput.click();
+        });
+        form.on('submit(articleform)', function (data) {
+            var action = $(data.form).attr('action');
+            if(data.field.anonymousSwitch === 'on'){
+                data.field.anonymousSwitch = 1;
+            }else {
+                data.field.anonymousSwitch = 0;
+            }
+            data.field.articleContent = quill.container.firstChild.innerHTML;
+            fly.json(action, data.field, function(res){
+                layer.msg("发表成功~文章进入审核阶段！");
+                setTimeout(function () {
+                    location.href = "${ctxPath}/superGeek"
+                }, 1000)
+            });
+            return false;
+        })
+    })
+</script>
+</html>

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%include("/common/_head.html"){}%>
+    <title> -飞趣</title>
+    <style>
+    </style>
+</head>
+<body>
+<%
+var user = c.currentUser(request, servlet.response);
+var isLogin = false;
+if(user != null){
+isLogin=true;
+}
+include("/common/_headwithlogin.html",{user:user,isLogin:isLogin}){}
+%>
+<div class="api-doc-nav api-doc-index layui-container">
+    <div class="layui-row layui-col-space10">
+        <div class="layui-col-md3">
+            <%include("/common/_api_doc_menu.html",{user:user}){}%>
+        </div>
+        <div class="layui-col-md9">
+            <div class="c-panel">
+                <div class="c-panel-title">
+                    项目名称：${apiDocProject.projectName}
+                </div>
+                <div class="c-panel-body">
+                    <div class="layui-btn-container">
+                        <!--<a href="/apiDocInterface/apiDocInterfaceAdd?projectId=${apiDocProject.id}" class="layui-btn">增加模块</a>-->
+                        <a href="/apiDocModule?projectId=${apiDocProject.id}" class="layui-btn">查看模块</a>
+                        <a href="/apiDocInterface/apiDocInterfaceAdd?projectId=${apiDocProject.id}" class="layui-btn">增加接口</a>
+                        <a href="/apiDocInterface?projectId=${apiDocProject.id}" class="layui-btn">查看接口</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<%include("/common/_footor.html"){}%>
+</body>
+<%include("/common/_scripts.html",{user:user}){}%>
+<script>
+    layui.use(['fly'], function () {
+        var fly = layui.fly;
+    })
+</script>
+</html>

@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<%include("/common/_head.html"){}%>
+    <title>用户管理 -飞趣</title>
+<style>
+</style>
+</head>
+<body>
+<%
+var user = c.currentUser(request, servlet.response);
+var isLogin = false;
+if(user != null){
+isLogin=true;
+}
+include("/common/_headwithlogin.html",{user:user,isLogin:isLogin}){}
+%>
+<div class="layui-container fly-marginTop topToFix c-user-main">
+    <%include("/common/_user_menu.html",{user:user}){}%>
+        <div class="c-panel fly-panel-user detail-box">
+            <div class="layui-row layui-col-space20">
+                <div class="layui-col-md12">
+                    <table class="layui-hide" id="userManage" lay-filter="user"></table>
+                    <script type="text/html" id="barDemo">
+                        <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="detail">查看</a>
+                        <a class="layui-btn layui-btn-xs" lay-event="frozen">冻结</a>
+                        <a class="layui-btn layui-btn-xs" lay-event="unFrozen">解冻</a>
+                        <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+                        <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="adminRole">设置管理员</a>
+                    </script>
+                </div>
+            </div>
+        </div>
+</div>
+<%include("/common/_footor.html"){}%>
+</body>
+<%include("/common/_scripts.html"){}%>
+<script>
+    layui.use(['table','fly'], function() {
+        var table=layui.table,fly=layui.fly;
+        table.render({
+            elem: '#userManage'
+            ,url:'/u/manage/list'
+            ,toolbar: true
+            ,title: '用户数据表'
+            ,totalRow: true
+            ,cols: [[
+                {field:'id', title:'ID', width:80, fixed: 'left', unresize: true, sort: true},
+                {field:'nickname', title:'昵称', width:120, fixed: 'left', unresize: true, sort: true},
+                {field:'username', title:'用户账号', width:120, fixed: 'left', unresize: true, sort: true},
+                {field:'createTime', title:'创建时间', width:80, fixed: 'left', unresize: true, sort: true},
+                {field:'status', title:'状态', width:80, fixed: 'left', unresize: true, sort: true},
+                {field:'role', title:'角色', width:80, fixed: 'left', unresize: true, sort: true},
+                {field:'createIp', title:'IP', width:80, fixed: 'left', unresize: true, sort: true},
+                {fixed: 'right', width:200, align:'center', toolbar: '#barDemo'}
+            ]]
+            ,page: true
+            ,response: {
+                statusCode: '0000',
+                msgName: 'message'
+            }
+            ,id: 'userReload'
+            ,parseData: function(res){
+                return {
+                    "code": res.code,
+                    "msg": res.message,
+                    "count": res.data.total,
+                    "data": res.data.list
+                };
+            }
+        });
+        //监听工具条
+        table.on('tool(user)', function(obj){
+            var data = obj.data;
+            if(obj.event === 'detail'){
+                location.href = '/u/'+data.id+'/peopleIndex';
+            } else if(obj.event === 'frozen'){
+                layer.confirm('真的冻结这个用户么', function(index){
+                    fly.json('/u/manage/changeStatus?status=2&userId='+data.id,{},function (res) {
+                        layer.msg('冻结成功！');
+                        table.reload('userReload', {
+                            page: {
+                                curr: 1
+                            }
+                        });
+                    });
+                    layer.close(index);
+                });
+            }else if(obj.event === 'unFrozen'){
+                layer.confirm('真的解除冻结这个用户么', function(index){
+                    fly.json('/u/manage/changeStatus?status=0&userId='+data.id,{},function (res) {
+                        layer.msg('解冻成功！');
+                        table.reload('userReload', {
+                            page: {
+                                curr: 1
+                            }
+                        });
+                    });
+                    layer.close(index);
+                });
+            }else if(obj.event === 'del'){
+                layer.confirm('真的删除这个用户么', function(index){
+                    fly.json('/u/manage/changeStatus?status=1&userId='+data.id,{},function (res) {
+                        layer.msg('删除成功！');
+                        table.reload('userReload', {
+                            page: {
+                                curr: 1
+                            }
+                        });
+                    });
+                    layer.close(index);
+                });
+            }else if(obj.event === 'adminRole'){
+                layer.confirm('真的授予这个用户管理员吗', function(index){
+                    fly.json('/u/manage/adminRole?role=1&userId='+data.id,{},function (res) {
+                        layer.msg('授予成功！');
+                        table.reload('userReload', {
+                            page: {
+                                curr: 1
+                            }
+                        });
+                    });
+                    layer.close(index);
+                });
+            }
+        });
+    });
+</script>
+</html>

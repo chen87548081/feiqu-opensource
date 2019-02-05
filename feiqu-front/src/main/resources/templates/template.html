@@ -1,0 +1,17 @@
+<script>
+    $.ajax({
+        url:'${ctxPath}/u/updatePass',
+        data:JSON.stringify(data.field),
+        dataType:'json',
+        contentType:'application/json',
+        type:'post',
+        success:function (result) {
+            console.log(result)
+            if(result&&result.code == '0000'){
+                layer.msg('密码修改成功~')
+            }else {
+                layer.msg('密码修改失败~')
+            }
+        }
+    })
+</script>

@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%include("/common/_head.html"){}%>
+    <title>飞趣社区 -让生活更有趣</title>
+    <style>
+        .c-list-info{position:relative;overflow:hidden;font-size:13px;line-height:2;color:#999}
+        .detail-box{line-height:26px}
+        .detail-body{min-height:0;margin-top:0;line-height:24px;font-size:14px}
+        .detail-about .fly-avatar{left:0;top:0}
+        .detail-about{padding:0 0 0 55px;background:none}
+        .thought-body{margin:25px 0 20px;min-height:0;line-height:24px;font-size:14px}
+        .hot{line-height:1.7}
+        .hot img{max-width:100%}
+        .new-user{display:flex;justify-content:space-between}
+        .hot li{position:relative}
+        .hot li a{overflow:hidden;max-width:80%;text-overflow:ellipsis;white-space:nowrap;display:inline-block}
+        .hot li em{position:absolute;right:0;top:0;font-size:12px;color:#999;font-style:normal}
+        .c-list h2 a{display:inline-block;max-width:80%;padding-right:10px;font-size:16px}
+        .c-list li h2 .layui-badge{top:-2px;height:16px;line-height:16px;padding:0 5px;margin-right:10px;font-size:12px;border:1px solid #5FB878;background:none;color:#5FB878}
+        .c-list-info a{color:#999}
+    </style>
+</head>
+<body>
+<%
+var user = c.currentUser(request, servlet.response);
+var isLogin = false;
+if(user != null){
+isLogin=true;
+}
+include("/common/_headwithlogin.html",{user:user,isLogin:isLogin}){}
+%>
+<div class="layui-container layui-clear topToFix">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md8">
+            <div class="c-panel" id="fq-notice">
+                <div class="c-panel-title fly-filter"><a>通知</a></div>
+                <ul class="c-list">
+                    <%if(isNotEmpty(noticeList)){%>
+                <%for(var notice in noticeList){%>
+                        <li> <a href="${ctxPath}/u/${notice.userId}/peopleIndex" class="fly-avatar"> <img src="${notice.icon}" alt="${notice.nickname}"> </a> <h2> <a class="layui-badge">公告</a> <a href="${ctxPath}/notice/view/${notice.id}">${notice.title}</a> </h2>
+                            <div class="c-list-info"><a href="${ctxPath}/u/${notice.userId}/peopleIndex"><cite>${notice.nickname}</cite><i class="iconfont icon-renzheng" title="认证信息：官方人员"></i></a> <span>${notice.createTime,'yyyy-MM-dd HH:mm:ss'}</span><span class="c-list-num"> <i class="iconfont icon-pinglun1" title="回复"></i>${notice.commentNum!0}</span></div></li>
+                <%}%>
+                    <%}%>
+                </ul>
+            </div>
+            <div class="c-panel">
+                <div class="c-panel-title">
+                    <span class="title-first">最新的5个想法(每半个小时更新一次)</span>
+                </div>
+                <ul class="c-list2">
+                    <%if(isNotEmpty(newThoughtList)){%>
+                    <%for(var thought in newThoughtList){%>
+                    <li>
+                        <div class="detail-about">
+                            <a href="${ctxPath}/u/${thought.userId}/peopleIndex" class="fly-avatar"><img src="${thought.icon}"></a>
+                            <div class="fly-detail-user">
+                                <a href="${ctxPath}/u/${thought.userId}/peopleIndex" class="c-fly-link">
+                                    <cite>${thought.nickname}</cite>
+                                </a>
+                                <a href="${ctxPath}/thought/${thought.id}"><span class="c-list-num">查看详情</span></a>
+                            </div>
+                            <div class="detail-hits">
+                                <span class="${isNotEmpty(thought.area)?'t-area'}">${thought.area}</span>
+                                <span>${printTime(thought.createTime)}</span>
+                            </div>
+                        </div>
+                        <div class="detail-body thought-body photos">
+                            <div class="thought-text">${emojiShow(thought.thoughtContent)}</div>
+                            <%if(isNotEmpty(thought.pictures)){%>
+                            <div class="thought-pic">
+                                <%for(var pic in thought.pictures){%>
+                                <img layer-src="${pic}" src="${pic}" data-cursor="big">
+                                <%}%>
+                            </div>
+                            <%}%>
+                        </div>
+                        <%if(!isEmpty(thought.lastReplyUserName)){%>
+                            <div class="light-gray">${thought.lastReplyUserName} 最后回复于 ${thought.lastReplyTime}</div>
+                        <%}%>
+                    </li>
+                    <%}}%>
+                </ul>
+            </div>
+            <div class="c-panel">
+                <div class="c-panel-title">
+                    <span class="title-first">评论最多的5个想法</span>
+                </div>
+                <ul class="c-list2" id="thoughtList">
+                    <%if(isNotEmpty(thoughtList)){%>
+                    <%for(var thought in thoughtList){%>
+                    <li>
+                        <div class="detail-about">
+                            <a href="${ctxPath}/u/${thought.userId}/peopleIndex" class="fly-avatar"><img src="${thought.icon}"></a>
+                            <div class="fly-detail-user">
+                                <a href="${ctxPath}/u/${thought.userId}/peopleIndex" class="c-fly-link">
+                                    <cite>${thought.nickname}</cite>
+                                </a>
+                                <a href="${ctxPath}/thought/${thought.id}"><span class="c-list-num">查看详情</span></a>
+                            </div>
+                            <div class="detail-hits">
+                                <span>${printTime(thought.createTime)}</span>
+                            </div>
+                        </div>
+                        <div class="detail-body thought-body photos">
+                            <div class="thought-text">${emojiShow(thought.thoughtContent)}</div>
+                            <%if(isNotEmpty(thought.pictures)){%>
+                            <div class="thought-pic">
+                                <%for(var pic in thought.pictures){%>
+                                <img layer-src="${pic}" src="${pic}">
+                                <%}%>
+                            </div>
+                            <%}%>
+                        </div>
+                        <%if(!isEmpty(thought.lastReplyUserName)){%>
+                        <div class="light-gray">${thought.lastReplyUserName} 最后回复于 ${thought.lastReplyTime}</div>
+                        <%}%>
+                    </li>
+                    <%}%>
+                    <%}%>
+                </ul>
+            </div>
+            <div class="c-panel">
+                <div class="c-panel-title">热门的5张图片</div>
+                    <%if(isEmpty(beautyList)){%>
+                    <div class="c-panel-title">暂无热门图片</div>
+                    <%}else{%>
+                <div class="c-panel-body">
+                    <ul class="c-list2">
+                        <%for(var be in beautyList){%>
+                        <li>
+                            <div class="detail-about fly-detail-user">
+                                <a href="${ctxPath}/u/${be.uploadUserId}/peopleIndex" class="fly-avatar"><img src="${be.icon}"></a>
+                                <a href="${ctxPath}/u/${be.uploadUserId}/peopleIndex" class="c-fly-link"><cite>${be.nickname}</cite></a>
+                                <span class="c-list-num">上传于${be.createTime,'yyyy-MM-dd'} &nbsp;点赞数：${be.likeCount!0}</span>
+                                <h2>${be.title!}</h2>
+                            </div>
+                            <div class="thought-body">
+                            <a href="javascript:;"><img lay-src="${be.imgUrl}"/></a>
+                            </div>
+                        </li>
+                        <%}%>
+                    </ul>
+                    <%}%>
+                </div>
+            </div>
+        </div>
+        <div class="layui-col-md4 ">
+            <div class="c-panel">
+                <div class="c-panel-title">
+                    <span>活跃达人</span>
+                </div>
+                <div class="c-panel-body">
+                    <ul class="rank-list">
+                        <%for(var u in activeUserList!){%>
+                        <li>
+                            <div class="rank-list-item">
+                                <%if(u.rank <= 3){%>
+                                <span class="c-list-num rank-red">${u.rank}</span>
+                                <%}else{%>
+                                <span class="c-list-num">${u.rank}</span>
+                                <%}%>
+                                <div class="icon-wrap">
+                                    <a href="/u/${u.userId}/peopleIndex">
+                                        <div class="icon-container"><img src="${u.icon}"/></div>
+                                    </a>
+                                </div>
+                                <div class="c-content">
+                                    <div class="content-nick">
+                                        <a href="/u/${u.userId}/peopleIndex">${u.name}</a>
+                                    </div>
+                                    <div class="rank-data">
+                                        <span>活跃度+${u.score}</span><span>(${u.city!})</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <%}%>
+                    </ul>
+                </div>
+            </div>
+            <div class="c-panel">
+                <div class="c-panel-body">
+                    <div class="layui-carousel" id="fq-topline">
+                        <div carousel-item>
+                            <%for(var be in beautySims){%>
+                            <div><a href="${be.href!'#'}"><img alt="${be.title!}" src="${be.imgUrl!}"></a></div>
+                            <%}%>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="c-panel">
+                <div class="detail-box fq-text-center" id="fq-date">
+                </div>
+            </div>
+            <div class="c-panel">
+                <div class="c-panel-title">最新加入的10位趣友(已经有${userCount!0}位趣友加入)</div>
+                <div class="hot detail-box">
+                    <%if(isEmpty(newUserList)){%>
+                    <p>暂无新用户</p>
+                    <%}else{%>
+                    <ul>
+                        <%for(var newuser in newUserList){%>
+                        <li class="new-user"><a class="c-fly-link" href="${ctxPath}/u/${newuser.userId}/peopleIndex">${newuser.nickname}</a>来自${newuser.city}</li>
+                        <%}%>
+                    </ul>
+                    <%}%>
+                </div>
+            </div>
+            <div class="c-panel">
+                <div class="c-panel-title">热门文章(每半小时更新一次)</div>
+                <div class="hot detail-box">
+                    <%if(isEmpty(articleList)){%>
+                    <p>暂无热门文章</p>
+                    <%}else{%>
+                    <ul>
+                        <%for(var ha in articleList){%>
+                        <li><a title="${ha.articleTitle}" href="${ctxPath}/article/${ha.id}">${ha.articleTitle}</a><em>${ha.browseCount}阅</em></li>
+                        <%}%>
+                    </ul>
+                    <%}%>
+                </div>
+            </div>
+            <div class="c-panel">
+                <div class="c-panel-title">友情链接</div>
+                <div class="detail-box word-deal">
+                    <ul>
+                        <%if(isNotEmpty(friendLinkList)){%>
+                        <%for(var f in friendLinkList){%>
+                        <li><a target="_blank" href="${f.linkUrl}">${f.linkName}</a></li>
+                        <%}%>
+                        <%}%>
+                    </ul>
+                    <p>官方交流群:&nbsp;<a target="_blank" href="//shang.qq.com/wpa/qunwpa?idkey=ca03296d1e274d6333a6c77d0b8fe5128ff7f650c4be98a88834d1506fa1f9b1"><img border="0" src="//pub.idqqimg.com/wpa/images/group.png" alt="飞趣社区官方交流群" title="飞趣社区官方交流群"></a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<%include("/common/_footor.html"){}%>
+</body>
+<script src="/js/twemoji.min.js?2.4"></script>
+<%include("/common/_scripts.html",{user:user}){}%>
+<script>
+    layui.use(['fly','flow','face','laydate','carousel'], function () {
+        var fly = layui.fly,flow=layui.flow,face=layui.face,laydate=layui.laydate,carousel = layui.carousel;
+
+        carousel.render({
+            elem: '#fq-topline'
+            ,width: '100%'
+            ,anim: 'fade'
+            ,height:'450px'
+        });
+        laydate.render({
+            elem:'#fq-date'
+            ,theme: 'molv'
+            ,position: 'static'
+            ,calendar: true
+        })
+
+        $('.thought-text').each(function(){
+            var othis = $(this), html = othis.html();
+            othis.html(twemoji.parse(fly.content(html)));
+        });
+        $('.detail-body img').each(function (i,item) {
+            $(item).attr('lay-src',$(item).attr('src'))
+            $(item).attr('src','')
+        })
+        flow.lazyimg();
+    });
+</script>
+</html>

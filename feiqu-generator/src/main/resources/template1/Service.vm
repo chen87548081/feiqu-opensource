@@ -1,0 +1,12 @@
+package ${package_name}.service;
+
+import ${package_name}.base.BaseService;
+import ${package_name}.model.${model};
+import ${package_name}.model.${model}Example;
+/**
+* ${model}Service接口
+* created by cwd on ${ctime}.
+*/
+public interface ${model}Service extends BaseService<${model}, ${model}Example> {
+
+}

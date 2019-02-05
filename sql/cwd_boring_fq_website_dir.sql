@@ -1,0 +1,3 @@
+INSERT INTO cwd_boring.fq_website_dir (url, type, del_flag, name, click_count, user_id, create_time, icon) VALUES ('https://www.google.com/', '社区', 0, 'Google', 0, 22, '2018-12-28 21:19:35', 'http://images.frontendjs.com/google.png');
+INSERT INTO cwd_boring.fq_website_dir (url, type, del_flag, name, click_count, user_id, create_time, icon) VALUES ('https://www.baidu.com/', '社区', 0, '百度', 0, 22, '2018-12-28 21:19:35', 'http://images.frontendjs.com/baidu.ico');
+INSERT INTO cwd_boring.fq_website_dir (url, type, del_flag, name, click_count, user_id, create_time, icon) VALUES ('https://stackoverflow.com/', '社区', 0, 'StackOverflow', 0, 22, '2018-12-28 21:19:35', 'http://images.frontendjs.com/stackoverflow.png');

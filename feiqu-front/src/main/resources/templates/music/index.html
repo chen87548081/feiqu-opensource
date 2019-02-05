@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<%include("/common/_head.html"){}%>
+    <title>音乐达人 一起听听歌吧 -飞趣</title>
+<style>
+    .art-item {
+        position: relative;
+        padding: 16px 20px;
+        display: inline-block;
+    }
+    .card {
+        overflow: hidden;
+        border-radius: 2px;
+        -webkit-box-shadow: 0 1px 3px rgba(0,0,0,.1);
+        box-shadow: 0 1px 3px rgba(0,0,0,.1);
+        -webkit-box-sizing: border-box;
+        box-sizing: border-box;
+    }
+    .upload-form-div {
+        padding: 1rem;
+    }
+    .c-video-list {
+        width: 100%;
+        margin-top: 15px;
+        font-size: 0;
+    }
+    .c-video-list li{
+        width: 100%;
+        margin: 0 15px 15px 0;
+        padding: 10px;
+        display: inline-block;
+        vertical-align: middle;
+        font-size: 14px;
+        background-color: #fff;
+    }
+    .img-info {
+        position: relative;
+        margin: 10px 0 0;
+        padding: 10px 65px 0 45px;
+        border-top: 1px dotted #eee;
+    }
+    .img-info .layui-btn {
+        position: absolute;
+        right: 0;
+        top: 15px;
+        padding: 0 15px;
+    }
+    .img-info p{
+        height: 24px;
+        line-height: 24px;
+    }
+    .beauty-icon {
+        position: absolute;
+        left: 0;
+        top: 15px;
+        width: 35px;
+        height: 35px;
+    }
+    .img-info .c-nav-icon img{
+        margin-left: 0 !important;
+    }
+    .upload-tip {
+        padding: 15px 15px;
+        border-bottom: 1px solid #1b6d85;
+        border-bottom: 1px dotted #E9E9E9;
+    }
+    .music-title{
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .music-title .c-fly-link{
+        font-size: 16px;
+    }
+    .play-count{
+
+    }
+</style>
+
+</head>
+<body>
+<%
+var user = c.currentUser(request, servlet.response);
+var isLogin = false;
+if(user != null){
+isLogin=true;
+}
+include("/common/_headwithlogin.html",{user:user,isLogin:isLogin}){}
+%>
+<div class="layui-container topToFix">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md12">
+            <div class="c-panel">
+                <div class="upload-tip">
+                    <div><a class="layui-btn" href="javascript:showUpload();">分享一个音频文件</a></div>
+                </div>
+            </div>
+            <div id="imgContain" class="">
+                <ul class="c-video-list">
+                <%for(var music in list){%>
+                <li class="art-item card" data-id="${music.id}">
+                    <div class="music-title">
+                        <a class="c-fly-link" href="${ctxPath}/music/${music.id}">${music.musicName}</a>
+                        <span class="layui-badge layui-bg-orange">已播放${music.playCount!0}次</span>
+                        <span class="reply_time">上传于${printTime(music.createTime)}</span>
+                    </div>
+                    <div class="img-info">
+                        <a  href="${ctxPath}/u/${music.userId}/peopleIndex" class="c-nav-icon beauty-icon"><img src="${music.icon!}"></a>
+                        <p><span style="color: #666">${music.nickname}</span></p>
+                        <p>获得<span style="color: #01AAED;font-size: 16px;padding: 0 3px">${music.likeCount!0}</span>个赞</p>
+                        <button class="layui-btn layui-btn-primary c-case-active" data-type="praise">点赞</button>
+                    </div>
+                </li>
+                <%}%>
+                </ul>
+                <div id="pagesplit">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="upload-id" class="layui-hide">
+    <br>
+    <div class="upload-form-div layui-form">
+    <form  action="${ctxPath}/music/uploadMusic">
+        <div class="layui-form-item">
+            <label class="layui-form-label">音乐名字</label>
+            <div class="layui-input-block">
+                <input type="text" name="musicName" required autofocus placeholder="音乐名字" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">歌手名称</label>
+            <div class="layui-input-block">
+                <input type="text" name="singer" required autofocus placeholder="歌手名称" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">音乐链接</label>
+            <div class="layui-input-block">
+                <input type="text" name="musicUrl" required  placeholder="音乐链接" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <div id="ossfile">你的浏览器不支持flash,Silverlight或者HTML5！</div>
+                <div class="layui-upload-drag" id="uploadContainer">
+                    <a id="selectfiles" href="javascript:void(0);" class="layui-btn layui-btn-normal">选择音乐文件</a>
+                    <a id="postfiles" href="javascript:void(0);" class="layui-btn">开始上传</a>
+                </div>
+                <pre id="console"></pre>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">音乐歌词</label>
+            <div class="layui-input-block">
+                <textarea name="lyric" class="layui-textarea"></textarea>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button id="uploadBtn" class="layui-btn" lay-submit lay-filter="formDemo">分享你的音乐吧</button>
+            </div>
+        </div>
+    </form>
+    </div>
+</div>
+<%include("/common/_footor.html"){}%>
+</body>
+<%include("/common/_scripts.html",{user:user}){}%>
+<script src="${ctxPath}/js/plupload.full.min.js"></script>
+<script src="${ctxPath}/js/upload.js?v=${VERSION}"></script>
+<script>
+    var extensions = "mp3,wav,mid"
+    // var extensions = "jpg,gif,png,bmp"
+    layui.use(['layer', 'form','laypage','fly'], function(){
+        var layer = layui.layer
+            ,form = layui.form
+            ,laypage=layui.laypage
+            ,fly=layui.fly;
+        var uploadIndex = 0;
+
+        $('.c-case-active').click(function () {
+            var nowTime =new Date().getTime()
+            var lastLikeTime = $(this).attr('data')
+            if(lastLikeTime && Math.abs(nowTime - lastLikeTime) < 5000){
+                layer.msg('歇一会再点吧~')
+                return false
+            }
+            var musicId = $(this).closest('li').data('id')
+            fly.json('${ctxPath}/music/like?musicId='+musicId,{},function () {
+                layer.msg('点赞成功')
+            })
+        })
+
+        form.on('submit(formDemo)', function(data){
+            var action = $(data.form).attr('action');
+            fly.json(action,data.field,function (res) {
+                layer.msg("上传成功~")
+                layer.close(uploadIndex)
+                setTimeout(function () {
+                    location.reload()
+                },500)
+            })
+            return false;
+        });
+
+        laypage.render({
+            elem: 'pagesplit'
+            ,count: ${count}
+            ,curr:${p}
+            ,jump: function(obj,first){
+                if(!first){
+                    location.href = "${ctxPath}/music?page="+obj.curr
+                }
+            }
+        });
+    });
+    function showUpload() {
+        $("#upload-id").removeClass("layui-hide");
+        uploadIndex = layer.open({
+            skin: 'demo-class',
+            area: ['80%', '70%'],
+            title:"与大家一起分享你的音乐",
+            type: 1,
+            content: $('#upload-id'),
+            yes: function(index, layero){
+                layer.close(index); //如果设定了yes回调，需进行手工关闭
+            },
+            cancel: function(index, layero){
+                layer.close(index)
+                return false;
+            },
+            end:function () {
+                $("#upload-id").addClass("layui-hide");
+            }
+        });
+    }
+</script>
+</html>

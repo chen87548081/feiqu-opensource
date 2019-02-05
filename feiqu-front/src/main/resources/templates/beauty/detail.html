@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%include("/common/_head.html"){}%>
+    <title>${beauty.title} -飞趣</title>
+    <meta name="description" content="${beauty.title}">
+    <style>
+        .art-item {
+            position: relative;
+            padding: 16px 0;
+        }
+        .card {
+            margin-bottom: 10px;
+            background: #fff;
+            overflow: hidden;
+            border-radius: 2px;
+            -webkit-box-shadow: 0 1px 3px rgba(0, 0, 0, .1);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, .1);
+            -webkit-box-sizing: border-box;
+            box-sizing: border-box;
+        }
+
+        .art-title{
+            font-size: 24px;
+            font-weight: 700;
+            line-height: 1.6;
+            color: #1e1e1e;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+         .time{
+            color: #999;
+            font-size: 13px;
+             padding-top: 10px;
+        }
+        .user-info {
+            display: -webkit-box;
+            display: -ms-flexbox;
+            display: flex;
+            margin: auto 0;
+            flex-direction: column;
+            margin-left: 5rem;
+        }
+        .name {
+            font-size: 16px;
+            line-height: 1.1;
+            font-weight: 100;
+            color: #999;
+        }
+        .detail-box{
+            padding: 20px;
+        }
+        .art-detail img{
+            max-width: 100%;
+        }
+        .comment-detail {
+            padding: 0 0 0 55px;
+            background: none;
+            position: relative;
+            line-height: 20px;
+            font-size: 13px;
+            color: #999;
+        }
+        .comment-detail .fly-avatar{
+            left: 0;
+            top:0;
+        }
+
+        .comment-detail-user {
+            white-space: nowrap;
+            overflow: hidden;
+        }
+
+        .comment-body {
+            margin: 25px 0 20px;
+            min-height: 0;
+            line-height: 24px;
+            font-size: 14px;
+        }
+        .comment-body a{
+            color: #4f99cf;text-decoration: none;
+            transition: all .5s;
+        }
+
+        .detail-time {
+            left: 0;
+            bottom: 0;
+            position: relative;
+            top: 5px;
+            line-height: 20px;
+        }
+        .detail-time span{
+            height: 20px;
+            line-height: 20px;
+        }
+
+        .comment-list {
+            margin-bottom: 30px;
+        }
+        .comment-list li{
+            position: relative;
+            padding: 20px 0 10px;
+            border-bottom: 1px dotted #DFDFDF;
+        }
+        .art-wrap, .art-detail{
+            /*margin: 0 auto;*/
+            padding: 50px 0 0 0;
+            background: #f8f8f8;
+            border-radius: 20px;
+            text-align: justify;
+            min-height: 657px;
+        }
+        .art-wrap{
+            margin: 0 auto;
+            position: relative;
+            margin-top: 35px;
+            width: 90%;
+            filter: drop-shadow(0px 0px 15px #bbb);
+        }
+        .art-detail{
+            text-align: center;
+            padding: 0 0 40px 0;
+            width: 100%;
+            line-height: 26px;
+            font-size: 16px;
+        }
+        .c-name {
+            color: #000;
+        }
+
+        .u-intro {
+            padding: 15px 15px;
+        }
+        .u-intro p{
+            line-height: 2rem;
+        }
+        .fly-beauty-nums{
+            padding: 0 5px;
+            color: #01AAED;
+        }
+        .imgs {
+            overflow-y: scroll;
+        }
+        .imgs img{
+            cursor: crosshair;
+        }
+    </style>
+</head>
+<body>
+<%
+var user = c.currentUser(request, servlet.response);
+var isLogin = false;
+if(user != null){
+isLogin=true;
+}
+include("/common/_headwithlogin.html",{user:user,isLogin:isLogin}){}
+%>
+<div class="layui-container topToFix">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md12">
+            <div class="c-panel">
+                <div class="art-item card">
+                    <span class="c-position-rt">
+                        <a class="layui-btn uploadBtn" href="javascript:void(0);">加入相册</a>
+                        <button data-type="praise" class="layui-btn layui-btn-primary fly-case-active">点赞</button>
+                    </span>
+                    <span>
+                        <a class="fly-avatar" href="/u/${beauty.uploadUserId}/peopleIndex"><img src="${beauty.icon}"></a>
+                    </span>
+                    <div class="user-info">
+                        <div class="art-desc"><span class="name"><a class="c-name" href="/u/${beauty.uploadUserId}/peopleIndex">${beauty.nickname}</a></span></div>
+                        <div class="time">${printTime(beauty.createTime)}<span style="padding-left: 1rem">获得了<a class="fly-beauty-nums" href="javascript:;">${beauty.likeCount!0}</a>个赞</span></div>
+                    </div>
+                    <div class="art-wrap">
+                        <div class="art-detail">
+                            <div class="layui-carousel" id="album">
+                                <div  id="carousel" carousel-item>
+                                    <%for(var pic in picList){%>
+                                    <div class="imgs">
+                                        <div>${pic.key}</div>
+                                        <img alt="${pic.key}" src="${pic.value}">
+                                    </div>
+                                    <%}%>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="c-panel">
+                <div class="c-panel-title">
+                    <a class="c-fly-link" href="javascript:;">${commentsSize}条回复</a>
+                </div>
+                <ul class="c-list">
+                    <%for(var comment in comments){%>
+                    <li style="min-height: 40px">
+                        <a target="_blank" class="fly-avatar" href="${ctxPath}/u/${comment.postUserId}/peopleIndex">
+                        <img src="${comment.postIcon}"></a>
+                        <p class="reply-header">
+                            <a class="c-fly-link" href="${ctxPath}/u/${comment.postUserId}/peopleIndex">
+                            <cite class="c-nickname">${comment.postNickname}</cite></a>
+                            <span>${printTime(comment.createTime)}</span>
+                            <span class="floor">${commentLP.index}楼</span></p>
+                        <a lay-data="${comment.id}" href="javascript:;" class="reply-action c-position-rt">回复</a>
+                        <div class="content">${emojiShow(comment.content)}</div>
+                    </li>
+                    <%}%>
+                </ul>
+            </div>
+            <div class="c-panel">
+                <div class="detail-box">
+                    <div class="reply-input">
+                        <input id="comment" class="layui-input" placeholder="回复点什么吧"/>
+                    </div>
+                    <div class="c-poster">
+                        <div class="c-poster-attach">
+                            <a class="emot" title="插入表情"><i class="iconfont icon-yxj-expression"></i></a>
+                        </div>
+                        <div class="op">
+                            <a href="javascript:;" class="layui-btn layui-btn-sm layui-btn-warm commentSingleBtn">评论</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="upload-id" class="layui-hide">
+    <br>
+    <div class="upload-form-div">
+        <form class="layui-form" action="">
+            <input type="hidden" name="id" value="${beauty.id}">
+            <div class="layui-form-item">
+                <label class="layui-form-label">图片链接</label>
+                <div class="layui-input-block">
+                    <input type="text" name="imgUrl" required  placeholder="图片链接" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">图片说明</label>
+                <div class="layui-input-block">
+                    <input type="text" name="title" required  placeholder="图片说明" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-input-block">
+                    <div class="layui-upload-drag" id="beautyUpload">
+                        <i class="layui-icon"></i>
+                        <p>点击上传，或将文件拖拽到此处</p>
+                    </div>
+                </div>
+            </div>
+            <input type="hidden" id="uploadImgUrl" value="">
+            <div class="layui-form-item">
+                <div class="layui-input-block">
+                    <button id="uploadBtn" class="layui-btn" lay-submit lay-filter="formDemo">分享你的图片吧</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<%include("/common/_footor.html"){}%>
+</body>
+<%include("/common/_scripts.html",{user:user}){}%>
+<script src="/js/twemoji.min.js?2.4"></script>
+<script>
+    var editor = $('.fly-editor'),picList = '${beauty.picList}',beautyId = ${beauty.id};
+    layui.use(['form','layer','fly','face','carousel'], function() {
+        var form = layui.form, layer = layui.layer, fly = layui.fly,
+            face = layui.face,device=layui.device,upload=layui.upload,carousel = layui.carousel;
+        var uploadIndex,loadIndex,commentInput=$("#comment");
+        carousel.render({
+            elem: '#album'
+            ,width: '100%' //设置容器宽度
+            ,height: '660px' //设置容器宽度
+            ,arrow: 'always' //始终显示箭头
+        });
+        layer.photos({
+            photos: '#carousel'
+            ,zIndex: 9999999999
+            ,anim: -1
+        });
+        upload.render({
+            elem: '#beautyUpload'
+            ,url: '/api/upload/'
+            ,size: 800
+            ,before:function (obj) {
+                loadIndex = layer.load(2, {shade: 0.8})
+            }
+            ,done: function(res){
+                layer.close(loadIndex);
+                if(res.code === '0000'){
+                    uploadImgUrl = res.data;
+                    $('input[name="imgUrl"]').val(uploadImgUrl)
+                } else {
+                    layer.msg(res.message, {icon: 5});
+                }
+            }
+            ,error: function(index, upload){
+                layer.close(loadIndex);
+            }
+        });
+        $('.content').each(function(){
+            var othis = $(this), html = othis.html();
+            var content = fly.content(html);
+            var endContent = twemoji.parse(content);
+            othis.html(endContent);
+        });
+        $('.commentSingleBtn').on('click',function () {
+            var commentData = commentInput.val()
+            var commentData = {
+                topicId: beautyId,
+                content: commentData
+            };
+            fly.json('/beauty/comment',commentData,function (res) {
+                layer.msg('评论成功啦');
+                commentInput.val('')
+            })
+        })
+        $('.reply-action').on('click',function () {
+            var li = $(this).parents('li');
+            commentInput.focus();
+            var val = commentInput.val();
+            var commentId = $(this).attr('lay-data')
+            var aite= '@'+li.find('cite').text().replace(/\s/g, '');
+            if(val.indexOf(aite)  !== -1) return;
+            commentInput.val(aite +' ' + val);
+        })
+        $('.emot').on('click', function(event){
+            var str = '', ul, face = fly.faces;
+            for (var key in face) {
+                str += '<li title="' + key + '"><img src="' + face[key] + '"></li>';
+            }
+            str = '<ul id="LAY-editface" class="layui-clear">' + str + '</ul>';
+            layer.tips(str, this, {
+                tips: 1
+                , time: 0
+                , skin: 'layui-edit-face'
+            });
+            $(document).on('click', function () {
+                layer.closeAll('tips');
+            });
+            $('#LAY-editface li').on('click', function () {
+                var title = $(this).attr('title') + ' ';
+                layui.focusInsert(commentInput[0], 'face' + title);
+            });
+            event.stopPropagation()
+        })
+        var active = {
+            praise: function(othis){
+                var PRIMARY = 'layui-btn-primary'
+                    ,unpraise = !othis.hasClass(PRIMARY)
+                    ,numElem = $('.fly-beauty-nums')
+
+                fly.json('/beauty/like/', {
+                    beautyId: ${beauty.id}
+                    ,unpraise: unpraise ? true : null
+                }, function(res){
+                    numElem.html(res.data);
+                    if(unpraise){
+                        othis.addClass(PRIMARY).html('点赞');
+                        layer.tips('少了个赞囖', numElem, {
+                            tips: 1
+                        });
+                    } else {
+                        othis.removeClass(PRIMARY).html('已赞');
+                        layer.tips('成功获得个赞', numElem, {
+                            tips: [1, '#FF5722']
+                        });
+                    }
+                });
+            }
+        }
+        $('.uploadBtn').on('click',function () {
+            var $uploadDiv = $("#upload-id");
+            $uploadDiv.removeClass("layui-hide");
+            uploadIndex = layer.open({
+                skin: 'demo-class',
+                area: (device.ios || device.android) ? ($(window).width() + 'px') : '660px',
+                title:"将此图片加入该相册(同一个人不同的照片)",
+                type: 1,
+                content: $uploadDiv,
+                yes: function(index, layero){
+                    layer.close(index);
+                },
+                cancel: function(index, layero){
+                    layer.close(index)
+                    return false;
+                },
+                end:function () {
+                    $uploadDiv.addClass("layui-hide");
+                }
+            });
+        })
+        form.on('submit(formDemo)', function(data){
+            fly.json("${ctxPath}/beauty/joinImg",data.field,function (result) {
+                layer.msg("上传成功！")
+                layer.close(uploadIndex)
+                $('input[name="imgUrl"]').val('')
+                $('input[name="title"]').val('')
+                $("#carousel").append('<div class="imgs"><img alt="未知" src="'+data.field.imgUrl+'"></div>')
+                carousel.render({
+                    elem: '#album'
+                    ,width: '100%' //设置容器宽度
+                    ,height: '660px' //设置容器宽度
+                    ,arrow: 'always' //始终显示箭头
+                });
+
+            });
+            return false;
+        });
+        $('body').on('click', '.fly-case-active', function(){
+            var othis = $(this), type = othis.data('type');
+            active[type] && active[type].call(this, othis);
+        });
+    })
+</script>
+</html>

@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%include("/common/_head.html"){}%>
+    <title>网址导航 快速找到你想要的网站 -飞趣</title>
+    <style>
+        .upload-form-div {
+            padding: 1rem;
+        }
+
+        .upload-tip {
+            padding: 15px 15px;
+            border-bottom: 1px solid #1b6d85;
+            border-bottom: 1px dotted #E9E9E9;
+        }
+
+        .c-site-list {
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        .c-site-list .site {
+            height: 45px;
+            line-height: 45px;
+            font-size: 16px;
+            color: #15120e;
+            margin: 3px 12px 3px 15px;
+            border-radius: 10px;
+            border-top: 1px solid transparent;
+            outline: 0;
+            position: relative;
+        }
+
+        .c-site-list .site img {
+            width: 20px;
+        }
+
+        .c-panel-body li {
+            display: inline-block;
+            padding: 5px 10px;
+        }
+
+        .c-panel-body li a {
+            color: #fff;
+        }
+        .headline-content {
+            max-width: 650px;
+            margin: 0 auto;
+            padding: 10px;
+        }
+        .search-tab {
+            max-width: 470px;
+            height: 33px;
+            margin: 0 0 20px;
+            display: flex;
+            align-items: center;
+            flex-direction: row;
+            justify-content: space-between;
+            border-bottom: 1px solid #e9e9e9;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .search-form input[type=search] {
+            max-width: 470px;
+            width: 74%;
+            background: #f5f5f5;
+            overflow: hidden;
+            height: 46px;
+            line-height: 26px;
+            font-family: inherit;
+            font-size: inherit;
+            padding: 0 15px;
+            color: #333;
+            border-radius: 0;
+            -webkit-appearance: none;
+            border: 0;
+        }
+        .search-form input[type=submit] {
+            max-width: 130px;
+            width: 26%;
+            height: 46px;
+            font-family: inherit;
+            font-size: inherit;
+            border-radius: 0;
+            -webkit-appearance: none;
+            border: 0;
+            text-transform: uppercase;
+            padding: 0 15px;
+            cursor: pointer;
+            color: #fff;
+            background: #444;
+            -webkit-transition: .2s;
+            transition: .2s;
+            float: right;
+        }
+        .search-tab span{
+            height: 32px;
+            padding: 0 8px;
+            display: inline-block;
+            font-size: 16px;
+            line-height: 1;
+            opacity: .6;
+            color: #444;
+            border-bottom: 2px solid transparent;
+            cursor: pointer;
+            white-space: nowrap;
+            overflow: hidden;
+            -webkit-transition: all .2s ease-in;
+            transition: all .2s ease-in;
+        }
+        .search-tab span.active, .search-tab span:hover {
+            opacity: 1;
+            border-color: #838383;
+        }
+    </style>
+</head>
+<body>
+<%
+var user = c.currentUser(request, servlet.response);
+var isLogin = false;
+if(user != null){
+isLogin=true;
+}
+include("/common/_headwithlogin.html",{user:user,isLogin:isLogin}){}
+%>
+<div class="layui-container topToFix">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md12">
+            <div class="c-panel">
+                <div class="upload-tip">
+                    <div>
+                        <a class="layui-btn showUpload" href="javascript:;">分享一个网站</a>
+                        <a class="layui-btn techWiki" href="/websiteDir/techWiki">技术wiki</a>
+                        <div class="c-position-rt bdsharebuttonbox article-share"><a href="#" class="bds_more"
+                                                                                     data-cmd="more"></a><a href="#"
+                                                                                                            class="bds_qzone"
+                                                                                                            data-cmd="qzone"></a><a
+                                href="#" class="bds_tsina" data-cmd="tsina"></a><a href="#" class="bds_tqq"
+                                                                                   data-cmd="tqq"></a><a href="#"
+                                                                                                         class="bds_renren"
+                                                                                                         data-cmd="renren"></a><a
+                                href="#" class="bds_weixin" data-cmd="weixin"></a></div>
+                        <script>window._bd_share_config = {
+                            "common": {
+                                "bdSnsKey": {},
+                                "bdText": "",
+                                "bdMini": "2",
+                                "bdPic": "",
+                                "bdStyle": "0",
+                                "bdSize": "16"
+                            },
+                            "share": {},
+                            "image": {
+                                "viewList": ["qzone", "tsina", "tqq", "renren", "weixin"],
+                                "viewText": "分享到：",
+                                "viewSize": "16"
+                            },
+                            "selectShare": {
+                                "bdContainerClass": null,
+                                "bdSelectMiniList": ["qzone", "tsina", "tqq", "renren", "weixin"]
+                            }
+                        };
+                        with (document)0[(getElementsByTagName('head')[0] || body).appendChild(createElement('script')).src = 'http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion=' + ~(-new Date() / 36e5)];</script>
+                    </div>
+                </div>
+            </div>
+            <div class="c-panel">
+                <div class="c-panel-body">
+                    <div class="container layui-clear">
+                        <div class="headline-content">
+                            <div class="search-tab"><span class="benzhan">本站</span><span class="baidu">百度</span> <span class="google">谷歌</span>
+                                <span class="bing">必应</span> <span class="image">图片</span> <span class="wiki">百科</span>
+                                <span class="torrent">种子</span> <span class="scholar">学术</span></div>
+                            <form class="search-form" target="_blank" action="/websiteDir"><input
+                                    class="float-left search-keyword" type="search" autocomplete="off" autofocus=""
+                                    name="word" placeholder="搜索你想找的网站" value="${word!}"> <input class="float-right" type="submit"
+                                                                                value="搜索"></form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="c-panel">
+                <div class="c-panel-title">分类</div>
+                <ul class="c-panel-body">
+                    <li><a class="layui-btn layui-btn-warm layui-btn-sm" href="${ctxPath}/websiteDir">全部</a></li>
+                    <%for(var type in types){%>
+                    <li><a class="layui-btn layui-btn-warm layui-btn-sm" href="${ctxPath}/websiteDir?type=${type}">${type}</a>
+                    </li>
+                    <%}%>
+                </ul>
+            </div>
+            <div class="c-panel">
+                <div class="layui-collapse">
+                    <div class="layui-colla-item">
+                        <h2 class="layui-colla-title">未登录热门点击（展示未登录人的最多点击网站）</h2>
+                        <div class="layui-colla-content layui-show">
+                            <ul class="c-site-list">
+                                <%for(var website in commonHotWebs){%>
+                                <li class="site"><a lay-data="${website.id}" class="layui-btn layui-btn-normal toRecord" target="_blank"
+                                                    href="${website.url}"><img src="${website.icon!'http://res.flyfun.site/favicon.ico'}">${website.name}（${website.clickCount!0}）</a></li>
+                                <%}%>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="c-panel">
+                <div class="layui-collapse">
+                    <div class="layui-colla-item">
+                        <h2 class="layui-colla-title">已登录热门点击（展示个人的最多点击网站）</h2>
+                        <div class="layui-colla-content layui-show">
+                            <ul class="c-site-list">
+                                <%for(var website in personalHotWebs){%>
+                                <li class="site"><a lay-data="${website.id}" class="layui-btn layui-btn-normal toRecord" target="_blank"
+                                                    href="${website.url}"><img src="${website.icon!'http://res.flyfun.site/favicon.ico'}">${website.name}（${website.clickCount!0}）</a></li>
+                                <%}%>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="c-panel c-opacity-white-background">
+                <div class="layui-collapse">
+                    <%for(var m in map){%>
+                    <div class="layui-colla-item">
+                        <h2 class="layui-colla-title">${m.key}</h2>
+                        <div class="layui-colla-content layui-show">
+                            <ul class="c-site-list layui-clear">
+                                <%for(var website in m.value){%>
+                                <li class="site">
+                                    <a lay-data="${website.id}" class="layui-btn layui-btn-normal toRecord"
+                                       target="_blank" href="${website.url}">
+                                        <img src="${website.icon!'http://res.flyfun.site/favicon.ico'}">
+                                        ${website.name}
+                                    </a>
+                                </li>
+                                <%}%>
+                            </ul>
+                        </div>
+                    </div>
+                    <%}%>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="upload-id" class="layui-hide">
+    <br>
+    <div class="upload-form-div layui-form">
+        <form action="${ctxPath}/websiteDir/add" method="post">
+            <div class="layui-form-item">
+                <label class="layui-form-label">网站名称</label>
+                <div class="layui-input-block">
+                    <input type="text" name="name" required autofocus placeholder="网站名称" class="layui-input"
+                           maxlength="40">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">网站链接</label>
+                <div class="layui-input-block">
+                    <input type="text" name="url" required lay-verify="url" placeholder="网站链接 比如：https://www.baidu.com"
+                           autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">网站类型</label>
+                <div class="layui-input-block">
+                    <input type="text" name="type" required placeholder="网站类型" autocomplete="off" class="layui-input"
+                           maxlength="40">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">网站图标</label>
+                <div class="layui-input-block">
+                    <input type="text" name="icon" required placeholder="网站图标" autocomplete="off" class="layui-input"
+                           maxlength="100">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-input-block">
+                    <button id="uploadBtn" class="layui-btn" lay-submit lay-filter="formDemo">分享一个网站</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<%include("/common/_footor.html"){}%>
+</body>
+<%include("/common/_scripts.html",{user:user}){}%>
+<script>
+    layui.use(['layer', 'form', 'laypage', 'upload', 'fly'], function () {
+        var layer = layui.layer
+            , form = layui.form
+            , laypage = layui.laypage
+            , upload = layui.upload
+            , fly = layui.fly, device = layui.device;
+        var uploadIndex = 0;
+
+        $('.search-tab span').on('click',function () {
+            var $span = $(this);
+            $span.siblings().removeClass('active')
+            $span.addClass('active');
+            var text = $span.html();
+            if(text === '谷歌'){
+                $('.search-form').attr('action','https://www.google.com/search');
+                $('.search-keyword').attr('placeholder','Google搜索');
+            }else if(text === '百度'){
+                $('.search-form').attr('action','https://www.baidu.com/s');
+                $('.search-keyword').attr('placeholder','百度一下，你就知道');
+            }else if(text === '必应'){
+                $('.search-form').attr('action','https://cn.bing.com/search');
+                $('.search-keyword').attr('placeholder','微软 Bing 搜索');
+            }else if(text === '图片'){
+                $('.search-form').attr('action','https://cn.bing.com/images/search');
+                $('.search-keyword').attr('placeholder','海量图片搜索');
+            }else if(text === '百科'){
+                $('.search-form').attr('action','https://baike.baidu.com/search');
+                $('.search-keyword').attr('placeholder','自由的百科全书');
+            }else if(text === '种子'){
+                $('.search-form').attr('action','https://torrentz2.eu/search');
+                $('.search-keyword').attr('placeholder','磁力链，种子搜索');
+            }else if(text === '学术'){
+                $('.search-form').attr('action','https://xueshu.baidu.com/s');
+                $('.search-keyword').attr('placeholder','中英文文献检索');
+            }else if(text === '本站'){
+                $('.search-form').attr('action','/websiteDir');
+//                $('.search-form').attr('target','_self');
+                $('.search-keyword').attr('placeholder','搜索你想找的网站');
+            }
+        })
+
+        form.on('submit(formDemo)', function (data) {
+            var action = $(data.form).attr('action');
+            fly.json(action, data.field, function (res) {
+                layer.msg("上传成功~")
+                layer.close(uploadIndex)
+                setTimeout(function () {
+                    location.reload()
+                }, 500)
+            })
+            return false;
+        });
+
+        $('.toRecord').on('click', function () {
+            var url = $(this).attr('href');
+            fly.json('/websiteDir/record', {url: url}, function () {
+            })
+        })
+
+        var loadIndex;
+
+        $('.showUpload').on('click', function () {
+            $("#upload-id").removeClass("layui-hide");
+            uploadIndex = layer.open({
+                skin: 'demo-class',
+                area: (device.ios || device.android) ? ($(window).width() + 'px') : '660px',
+                title: "输入网站链接地址",
+                type: 1,
+                content: $('#upload-id'),
+                yes: function (index, layero) {
+                    layer.close(index); //如果设定了yes回调，需进行手工关闭
+                },
+                cancel: function (index, layero) {
+                    layer.close(index)
+                    return false;
+                },
+                end: function () {
+                    $("#upload-id").addClass("layui-hide");
+                }
+            });
+        })
+    });
+</script>
+</html>

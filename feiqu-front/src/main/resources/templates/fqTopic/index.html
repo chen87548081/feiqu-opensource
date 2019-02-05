@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<%include("/common/_head.html"){}%>
+<title>话题广场 -飞趣</title>
+<style>
+    #pagesplit{
+        background-color: #fff;
+    }
+    .see-detail {
+        position: absolute;
+        right: 0;
+    }
+    .hot-article {
+        padding: 1rem 1rem;
+        line-height: 1.7;
+    }
+    .hot-article li{position: relative}
+    .hot-article li a{
+        overflow: hidden;
+        max-width: 80%;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        display: inline-block;
+    }
+    .hot-article li em {
+        position: absolute;
+        right: 0;
+        top: 0;
+        font-size: 12px;
+        color: #999;
+        font-style: normal;
+    }
+    .layui-badge{
+        margin-left: 10px;
+    }
+
+    .a-search {
+        width: 218px;
+        position: relative;
+        float: left;
+        height: 28px;
+        margin: 9px 0 0 10px;
+        background-color: #f2f2f5;
+        border: 1px solid #ccc;
+    }
+    .a-search .layui-input{
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 245px;
+        padding: 4px 33px 4px 10px;
+        height: 28px;
+        line-height: 20px;
+        box-shadow: none;
+        border: none;
+        background-color: transparent;
+        color: #808080;
+        outline-style: none;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+    }
+
+    .news-single {
+        margin: 20px 0;
+        padding: 10px 0;
+        border-bottom: 1px solid #B3CC9C;
+        position: relative;
+        min-height: 200px;
+    }
+    .news-single .news-body{
+        width: 100%;
+        color: #0C0C0C !important;
+    }
+    .news-single .news-body time{
+        position: absolute;
+        bottom: 0;
+        font-size: 16px;
+    }
+</style>
+</head>
+<body>
+<%
+var user = c.currentUser(request, servlet.response);
+var isLogin = false;
+if(user != null){
+isLogin=true;
+}
+include("/common/_headwithlogin.html",{user:user,isLogin:isLogin}){}
+%>
+<div class="layui-container topToFix">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md8">
+            <div class="c-panel">
+                <div class="c-panel-title">
+                    <span class="title-first">讨论话题</span>
+                </div>
+                <div class="c-panel-body">
+                    <%for(var topic in fqTopics){%>
+                    <div class="news-single">
+                        <a href="/fqTopic/detail/${topic.id}" target="_blank">
+                            <div class="news-body">
+                                <h2>${topic.title}</h2>
+                                <time>来自${topic.type}</time>
+                            </div>
+                        </a>
+                    </div>
+                    <%}%>
+                </div>
+
+                <div id="pagesplit">
+                </div>
+            </div>
+        </div>
+        <div class="layui-col-md4">
+            <div class="c-panel">
+                <div class="c-panel-title">标签</div>
+                <div class="hot-article">
+                    <%for(var label in labels){%>
+                    <a href="${ctxPath}/fqTopic?type=${label.name}">
+                        <span class="layui-badge layui-bg-orange">${label.name}</span></a>
+                    <%}%>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<%include("/common/_footor.html"){}%>
+</body>
+<%include("/common/_scripts.html",{user:user}){}%>
+<script>
+    layui.use(['layer', 'laypage','fly'], function(){
+        var layer = layui.layer
+            ,laypage=layui.laypage
+            ,fly=layui.fly;
+        laypage.render({
+            elem: 'pagesplit'
+            ,curr:${pageIndex}
+            ,count: ${count}
+            , limit:${pageSize}
+            ,layout: ['count', 'prev', 'page', 'next', 'skip']
+            ,jump: function(obj,first){
+                if(!first){
+                    location.href = "${ctxPath}/fqTopic?pageIndex="+obj.curr+"&type=${type!''}"
+                }
+            }
+        });
+    });
+</script>
+</html>

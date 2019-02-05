@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%include("/common/_head.html"){}%>
+    <title>交流与吐槽 -飞趣</title>
+    <style type="text/css">
+        .fq-rich-poster-container {
+            margin: 0 auto;
+            padding: 20px 0 0;
+            text-align: left;
+        }
+        .fq-rich-poster-container .fq-rich-poster{
+            position: relative;
+            margin:0 20px;
+        }
+        .poster-body .poster-title{
+            padding-bottom: 10px;
+
+        }
+        .poster-body .poster-content{
+            padding-bottom: 10px;
+        }
+        .poster-body .poster-submit{
+            padding-bottom: 20px;
+        }
+        .poster-tip{
+            padding-bottom: 10px;
+        }
+
+        .up-block {
+            padding-bottom: 10px;
+        }
+        .up-block h2{
+            display: inline-block;
+        }
+        .up-block .title-href{
+            color: #2d64b3;
+        }
+        .up-block .author-info{
+             width: 160px;
+             float: right;
+             color: #999;
+         }
+        .up-block .author-info .time{
+            float: right;
+        }
+        .down-block{
+            color: #666;
+            line-height: 24px;
+            font-size: 14px;
+            word-wrap: break-word;
+        }
+        .down-block img{
+            /*margin-top: 8px;*/
+            max-width: 500px;
+        }
+
+        .reply-block {
+            position: absolute;
+            left: 15px;
+            top:15px;
+        }
+        .reply-block .comment-num{
+            display: inline-block;
+            width: 50px;
+            height: 30px;
+            line-height: 26px;
+            margin-right: 20px;
+            text-align: center;
+            background: url(//tb2.bdstatic.com/tb/img/f_reply_bg_89030dc.png) no-repeat;
+        }
+        .layui-textarea{
+            min-height: 15rem;
+        }
+    </style>
+</head>
+<body>
+<%
+var user = c.currentUser(request, servlet.response);
+var isLogin = false;
+if(user != null){
+isLogin=true;
+}
+include("/common/_headwithlogin.html",{user:user,isLogin:isLogin}){}
+%>
+<div class="layui-container topToFix">
+    <div class="layui-row layui-col-space15">
+        <p><a class="layui-btn tucaoBtn" href="javascript:void(0);">分享你的新鲜事</a></p>
+        <div class="layui-col-md10">
+            <div class="c-panel">
+                <!--<div class="c-panel-title">
+                    <span class="title-first">排序规则</span>
+                    <span class="c-mid"></span>
+                    <a href="${ctxPath}/superGorderrder=time">时间</a>
+                    <span class="c-mid"></span>
+                    <a href="${ctxPath}/superGorderrder=zan">点赞数</a>
+                    <span class="c-mid"></span>
+                    <a href="${ctxPath}/superGorderrder=comment">评论数</a>
+                </div>-->
+
+                <div class="c-panel">
+                    <ul class="c-list">
+                        <%for(var j in jobTalkList){%>
+                        <li><div class="reply-block"><span title="回复" class="comment-num">${j.commentCount!0}</span></div>
+                            <div class="up-block">
+                                <h2><a title="${j.title}" class="title-href" href="${ctxPath}/job/detail/${j.id}"> ${j.title}</a></h2>
+                                <div class="author-info"><span><a href="${ctxPath}/u/${j.userId}/peopleIndex"> ${j.nickname}</a></span> <span class="time">${printTime(j.createTime)} </span></div>
+                            </div>
+                            <div class="down-block">${j.content}</div>
+                        </li>
+                        <%}%>
+                    </ul>
+                </div>
+
+                <div id="pagesplit">
+
+                </div>
+
+                <div class="fq-rich-poster-container">
+                    <div class="fq-rich-poster">
+                        <div class="poster-tip"><i class="layui-icon">&#xe642;</i>发表新帖</div>
+                        <div class="poster-body">
+                            <form class="layui-form">
+                            <div class="poster-title">
+                                <input class="layui-input" type="text" name="title" placeholder="请填写标题">
+                                <input type="hidden" name="userId" value="${user.id!0}">
+                            </div>
+                            <div class="poster-content">
+                                <textarea  name="content" class="layui-textarea fly-editor" placeholder="吐个槽或是分享下周围的新鲜事~"></textarea>
+                            </div>
+                            <div class="poster-submit">
+                                <button lay-submit lay-filter="jobform" id="poster-btn" class="layui-btn">发表</button>
+                            </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<%include("/common/_footor.html"){}%>
+</body>
+<%include("/common/_scripts.html",{user:user}){}%>
+<script>
+    $(function () {
+        $(".tucaoBtn").click(function () {
+            $('html,body').animate({scrollTop:$(".fq-rich-poster-container").offset().top}, 800);
+            $("input[name='title']").focus()
+        })
+    })
+    layui.use(['layer', 'form','laypage','fly'], function(){
+        var layer = layui.layer
+            ,form = layui.form
+            ,laypage=layui.laypage
+            ,fly=layui.fly;
+
+        form.on('submit(jobform)', function(data){
+            if(!data.field.title || data.field.title.trim() == ''){
+                layer.msg('标题不能为空')
+                return false
+            }
+            if(data.field.title.trim().length > 50){
+                layer.msg('标题长度不能超过50个字符')
+                return false
+            }
+            if(!data.field.content || data.field.content.trim() == ''){
+                layer.msg('内容不能为空')
+                return false
+            }
+            console.log(data)
+            data.field.content = fly.content(data.field.content)
+            console.log(data.field.content)
+            $.ajax({
+                url:'${ctxPath}/job/postTalk',
+                type:'post',
+                data:JSON.stringify(data.field),
+                contentType:'application/json',
+                dataType:'json',
+                success:function (result) {
+                    console.log(result)
+                    if(result.code == '0000'){
+                        layer.msg("吐槽成功")
+                        location.reload()
+                    }else {
+                        layer.msg(result.message||"吐槽失败")
+                    }
+                }
+            });
+            return false
+        });
+
+        laypage.render({
+            elem: 'pagesplit'
+            ,curr:${pageIndex}
+            ,count: ${count}
+            ,limit:20
+            ,layout: ['count', 'prev', 'page', 'next', 'skip']
+            ,jump: function(obj,first){
+                if(!first){
+                    location.href = "${ctxPath}/job?pageIndex="+obj.curr+"&pageSize="+obj.limit
+                }
+            }
+        });
+    });
+</script>
+</html>

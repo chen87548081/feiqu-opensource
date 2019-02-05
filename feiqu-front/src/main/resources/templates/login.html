@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%include("/common/_head.html"){}%>
+    <title>登录 -飞趣</title>
+    <style>
+        .nav-ul li {
+            padding: 0 1.5rem;
+        }
+
+        .layui-form {
+            margin: 20px 0 0 10px;
+        }
+
+        .layui-input-block input {
+            width: 20rem;
+        }
+
+        .aside {
+            padding-top: 3rem;
+        }
+
+        .aside a {
+            color: #1E9FFF;
+        }
+
+        .fly-form-app {
+            margin-top: 30px;
+        }
+
+        .fly-form-app .icon-qq {
+            color: #7CA9C9;
+        }
+
+        .fly-form-app .icon-weibo {
+            color: #E6162D;
+        }
+
+        .login-btn {
+            margin-left: 8rem;
+        }
+    </style>
+</head>
+<body>
+<%
+var user = c.currentUser(request, servlet.response);
+var isLogin = false;
+if(user != null){
+isLogin=true;
+}
+include("/common/_headwithlogin.html",{user:user,isLogin:isLogin}){}
+%>
+<div class="layui-container topToFix">
+    <div class="layui-row c-panel">
+        <div class="layui-md layui-col-md6 ">
+            <form class="layui-form" action="${ctxPath}/u/login" method="post">
+                <div class="layui-form-item">
+                    <label class="layui-form-label">邮箱</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="username" required lay-verify="required" placeholder="请输入邮箱"
+                               autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">密码</label>
+                    <div class="layui-input-block">
+                        <input type="password" name="password" required lay-verify="required" placeholder="请输入密码"
+                               autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">验证码</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="verifyCode" required  lay-verify="required" placeholder="请输入验证码" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-input-block"><img id="captchaImg" src="${ctxPath}/captcha"/></div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">记住我</label>
+                    <div class="layui-input-block">
+                        <input type="checkbox" name="remember" lay-skin="switch">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <button class="layui-btn login-btn" lay-submit lay-filter="formDemo">登录</button>
+                    <span style="padding-left:20px;"> <a href="/u/forget">忘记密码？</a> </span>
+                </div>
+                <div class="layui-form-item fly-form-app"><label class="layui-form-label"></label>
+                    <div class="layui-input-block">
+                        <span>或者使用社交账号登入</span> <a href="${ctxPath}/sns?t=qq"
+                                                   onclick="layer.msg('正在通过QQ登入', {icon:16, shade: 0.1, time:0})"
+                                                   class="iconfont icon-qq" title="QQ登入"></a> <a
+                            href="${ctxPath}/sns?t=sina" onclick="layer.msg('正在通过微博登入', {icon:16, shade: 0.1, time:0})"
+                            class="iconfont icon-weibo" title="微博登入"></a>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="layui-col-md4 layui-col-md-offset2">
+            <div class="aside">
+                <p>还没有飞趣账号？<a href="${ctxPath}/u/register">立即注册</a></p>
+            </div>
+        </div>
+    </div>
+</div>
+<%include("/common/_footor.html"){}%>
+</body>
+<%include("/common/_scripts.html"){}%>
+<script>
+    layui.use(['form', 'fly'], function () {
+        var form = layui.form, fly = layui.fly;
+        form.on('submit(formDemo)', function (data) {
+            var action = $(data.form).attr('action');
+            data.field.redirectSuccessUrl = "${redirectSuccessUrl!''}";
+            fly.json(action,data.field,function (result) {
+                layer.msg("登录成功！", {icon: 6})
+                if (result.data) {
+                    location.href = result.data
+                } else {
+                    location.href = "${DOMAIN_URL}/"
+                }
+            })
+            return false;
+        });
+        $("#captchaImg").click(function () {
+            var time = new Date().getTime()
+            $(this).attr('src','${ctxPath}/captcha?time='+time)
+        })
+    });
+</script>
+</html>

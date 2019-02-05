@@ -1,0 +1,135 @@
+package com.feiqu.web.controller;
+
+
+import com.feiqu.system.service.${model}Service;
+import com.feiqu.system.model.${model};
+import com.feiqu.system.model.${model}Example;
+import com.feiqu.framwork.web.base.BaseController;
+import com.feiqu.common.base.BaseResult;
+import com.feiqu.common.enums.ResultEnum;
+import com.feiqu.common.enums.YesNoEnum;
+import com.feiqu.system.model.FqUser;
+import com.feiqu.system.pojo.cache.FqUserCache;
+import com.feiqu.system.pojo.response.FollowUserResponse;
+import com.feiqu.framwork.util.WebUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.Date;
+import java.util.List;
+import javax.annotation.Resource;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
+
+
+
+
+/**
+* ${model}controller
+* Created by cwd on ${ctime}.
+*/
+@Controller
+@RequestMapping("/${mapper}")
+public class ${model}Controller extends BaseController {
+
+private static Logger logger = LoggerFactory.getLogger(${model}Controller.class);
+
+@Resource
+private ${model}Service ${mapper}Service;
+
+/**
+* 跳转到${model}首页
+*/
+@RequestMapping("")
+public String index() {
+return "/${mapper}/index.html";
+}
+
+/**
+* 添加${model}页面
+*/
+@RequestMapping("/${mapper}_add")
+public String ${mapper}_add() {
+return "/${mapper}/add.html";
+}
+
+/**
+* ajax删除${model}
+*/
+@ResponseBody
+@RequestMapping("/delete")
+public Object delete(@RequestParam Long id) {
+BaseResult result = new BaseResult();
+    try{
+        ${mapper}Service.deleteByPrimaryKey(id);
+    } catch (Exception e) {
+        logger.error("error", e);
+        result.setCode("1");
+    }
+return result;
+}
+
+/**
+* 更新${model}页面
+*/
+@RequestMapping("/edit/{${mapper}Id}")
+public Object ${mapper}Edit(@PathVariable Long ${mapper}Id, Model model) {
+    ${model} ${mapper} = ${mapper}Service.selectByPrimaryKey(${mapper}Id);
+    model.addAttribute("${mapper}",${mapper});
+    return "/${mapper}/edit.html";
+}
+
+/**
+* ajax更新${model}
+*/
+@ResponseBody
+@PostMapping("/save")
+public Object save(${model} ${mapper}) {
+BaseResult result = new BaseResult();
+    try{
+        FqUserCache fqUserCache = getCurrentUser();
+        if(fqUserCache == null){
+        result.setResult(ResultEnum.USER_NOT_LOGIN);
+        return result;
+        }
+        if(${mapper}.getId() == null){
+        ${mapper}Service.insert(${mapper});
+        }else{
+        ${mapper}Service.updateByPrimaryKeySelective(${mapper});
+        }
+    } catch (Exception e) {
+    logger.error("error", e);
+    result.setCode("1");
+    }
+    return result;
+}
+
+
+/**
+* 查询${model}首页
+*/
+@RequestMapping("list")
+@ResponseBody
+public Object list(@RequestParam(defaultValue = "0") Integer index,
+@RequestParam(defaultValue = "10") Integer size) {
+    BaseResult result = new BaseResult();
+    try{
+        PageHelper.startPage(index, size);
+        ${model}Example example = new ${model}Example();
+        example.setOrderByClause("create_time desc");
+        List<${model}> list = ${mapper}Service.selectByExample(example);
+        PageInfo page = new PageInfo(list);
+        result.setData(page);
+    } catch (Exception e) {
+        logger.error("error", e);
+        result.setCode("1");
+    }
+    return result;
+}
+}

@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%include("/common/_head.html"){}%>
+    <title>${fqNews.title} -飞趣</title>
+    <meta name="description" content="${fqNews.title}">
+    <style>
+        .art-item{position:relative;}
+        .card{border-radius:2px;-webkit-box-shadow:0 1px 3px rgba(0,0,0,.1);box-shadow:0 1px 3px rgba(0,0,0,.1);-webkit-box-sizing:border-box;box-sizing:border-box}
+        .user-info{display:-webkit-box;display:-ms-flexbox;display:flex;margin:auto 0;flex-direction:column;}
+        .user-info a{padding-right:10px;font-size:14px}
+        .art-detail img{max-width:100%;}
+        .comment-detail{padding:0 0 0 55px;background:none;position:relative;line-height:20px;font-size:13px;color:#999}
+        .comment-detail .fly-avatar{left:0;top:0}
+        .comment-detail-user{white-space:nowrap;overflow:hidden}
+        .comment-body{margin:25px 0 20px;min-height:0;line-height:24px;font-size:14px}
+        .comment-body a{color:#4f99cf;text-decoration:none;transition:all .5s}
+        .detail-time{left:0;bottom:0;position:relative;top:5px;line-height:20px}
+        .detail-time span{height:20px;line-height:20px}
+        .comment-list{margin-bottom:30px}
+        .comment-list li{position:relative;padding:20px 0 10px;border-bottom:1px dotted #DFDFDF}
+        .art-wrap,.art-detail{padding:50px 0 0 5%;background:#fff;border-radius:20px;text-align:justify;min-height:500px}
+        .art-wrap{position:relative;margin-left:1rem;margin-top:35px;width:80%;filter:drop-shadow(0px 0px 15px #bbb)}
+        .art-detail{padding:0 10% 40px 0;width:100%;line-height:26px;font-size:16px}
+        .art-wrap:before{content:'';display:block;position:absolute;right:-60px;top:0;width:60px;height:50px;background:linear-gradient(42deg,#ddd 30%,rgba(0,0,0,0) 40%)}
+        .detail-box p{line-height:2rem}
+        .detail-hits .collect-btn{padding:0 10px}
+        .art-content{color:#262626;word-wrap: break-word;}
+        .art-content a{color:#01AAED}
+        .article-share {
+            position: absolute;
+            bottom: 10px;
+            right: 0;
+        }
+
+        .c-detail-title {
+            margin: 0 50px
+        }
+    </style>
+</head>
+<body>
+<%
+var user = c.currentUser(request, servlet.response);
+var isLogin = false;
+if(user != null){
+isLogin=true;
+}
+include("/common/_headwithlogin.html",{user:user,isLogin:isLogin}){}
+%>
+<div class="layui-container topToFix">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md8">
+            <div class="c-panel">
+                <div class="art-item card detail-about c-panel-body">
+                    <h2 class="c-detail-title c-text-center"> ${fqNews.title}</h2>
+                    <a class="c-position-rt comment-dir" href="javascript:goComment()">评论走起</a>
+                    <div class="user-info">
+                        <div class="detail-hits" id="article_admin" data-id="${fqNews.id}">
+                        </div>
+                    </div>
+                    <div class="art-wrap">
+                        <div class="art-detail">
+                            <div class="art-content">${fqNews.content}</div>
+                                <div class="bdsharebuttonbox article-share"><a href="#" class="bds_more" data-cmd="more"></a><a href="#" class="bds_qzone" data-cmd="qzone"></a><a href="#" class="bds_tsina" data-cmd="tsina"></a><a href="#" class="bds_tqq" data-cmd="tqq"></a><a href="#" class="bds_renren" data-cmd="renren"></a><a href="#" class="bds_weixin" data-cmd="weixin"></a></div>
+                            <script>window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdPic":"","bdStyle":"0","bdSize":"16"},"share":{},"image":{"viewList":["qzone","tsina","tqq","renren","weixin"],"viewText":"分享到：","viewSize":"16"},"selectShare":{"bdContainerClass":null,"bdSelectMiniList":["qzone","tsina","tqq","renren","weixin"]}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];</script>
+                        </div>
+                    </div>
+                </div>
+                <div id="pagesplit">
+                </div>
+            </div>
+            <div class="c-panel detail-box">
+                <fieldset class="layui-elem-field layui-field-title" style="text-align: center;">
+                    <legend>评论</legend>
+                </fieldset>
+                <ul class="comment-list">
+                    <%for(var comment in commentList){%>
+                    <li data-id="${comment.id}">
+                        <div class="comment-detail">
+                            <a class="fly-avatar" href="${ctxPath}/u/${comment.postUserId}/peopleIndex">
+                                <img src="${comment.postIcon}"/>
+                            </a>
+                            <div class="comment-detail-user">
+                                <a class="c-fly-link" href="${ctxPath}/u/${comment.postUserId}/peopleIndex">
+                                    <cite>${comment.postNickname}</cite></a>
+                            </div>
+                            <div class="detail-time"><span>${printTime(comment.createTime)}</span></div>
+                        </div>
+                        <div class="comment-body ql-editor">${comment.content}</div>
+                        <div class="c-reply">
+                            <span type="zan" class="zan"><i class="iconfont icon-zan"></i><em>${comment.likeCount}</em></span>
+                            <span type="reply" class="reply-comment"><i class="iconfont icon-svgmoban53"></i>回复</span>
+                            <%if(isLogin && comment.postUserId == user.id){ %>
+                            <span type="del" class="reply-comment"><i class="iconfont"></i>删除</span>
+                            <%}%>
+                        </div>
+                    </li>
+                    <%}%>
+                </ul>
+                <div class="layui-form-item layui-form-text"><a name="comment"></a>
+                </div>
+                <div class="layui-form layui-form-pane">
+                    <form action="${ctxPath}/fqNews/comment">
+                        <div class="layui-form-item">
+                            <input type="hidden" name="postUserId" value="${user.id!0}">
+                            <input type="hidden" name="topicId" value="${fqNews.id}">
+                            <textarea class="layui-textarea fly-editor" name="content" ></textarea>
+                        </div>
+                        <div class="layui-form-item"><button class="layui-btn" lay-filter="cform" lay-submit>提交回复</button></div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="layui-col-md4">
+            <div class="c-panel" style="min-height: 5rem">
+                <div class="c-panel-title">来自${fqNews.source}的其他新闻</div>
+                <div class="right-nav detail-box">
+                    <%if(isEmpty(sameSource)){%>
+                    <p>暂无其他新闻</p>
+                    <%}else{%>
+                    <ul>
+                        <%for(var news in sameSource){%>
+                        <li><a title="${news.title}" href="${ctxPath}/fqNews/detail/${news.id}">${news.title}</a></li>
+                        <%}%>
+                    </ul>
+                    <%}%>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<%include("/common/_footor.html"){}%>
+</body>
+<%include("/common/_scripts.html",{user:user}){}%>
+<script>
+    layui.use(['layer', 'form', 'fly','face'], function () {
+        var layer = layui.layer
+            , form = layui.form
+            , fly = layui.fly,face = layui.face,gather={},editor = $('.fly-editor');
+
+        form.on('submit(cform)', function(data){
+            sessionStorage.setItem("commentContent",data.field.content);
+            fly.json('/fqNews/comment',data.field,function (result) {
+                layer.msg("评论成功~");
+                var newCom = result.data;
+                var liNew = '<li><div class="comment-detail detail-about">'+
+                    '<a class="fly-avatar" href="/u/'+layui.cache.user.userId+'/peopleIndex">'+
+                    '<img src="'+layui.cache.user.icon+'">'+
+                    '</a>'+
+                    '<div class="comment-detail-user"><a class="c-fly-link" href="/u/'+layui.cache.user.userId+'/peopleIndex">'+layui.cache.user.username+'</a>'+
+                    '</div>'+
+                    ' <div class="detail-time"><span>刚刚</span></div></div>' +
+                    '<div class="comment-body">'+fly.content(newCom.content)+'</div>' +
+                    '</li>';
+                $(".comment-list").append(liNew)
+                editor.val('')
+            })
+            return false;
+        });
+
+        gather.articleAdmin={
+            like:function (li) {
+                var othis = $(this), ok = othis.hasClass('zanok');
+                fly.json('/comment/like', {
+                    ok: ok
+                    ,commentId: li.data('id')
+                }, function(res){
+                    if(res.status === 0){
+                        var zans = othis.find('em').html()|0;
+                        othis[ok ? 'removeClass' : 'addClass']('zanok');
+                        othis.find('em').html(ok ? (--zans) : (++zans));
+                    } else {
+                        layer.msg(res.msg);
+                    }
+                });
+            }
+        }
+
+        gather.jiedaActive = {
+            zan: function(li){ //赞
+                var othis = $(this), ok = othis.hasClass('zanok');
+                fly.json('/comment/like', {
+                    commentId: li.data('id')
+                }, function(res){
+                    var zans = othis.find('em').html()|0;
+                    othis[ok ? 'removeClass' : 'addClass']('zanok');
+                    othis.find('em').html(ok ? (--zans) : (++zans));
+                });
+            }
+            ,reply: function(li){ //回复
+                var val = editor.val();
+                var aite = '@'+ li.find('.comment-detail-user cite').text().replace(/\s/g, '');
+                editor.focus()
+                if(val.indexOf(aite) !== -1) return;
+                editor.val(aite +' ' + val);
+            }
+            ,del: function(li){ //删除
+                layer.confirm('确认删除该回复么？', function(index){
+                    layer.close(index);
+                    fly.json('/comment/delete', {
+                        id: li.data('id')
+                    }, function(res){
+                        li.fadeOut(1000);
+                    });
+                });
+            }
+        };
+
+        $('.c-reply span').on('click', function(){
+            var othis = $(this), type = othis.attr('type');
+            gather.jiedaActive[type].call(this, othis.parents('li'));
+        });
+
+
+        $('.comment-dir').on('click',function () {
+            $('html,body').animate({scrollTop:$('.fly-editor').offset().top}, 800);
+            editor.focus()
+        })
+
+
+        $('.comment-body').each(function(){
+            var othis = $(this), html = othis.html();
+            othis.html(fly.content(html));
+        });
+    })
+</script>
+</html>

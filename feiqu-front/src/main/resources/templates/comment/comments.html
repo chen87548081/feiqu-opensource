@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%include("/common/_head.html"){}%>
+    <title>我的回复 -飞趣</title>
+    <style>
+        .c-list-info{position:relative;overflow:hidden;font-size:13px;line-height:2}
+        .detail-body{min-height:0;margin-top:0;line-height:24px;font-size:14px}
+        .c-reply-block{-webkit-box-shadow:0 1px 3px 0 rgba(0,33,77,.05);box-shadow:0 1px 3px 0 rgba(0,33,77,.05);margin-top:12px;overflow:visible;border-radius:4px}
+        .reply-input{padding:5px 12px !important;position:relative}
+        .reply-input input{width:80%;background:none}
+        .reply-input button{position:absolute;right:10px;top:5px}
+        .comments span{padding-right:0}
+        .c-signin cite{padding:0 5px;color:#FF5722;font-style:normal}
+        .detail-about .fly-avatar{left:0;top:0}
+        .t-intro{display:inline-block;vertical-align:top;height:21px;letter-spacing:3.8px;color:#1b7fb6}
+        .left-block{padding:10px}
+        .left-block a{font-size:14px;font-weight:bold;padding:0 0 0 15px;height:34px;line-height:34px}
+        .home-nav{position:absolute;left:0;top:7px;z-index:1000;height:100%;padding:10px 0;background-color:#82b9dc;width:200px;border-radius:2px}
+        @media screen and (max-width:768px){.home-nav{left:-300px;transition:all .3s;-webkit-transition:all .3s}
+            .site-mobile .home-nav{left:0}
+            .home-all .home-main{margin-left:0}
+        }.left-nav{border-color:rgba(255,255,255,0.2)}
+        #pagesplit-head .layui-laypage{margin:0}
+        .site-mobile .c-user-main>.layui-nav{left:0}
+        .home-main{margin-left:200px}
+        .reply-input span{position:absolute;right:22%;cursor:pointer;padding:0 10px;line-height:38px;color:#ffa405}
+        .del-t{position: absolute;right: 0;}
+        .c-list2{min-height: 300px;}
+    </style>
+</head>
+<body>
+<%
+var user = c.currentUser(request, servlet.response);
+var isLogin = false;
+if(user != null){
+isLogin=true;
+}
+include("/common/_headwithlogin.html",{user:user,isLogin:isLogin}){}
+%>
+<div class="layui-container layui-clear topToFix home-all">
+    <%include("/common/_home_nav.html",{user:user}){}%>
+    <div class="home-main layui-row layui-col-space15">
+        <div class="layui-col-md12">
+            <div class="c-panel">
+                <div class="c-panel-body">
+                    <div class="layui-tab" lay-filter="comment">
+                        <ul class="layui-tab-title">
+                            <li class="layui-this" lay-id="1" >想法</li>
+                            <li lay-id="2">文章</li>
+                        </ul>
+                        <div class="layui-tab-content">
+                            <div class="layui-tab-item layui-show">
+                                <div class="comments">
+                                    <ul class="c-answer">
+
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="layui-tab-item">暂不支持</div>
+                        </div>
+                    </div>
+                </div>
+                <div id="pagesplit">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="site-tree-mobile layui-hide"><i class="layui-icon">&#xe602;</i></div>
+<div class="site-mobile-shade"></div>
+<%include("/common/_footor.html"){}%>
+</body>
+<script src="/js/twemoji.min.js?2.4"></script>
+<%include("/common/_scripts.html",{user:user}){}%>
+<script>
+    layui.cache.page = 'thoughts'
+    layui.cache.pageInfo = {curr:1}
+    layui.use(['layer','fly','face','element','laypage'], function () {
+        var layer = layui.layer, fly = layui.fly, face = layui.face,element=layui.element,laypage=layui.laypage,page=1;
+        element.on('tab(comment)', function(){
+            var topicType = this.getAttribute('lay-id');
+//            location.hash = 'test1='+ this.getAttribute('lay-id');
+            fly.json('/comment/my/'+page,{
+             userId:layui.cache.user.userId,
+                topicType:topicType
+            },function (res) {
+                pageRender(res.data,topicType);
+            })
+        });
+        element.tabChange('comment', 1);
+        function pageRender(data,topicType) {
+            laypage.render({
+                elem: 'pagesplit'
+                , curr:data.pageNum
+                , limit:data.pageSize
+                , count: data.total
+                , layout: ['count', 'prev', 'page', 'next']
+                , jump: function (obj, first) {
+                    if (!first) {
+                        fly.json('/comment/my/'+obj.curr,{
+                            userId:layui.cache.user.userId,
+                            topicType:topicType
+                        },function (res) {
+                            pageRender(res.data);
+                        })
+                    }else {
+                        var str = ''
+                        $.each(data.list,function (index,item) {
+                            str+='<li><p> <span>'+item.createTime+'</span> 在' +
+                                '<a href="/thought/'+item.thoughtId+'" target="_blank">'+twemoji.parse(fly.content(item.thoughtContent))+'</a>中回复： </p>' +
+                                '<div class="c-answer-content"> '+twemoji.parse(fly.content(item.content))+'</div></li>';
+                        })
+                        $(".c-answer").html(str)
+                    }
+                }
+            });
+        }
+    })
+</script>
+</html>

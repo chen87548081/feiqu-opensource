@@ -1,0 +1,590 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.feiqu.system.mapper.ApiDocInterfaceMapper">
+  <resultMap id="BaseResultMap" type="com.feiqu.system.model.ApiDocInterface">
+    <id column="ID" jdbcType="BIGINT" property="id" />
+    <result column="url" jdbcType="VARCHAR" property="url" />
+    <result column="method" jdbcType="VARCHAR" property="method" />
+    <result column="status" jdbcType="TINYINT" property="status" />
+    <result column="moduleId" jdbcType="BIGINT" property="moduleid" />
+    <result column="interfaceName" jdbcType="VARCHAR" property="interfacename" />
+    <result column="updateBy" jdbcType="VARCHAR" property="updateby" />
+    <result column="updateTime" jdbcType="TIMESTAMP" property="updatetime" />
+    <result column="createTime" jdbcType="TIMESTAMP" property="createtime" />
+    <result column="version" jdbcType="VARCHAR" property="version" />
+    <result column="sequence" jdbcType="INTEGER" property="sequence" />
+    <result column="fullUrl" jdbcType="VARCHAR" property="fullurl" />
+    <result column="isTemplate" jdbcType="BIT" property="istemplate" />
+    <result column="projectId" jdbcType="BIGINT" property="projectid" />
+    <result column="contentType" jdbcType="VARCHAR" property="contenttype" />
+  </resultMap>
+  <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.feiqu.system.model.ApiDocInterface">
+    <result column="param" jdbcType="LONGVARCHAR" property="param" />
+    <result column="paramRemark" jdbcType="LONGVARCHAR" property="paramremark" />
+    <result column="requestExam" jdbcType="LONGVARCHAR" property="requestexam" />
+    <result column="responseParam" jdbcType="LONGVARCHAR" property="responseparam" />
+    <result column="errorList" jdbcType="LONGVARCHAR" property="errorlist" />
+    <result column="trueExam" jdbcType="LONGVARCHAR" property="trueexam" />
+    <result column="falseExam" jdbcType="LONGVARCHAR" property="falseexam" />
+    <result column="remark" jdbcType="LONGVARCHAR" property="remark" />
+    <result column="errors" jdbcType="LONGVARCHAR" property="errors" />
+    <result column="header" jdbcType="LONGVARCHAR" property="header" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    ID, url, method, status, moduleId, interfaceName, updateBy, updateTime, createTime, 
+    version, sequence, fullUrl, isTemplate, projectId, contentType
+  </sql>
+  <sql id="Blob_Column_List">
+    param, paramRemark, requestExam, responseParam, errorList, trueExam, falseExam, remark, 
+    errors, header
+  </sql>
+  <select id="selectByExampleWithBLOBs" parameterType="com.feiqu.system.model.ApiDocInterfaceExample" resultMap="ResultMapWithBLOBs">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from api_doc_interface
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByExample" parameterType="com.feiqu.system.model.ApiDocInterfaceExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from api_doc_interface
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="ResultMapWithBLOBs">
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from api_doc_interface
+    where ID = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from api_doc_interface
+    where ID = #{id,jdbcType=BIGINT}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.feiqu.system.model.ApiDocInterfaceExample">
+    delete from api_doc_interface
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.feiqu.system.model.ApiDocInterface">
+    insert into api_doc_interface (ID, url, method, 
+      status, moduleId, interfaceName, 
+      updateBy, updateTime, createTime, 
+      version, sequence, fullUrl, 
+      isTemplate, projectId, contentType, 
+      param, paramRemark, requestExam, 
+      responseParam, errorList, trueExam, 
+      falseExam, remark, errors, 
+      header)
+    values (#{id,jdbcType=BIGINT}, #{url,jdbcType=VARCHAR}, #{method,jdbcType=VARCHAR}, 
+      #{status,jdbcType=TINYINT}, #{moduleid,jdbcType=BIGINT}, #{interfacename,jdbcType=VARCHAR}, 
+      #{updateby,jdbcType=VARCHAR}, #{updatetime,jdbcType=TIMESTAMP}, #{createtime,jdbcType=TIMESTAMP}, 
+      #{version,jdbcType=VARCHAR}, #{sequence,jdbcType=INTEGER}, #{fullurl,jdbcType=VARCHAR}, 
+      #{istemplate,jdbcType=BIT}, #{projectid,jdbcType=BIGINT}, #{contenttype,jdbcType=VARCHAR}, 
+      #{param,jdbcType=LONGVARCHAR}, #{paramremark,jdbcType=LONGVARCHAR}, #{requestexam,jdbcType=LONGVARCHAR}, 
+      #{responseparam,jdbcType=LONGVARCHAR}, #{errorlist,jdbcType=LONGVARCHAR}, #{trueexam,jdbcType=LONGVARCHAR}, 
+      #{falseexam,jdbcType=LONGVARCHAR}, #{remark,jdbcType=LONGVARCHAR}, #{errors,jdbcType=LONGVARCHAR}, 
+      #{header,jdbcType=LONGVARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.feiqu.system.model.ApiDocInterface">
+    insert into api_doc_interface
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        ID,
+      </if>
+      <if test="url != null">
+        url,
+      </if>
+      <if test="method != null">
+        method,
+      </if>
+      <if test="status != null">
+        status,
+      </if>
+      <if test="moduleid != null">
+        moduleId,
+      </if>
+      <if test="interfacename != null">
+        interfaceName,
+      </if>
+      <if test="updateby != null">
+        updateBy,
+      </if>
+      <if test="updatetime != null">
+        updateTime,
+      </if>
+      <if test="createtime != null">
+        createTime,
+      </if>
+      <if test="version != null">
+        version,
+      </if>
+      <if test="sequence != null">
+        sequence,
+      </if>
+      <if test="fullurl != null">
+        fullUrl,
+      </if>
+      <if test="istemplate != null">
+        isTemplate,
+      </if>
+      <if test="projectid != null">
+        projectId,
+      </if>
+      <if test="contenttype != null">
+        contentType,
+      </if>
+      <if test="param != null">
+        param,
+      </if>
+      <if test="paramremark != null">
+        paramRemark,
+      </if>
+      <if test="requestexam != null">
+        requestExam,
+      </if>
+      <if test="responseparam != null">
+        responseParam,
+      </if>
+      <if test="errorlist != null">
+        errorList,
+      </if>
+      <if test="trueexam != null">
+        trueExam,
+      </if>
+      <if test="falseexam != null">
+        falseExam,
+      </if>
+      <if test="remark != null">
+        remark,
+      </if>
+      <if test="errors != null">
+        errors,
+      </if>
+      <if test="header != null">
+        header,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="url != null">
+        #{url,jdbcType=VARCHAR},
+      </if>
+      <if test="method != null">
+        #{method,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=TINYINT},
+      </if>
+      <if test="moduleid != null">
+        #{moduleid,jdbcType=BIGINT},
+      </if>
+      <if test="interfacename != null">
+        #{interfacename,jdbcType=VARCHAR},
+      </if>
+      <if test="updateby != null">
+        #{updateby,jdbcType=VARCHAR},
+      </if>
+      <if test="updatetime != null">
+        #{updatetime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createtime != null">
+        #{createtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="version != null">
+        #{version,jdbcType=VARCHAR},
+      </if>
+      <if test="sequence != null">
+        #{sequence,jdbcType=INTEGER},
+      </if>
+      <if test="fullurl != null">
+        #{fullurl,jdbcType=VARCHAR},
+      </if>
+      <if test="istemplate != null">
+        #{istemplate,jdbcType=BIT},
+      </if>
+      <if test="projectid != null">
+        #{projectid,jdbcType=BIGINT},
+      </if>
+      <if test="contenttype != null">
+        #{contenttype,jdbcType=VARCHAR},
+      </if>
+      <if test="param != null">
+        #{param,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="paramremark != null">
+        #{paramremark,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="requestexam != null">
+        #{requestexam,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="responseparam != null">
+        #{responseparam,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="errorlist != null">
+        #{errorlist,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="trueexam != null">
+        #{trueexam,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="falseexam != null">
+        #{falseexam,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="remark != null">
+        #{remark,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="errors != null">
+        #{errors,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="header != null">
+        #{header,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.feiqu.system.model.ApiDocInterfaceExample" resultType="java.lang.Long">
+    select count(*) from api_doc_interface
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update api_doc_interface
+    <set>
+      <if test="record.id != null">
+        ID = #{record.id,jdbcType=BIGINT},
+      </if>
+      <if test="record.url != null">
+        url = #{record.url,jdbcType=VARCHAR},
+      </if>
+      <if test="record.method != null">
+        method = #{record.method,jdbcType=VARCHAR},
+      </if>
+      <if test="record.status != null">
+        status = #{record.status,jdbcType=TINYINT},
+      </if>
+      <if test="record.moduleid != null">
+        moduleId = #{record.moduleid,jdbcType=BIGINT},
+      </if>
+      <if test="record.interfacename != null">
+        interfaceName = #{record.interfacename,jdbcType=VARCHAR},
+      </if>
+      <if test="record.updateby != null">
+        updateBy = #{record.updateby,jdbcType=VARCHAR},
+      </if>
+      <if test="record.updatetime != null">
+        updateTime = #{record.updatetime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.createtime != null">
+        createTime = #{record.createtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.version != null">
+        version = #{record.version,jdbcType=VARCHAR},
+      </if>
+      <if test="record.sequence != null">
+        sequence = #{record.sequence,jdbcType=INTEGER},
+      </if>
+      <if test="record.fullurl != null">
+        fullUrl = #{record.fullurl,jdbcType=VARCHAR},
+      </if>
+      <if test="record.istemplate != null">
+        isTemplate = #{record.istemplate,jdbcType=BIT},
+      </if>
+      <if test="record.projectid != null">
+        projectId = #{record.projectid,jdbcType=BIGINT},
+      </if>
+      <if test="record.contenttype != null">
+        contentType = #{record.contenttype,jdbcType=VARCHAR},
+      </if>
+      <if test="record.param != null">
+        param = #{record.param,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="record.paramremark != null">
+        paramRemark = #{record.paramremark,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="record.requestexam != null">
+        requestExam = #{record.requestexam,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="record.responseparam != null">
+        responseParam = #{record.responseparam,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="record.errorlist != null">
+        errorList = #{record.errorlist,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="record.trueexam != null">
+        trueExam = #{record.trueexam,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="record.falseexam != null">
+        falseExam = #{record.falseexam,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="record.remark != null">
+        remark = #{record.remark,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="record.errors != null">
+        errors = #{record.errors,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="record.header != null">
+        header = #{record.header,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExampleWithBLOBs" parameterType="map">
+    update api_doc_interface
+    set ID = #{record.id,jdbcType=BIGINT},
+      url = #{record.url,jdbcType=VARCHAR},
+      method = #{record.method,jdbcType=VARCHAR},
+      status = #{record.status,jdbcType=TINYINT},
+      moduleId = #{record.moduleid,jdbcType=BIGINT},
+      interfaceName = #{record.interfacename,jdbcType=VARCHAR},
+      updateBy = #{record.updateby,jdbcType=VARCHAR},
+      updateTime = #{record.updatetime,jdbcType=TIMESTAMP},
+      createTime = #{record.createtime,jdbcType=TIMESTAMP},
+      version = #{record.version,jdbcType=VARCHAR},
+      sequence = #{record.sequence,jdbcType=INTEGER},
+      fullUrl = #{record.fullurl,jdbcType=VARCHAR},
+      isTemplate = #{record.istemplate,jdbcType=BIT},
+      projectId = #{record.projectid,jdbcType=BIGINT},
+      contentType = #{record.contenttype,jdbcType=VARCHAR},
+      param = #{record.param,jdbcType=LONGVARCHAR},
+      paramRemark = #{record.paramremark,jdbcType=LONGVARCHAR},
+      requestExam = #{record.requestexam,jdbcType=LONGVARCHAR},
+      responseParam = #{record.responseparam,jdbcType=LONGVARCHAR},
+      errorList = #{record.errorlist,jdbcType=LONGVARCHAR},
+      trueExam = #{record.trueexam,jdbcType=LONGVARCHAR},
+      falseExam = #{record.falseexam,jdbcType=LONGVARCHAR},
+      remark = #{record.remark,jdbcType=LONGVARCHAR},
+      errors = #{record.errors,jdbcType=LONGVARCHAR},
+      header = #{record.header,jdbcType=LONGVARCHAR}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update api_doc_interface
+    set ID = #{record.id,jdbcType=BIGINT},
+      url = #{record.url,jdbcType=VARCHAR},
+      method = #{record.method,jdbcType=VARCHAR},
+      status = #{record.status,jdbcType=TINYINT},
+      moduleId = #{record.moduleid,jdbcType=BIGINT},
+      interfaceName = #{record.interfacename,jdbcType=VARCHAR},
+      updateBy = #{record.updateby,jdbcType=VARCHAR},
+      updateTime = #{record.updatetime,jdbcType=TIMESTAMP},
+      createTime = #{record.createtime,jdbcType=TIMESTAMP},
+      version = #{record.version,jdbcType=VARCHAR},
+      sequence = #{record.sequence,jdbcType=INTEGER},
+      fullUrl = #{record.fullurl,jdbcType=VARCHAR},
+      isTemplate = #{record.istemplate,jdbcType=BIT},
+      projectId = #{record.projectid,jdbcType=BIGINT},
+      contentType = #{record.contenttype,jdbcType=VARCHAR}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.feiqu.system.model.ApiDocInterface">
+    update api_doc_interface
+    <set>
+      <if test="url != null">
+        url = #{url,jdbcType=VARCHAR},
+      </if>
+      <if test="method != null">
+        method = #{method,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null">
+        status = #{status,jdbcType=TINYINT},
+      </if>
+      <if test="moduleid != null">
+        moduleId = #{moduleid,jdbcType=BIGINT},
+      </if>
+      <if test="interfacename != null">
+        interfaceName = #{interfacename,jdbcType=VARCHAR},
+      </if>
+      <if test="updateby != null">
+        updateBy = #{updateby,jdbcType=VARCHAR},
+      </if>
+      <if test="updatetime != null">
+        updateTime = #{updatetime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createtime != null">
+        createTime = #{createtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="version != null">
+        version = #{version,jdbcType=VARCHAR},
+      </if>
+      <if test="sequence != null">
+        sequence = #{sequence,jdbcType=INTEGER},
+      </if>
+      <if test="fullurl != null">
+        fullUrl = #{fullurl,jdbcType=VARCHAR},
+      </if>
+      <if test="istemplate != null">
+        isTemplate = #{istemplate,jdbcType=BIT},
+      </if>
+      <if test="projectid != null">
+        projectId = #{projectid,jdbcType=BIGINT},
+      </if>
+      <if test="contenttype != null">
+        contentType = #{contenttype,jdbcType=VARCHAR},
+      </if>
+      <if test="param != null">
+        param = #{param,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="paramremark != null">
+        paramRemark = #{paramremark,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="requestexam != null">
+        requestExam = #{requestexam,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="responseparam != null">
+        responseParam = #{responseparam,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="errorlist != null">
+        errorList = #{errorlist,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="trueexam != null">
+        trueExam = #{trueexam,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="falseexam != null">
+        falseExam = #{falseexam,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="remark != null">
+        remark = #{remark,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="errors != null">
+        errors = #{errors,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="header != null">
+        header = #{header,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where ID = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.feiqu.system.model.ApiDocInterface">
+    update api_doc_interface
+    set url = #{url,jdbcType=VARCHAR},
+      method = #{method,jdbcType=VARCHAR},
+      status = #{status,jdbcType=TINYINT},
+      moduleId = #{moduleid,jdbcType=BIGINT},
+      interfaceName = #{interfacename,jdbcType=VARCHAR},
+      updateBy = #{updateby,jdbcType=VARCHAR},
+      updateTime = #{updatetime,jdbcType=TIMESTAMP},
+      createTime = #{createtime,jdbcType=TIMESTAMP},
+      version = #{version,jdbcType=VARCHAR},
+      sequence = #{sequence,jdbcType=INTEGER},
+      fullUrl = #{fullurl,jdbcType=VARCHAR},
+      isTemplate = #{istemplate,jdbcType=BIT},
+      projectId = #{projectid,jdbcType=BIGINT},
+      contentType = #{contenttype,jdbcType=VARCHAR},
+      param = #{param,jdbcType=LONGVARCHAR},
+      paramRemark = #{paramremark,jdbcType=LONGVARCHAR},
+      requestExam = #{requestexam,jdbcType=LONGVARCHAR},
+      responseParam = #{responseparam,jdbcType=LONGVARCHAR},
+      errorList = #{errorlist,jdbcType=LONGVARCHAR},
+      trueExam = #{trueexam,jdbcType=LONGVARCHAR},
+      falseExam = #{falseexam,jdbcType=LONGVARCHAR},
+      remark = #{remark,jdbcType=LONGVARCHAR},
+      errors = #{errors,jdbcType=LONGVARCHAR},
+      header = #{header,jdbcType=LONGVARCHAR}
+    where ID = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.feiqu.system.model.ApiDocInterface">
+    update api_doc_interface
+    set url = #{url,jdbcType=VARCHAR},
+      method = #{method,jdbcType=VARCHAR},
+      status = #{status,jdbcType=TINYINT},
+      moduleId = #{moduleid,jdbcType=BIGINT},
+      interfaceName = #{interfacename,jdbcType=VARCHAR},
+      updateBy = #{updateby,jdbcType=VARCHAR},
+      updateTime = #{updatetime,jdbcType=TIMESTAMP},
+      createTime = #{createtime,jdbcType=TIMESTAMP},
+      version = #{version,jdbcType=VARCHAR},
+      sequence = #{sequence,jdbcType=INTEGER},
+      fullUrl = #{fullurl,jdbcType=VARCHAR},
+      isTemplate = #{istemplate,jdbcType=BIT},
+      projectId = #{projectid,jdbcType=BIGINT},
+      contentType = #{contenttype,jdbcType=VARCHAR}
+    where ID = #{id,jdbcType=BIGINT}
+  </update>
+
+</mapper>

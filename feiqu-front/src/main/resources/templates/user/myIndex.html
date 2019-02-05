@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<%include("/common/_head.html"){}%>
+    <title>我的个人主页 -飞趣</title>
+<style>
+    .userinfo {
+        position: relative;
+        padding: 30px 0 30px;
+        text-align: center;
+    }
+    .userinfo h1{
+        font-size: 26px;
+        line-height: 30px;
+        margin-top: 10px;
+    }
+    .userinfo img{
+        width: 10rem;
+        height: 10rem;
+        border-radius: 100%;
+    }
+    .detail div{
+        color:#878a7c;
+    }
+    .emotion {
+        margin: 5px 0;
+    }
+    .emotion .qudou{
+        padding-left: 1rem;
+    }
+    .qudou img{
+        position: relative;
+        left: 0;
+        width: 20px;height:20px;
+        padding-right: 5px;
+    }
+    .city {
+        margin: 10px 0;
+    }
+    .city span{
+        padding-right: 1rem;
+    }
+    .user-act {
+        margin: 20px 0;
+        padding: 10px;
+        border-radius: 10px;
+        position: relative;
+    }
+    .layui-tab-card{
+        min-height: 500px;
+        margin: 0 10px;
+    }
+    .c-t-list {
+    }
+    .c-t-list img{
+        max-width: 100%;
+    }
+    .c-t-list li{
+        position: relative;
+        line-height: 22px;
+        padding: 15px 15px 25px 10px;
+        border-bottom: 1px dotted #e2e2e2;
+    }
+    .c-t-list li .layui-btn{
+        float: right;
+        margin-right: 5px;
+    }
+    .c-t-list li i{
+        font-size: 12px;
+        color: #999;
+        font-style: normal;
+    }
+    .c-t-list .art-title{
+        max-width: 70%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        font-size: 18px;
+        word-break: break-all;
+        font-weight: 600;
+    }
+    .cwd-msg {
+
+    }
+    .c-list li{
+        height: 50px;
+
+    }
+    .icon-nan {
+        color: #4EBBF9;
+    }
+    .icon-nv {
+        color: #F581B1;
+    }
+    .th-detail video{
+        max-width: 100%;
+    }
+</style>
+</head>
+<body>
+<%
+var user = c.currentUser(request, servlet.response);
+var isLogin = false;
+if(user != null){
+isLogin=true;
+}
+include("/common/_headwithlogin.html",{user:user,isLogin:isLogin}){}
+%>
+<div class="layui-container topToFix">
+    <div class="c-panel userinfo">
+        <img src="${user.icon!}">
+        <div class="detail">
+            <%if(user.isMailBind != 1){%>
+            <div class="cwd-msg"> 您的邮箱尚未验证，这比较影响您的帐号安全，<a href="${ctxPath}/u/activate/">立即去激活？</a> </div>
+            <%}%>
+            <h1>${user.nickname!}
+                ${decode(user.sex,1,"<i class=\"iconfont icon-nan\"></i>",2,"<i class=\"iconfont icon-nv\"></i>","<i class='iconfont  icon-wenda'></i>")}
+                </h1>
+            <div class="emotion">情感状态：<%select{
+                case user.isSingle == 1:print("单身");break;
+                case user.isSingle == 0:print("恋爱中");break;
+                case user.isSingle == 2:print("已婚");break;
+                default:print("未知");break;
+                }%>
+                <span class="qudou"><img alt="趣豆" title="趣豆" src="${ctxPath}/img/qd3.png">${user.qudouNum!0}趣豆</span>
+            </div>
+            <div class="city"><span><i class="iconfont icon-chengshi"></i>${user.city!'未知'}</span>
+                <span><i class="iconfont icon-shijian"></i>${user.createTime,'yyyy-MM-dd'}加入</span></div>
+            <div class="city"><span>生日：${user.birth!'无'}</span><span class="qudou">学历：${user.education!'无'}</span><span class="qudou">学校：${user.school!'无'}</span></div>
+            <div>(${isEmpty(user.sign)?'此人暂无签名':user.sign})</div>
+        </div>
+    </div>
+    <div class="user-act c-panel">
+        <div class="layui-tab layui-tab-card" lay-filter="user-center-tab">
+            <ul class="layui-tab-title">
+                <li class="layui-this" lay-id="thoughts">我说的想法</li>
+                <li lay-id="articles">我发表的文章</li>
+                <li lay-id="follow">我的关注</li>
+                <li lay-id="theme">我的帖子</li>
+            </ul>
+            <div class="layui-tab-content">
+                <div class="layui-tab-item layui-show">
+                    <ul class="c-t-list">
+                        <%for(var t in thoughts){%>
+                        <li ><div class="th-detail">${t.thoughtContent}</div> <i>${printTime(t.createTime)}</i>
+                            <a onclick="deleteThought(${t.id},this)" href="javascript:void(0)" class="layui-btn layui-btn-danger">删除</a>
+                        </li>
+                        <%}%>
+                    </ul>
+                </div>
+                <div class="layui-tab-item">
+                    <ul class="c-t-list">
+                        <%for(var article in articles){%>
+                        <li><a class="art-title word-deal" href="${ctxPath}/article/${article.id}"> ${article.articleTitle}</a>
+                        <i>${printTime(article.createTime)}</i>
+                            <a href="${ctxPath}/article/edit/${article.id}" class="layui-btn  layui-btn-normal">编辑</a>
+                            <a onclick="deleteArticle(${article.id},this)" href="javascript:void(0)" class="layui-btn layui-btn-danger">删除</a>
+                        </li>
+                        <%}%>
+                    </ul>
+                </div>
+                <div class="layui-tab-item">
+                </div>
+                <div class="layui-tab-item">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<%include("/common/_footor.html"){}%>
+</body>
+<%include("/common/_scripts.html"){}%>
+<script>
+    function deleteThought(tid,me) {
+        layer.confirm('确认删除这个想法吗?', {icon: 3, title:'提示'}, function(index){
+            $.ajax({
+                url:'${ctxPath}/thought/delete?thoughtId='+tid,
+                method:'post',
+                dataType:'json',
+                success:function (result) {
+                    if(result && result.code == '0000'){
+                        layer.msg('删除成功')
+                        console.log($(me))
+                        $(me).parent('li').addClass('layui-hide')
+                    }else {
+                        layer.msg(result.message||'删除失败')
+                    }
+                }
+            })
+            layer.close(index);
+        });
+    }
+
+    function deleteArticle(aid,me) {
+        layer.confirm('确认删除这篇文章?', {icon: 3, title:'提示'}, function(index){
+            $.ajax({
+                url:'${ctxPath}/article/delete?articleId='+aid,
+                method:'get',
+                dataType:'json',
+                success:function (result) {
+                    if(result && result.code == '0000'){
+                        layer.msg('删除成功')
+                        console.log($(me))
+                        $(me).parent('li').addClass('layui-hide')
+                    }else {
+                        layer.msg(result.message||'删除失败')
+                    }
+                }
+            })
+            layer.close(index);
+        });
+    }
+
+    function getFollowees(index) {
+        var html = ''
+        $.ajax({
+            url:'${ctxPath}/follow/${user.id}/followees',
+            method:'get',
+            dataType:'json',
+            success:function (result) {
+                if(result && result.code == '0000'){
+                    console.log(result.data)
+                    $.each(result.data,function (i,obj) {
+                        html += '<li>' +
+                            '<a href="/u/'+obj.followedUserId+'/peopleIndex" class="fly-avatar">' +
+                            '<img src="'+obj.icon+'">' +
+                            '</a>' +
+                            '<div class="thought-content"></div>' +
+                            '<div class="c-list-info">' +
+                            '<cite>'+obj.nickname+'</cite>' +
+                            '</div>' +
+                            '</li>'
+                    })
+                    html = '<ul class="c-list">'+html+'</ul>'
+                    $('.layui-tab-item:nth-child('+parseInt(++index)+')').html(html)
+                }else {
+                    layer.msg(result.message||'获取关注失败')
+                }
+            }
+        })
+    }
+
+    layui.use(['layer','element','fly','face'], function() {
+        var layer = layui.layer,element=layui.element,fly=layui.fly,face=layui.face
+        $('.th-detail').each(function(){
+            var othis = $(this), html = othis.html();
+            othis.html(fly.content(html));
+        });
+
+        element.on('tab(user-center-tab)', function(e){
+            var layid = this.getAttribute('lay-id')
+            if (layid == 'follow'){
+                getFollowees(e.index)
+            }else if(layid == 'theme'){
+                getThemes(e.index)
+            }
+            location.hash = 'user-center-tab='+ this.getAttribute('lay-id');
+        });
+
+        var layid = location.hash.replace(/^#user-center-tab=/, '');
+        element.tabChange('user-center-tab', layid);
+        function getThemes(index) {
+            var html = ''
+            $.ajax({
+                url:'${ctxPath}/knowfriend/theme/list/${user.id}',
+                method:'get',
+                dataType:'json',
+                success:function (result) {
+                    if(result && result.code == '0000'){
+                        $.each(result.data,function (i,obj) {
+                            html += '<li>' +
+                                '<a href="/u/'+obj.userId+'/peopleIndex" class="fly-avatar">' +
+                                '<img src="'+obj.icon+'">' +
+                                '</a>' +
+                                '<div class="thought-content"><a class="c-fly-link" href="${ctxPath}/knowfriend/themeDetail/'+obj.id+'">'+obj.title+
+                                '</a></div>' +
+                                '<div class="c-list-info">' +obj.createTime+
+                                '</div>' +
+                                '</li>'
+                        })
+                        html = '<ul class="c-list">'+html+'</ul>'
+                        $('.layui-tab-item:nth-child('+parseInt(++index)+')').html(html)
+                    }else {
+                        layer.msg(result.message||'获取帖子失败')
+                    }
+                }
+            })
+        }
+    });
+</script>
+</html>

@@ -1,0 +1,21 @@
+spring:
+  profiles:
+    active: dev
+
+
+server:
+  # 服务端口
+  port: 8080
+  servlet:
+    # 项目contextPath
+    context-path: /
+  tomcat:
+    # tomcat的URI编码
+    uri-encoding: UTF-8
+    # tomcat最大线程数，默认为200
+    max-threads: 800
+    # Tomcat启动初始化的线程数，默认值25
+    min-spare-threads: 30
+  address: 0.0.0.0
+  compression:
+    enabled: true

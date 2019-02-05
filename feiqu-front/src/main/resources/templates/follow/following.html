@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%include("/common/_head.html"){}%>
+    <title>我的关注 -飞趣</title>
+    <style>
+        .detail-body{min-height:50px;}
+        .detail-about .fly-avatar{left:0;top:0}
+        .detail-about{padding:0 0 0 55px;background:none;height: 50px;}
+        .site-mobile .c-user-main>.layui-nav{left:0}
+        .home-main{margin-left:200px}
+        .article-single {
+            margin-bottom: 10px;
+        }
+        .detail-box{min-height: 200px;}
+    </style>
+</head>
+<body>
+<%
+var user = c.currentUser(request, servlet.response);
+var isLogin = false;
+if(user != null){
+isLogin=true;
+}
+include("/common/_headwithlogin.html",{user:user,isLogin:isLogin}){}
+%>
+<div class="layui-container layui-clear topToFix home-all">
+    <%include("/common/_home_nav.html",{user:user}){}%>
+    <div class="home-main layui-row layui-col-space15">
+        <div class="layui-col-md12">
+            <div class="c-panel detail-box">
+                <div class="c-panel-title">
+                    <a href="javascript:;">我的关注</a>
+                </div>
+               <ul class="c-list">
+                <%for(var follow in follows){%>
+               <li>
+                   <a href="${ctxPath}/u/${follow.followedUserId}/peopleIndex" class="fly-avatar"><img src="${follow.icon}"></a>
+                   <a href="${ctxPath}/u/${follow.followedUserId}/peopleIndex" class="c-fly-link">${follow.nickname}</a>
+                   <div>于${printTime(follow.createTime)}关注</div>
+               </li>
+                <%}%>
+               </ul>
+                <div id="pagesplit">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="site-tree-mobile layui-hide"><i class="layui-icon">&#xe602;</i></div>
+<div class="site-mobile-shade"></div>
+<%include("/common/_footor.html"){}%>
+</body>
+<%include("/common/_scripts.html",{user:user}){}%>
+</html>

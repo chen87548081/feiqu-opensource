@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%include("/common/_head.html"){}%>
+    <title>${article.articleTitle} -${oUser.nickname} -飞趣</title>
+    <meta name="description" content="${article.articleTitle}">
+    <style>
+        .art-item{position:relative;padding:16px 0}
+        .card{border-radius:2px;-webkit-box-shadow:0 1px 3px rgba(0,0,0,.1);box-shadow:0 1px 3px rgba(0,0,0,.1);-webkit-box-sizing:border-box;box-sizing:border-box}
+        .art-title{font-size:24px;font-weight:700;line-height:1.6;color:#1e1e1e;text-align:center;margin: 0 50px}
+        .time{color:#999}
+        .user-info{display:-webkit-box;display:-ms-flexbox;display:flex;margin:auto 0;flex-direction:column;margin-left:5rem}
+        .user-info a{padding-right:10px;font-size:14px}
+        .art-detail img{max-width:100%;}
+        .comment-detail{padding:0 0 0 55px;background:none;position:relative;line-height:20px;font-size:13px;color:#999}
+        .comment-detail .fly-avatar{left:0;top:0}
+        .comment-detail-user{white-space:nowrap;overflow:hidden}
+        .comment-body{margin:25px 0 20px;min-height:0;line-height:24px;font-size:14px}
+        .comment-body a{color:#4f99cf;text-decoration:none;transition:all .5s}
+        .detail-time{left:0;bottom:0;position:relative;top:5px;line-height:20px}
+        .detail-time span{height:20px;line-height:20px}
+        .comment-list{margin-bottom:30px}
+        .comment-list li{position:relative;padding:20px 0 10px;border-bottom:1px dotted #DFDFDF}
+        .comment-dir{position:absolute;right:15px;top:15px;color:#5acc7b}
+        .art-wrap,.art-detail{padding:50px 0 0 5%;background:#fff;border-radius:20px;text-align:justify;min-height:500px}
+        .art-wrap{position:relative;margin-left:1rem;margin-top:35px;width:80%;filter:drop-shadow(0px 0px 15px #bbb)}
+        .art-detail{padding:0 10% 40px 0;width:100%;line-height:26px;font-size:16px}
+        .art-wrap:before{content:'';display:block;position:absolute;right:-60px;top:0;width:60px;height:50px;background:linear-gradient(42deg,#ddd 30%,rgba(0,0,0,0) 40%)}
+        .detail-box p{line-height:2rem}
+        .detail-hits .collect-btn{padding:0 10px}
+        .art-content{color:#262626;word-wrap: break-word;}
+        .art-content a{color:#01AAED}
+        .article-share {
+            position: absolute;
+            bottom: 10px;
+            right: 0;
+        }
+        article textarea{
+            width: 100%;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+<%
+var user = c.currentUser(request, servlet.response);
+var isLogin = false;
+if(user != null){
+isLogin=true;
+}
+include("/common/_headwithlogin.html",{user:user,isLogin:isLogin}){}
+%>
+<div class="layui-container topToFix">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md8">
+            <div class="c-panel">
+                <div class="art-item card detail-about">
+                    <a class="comment-dir" href="javascript:goComment()">评论走起</a>
+                    <span>
+                        <%if(article.anonymousSwitch == 1){%>
+                        <a class="fly-avatar" href="javascript:;"><img src="http://res.flyfun.site/favicon.ico"></a>
+                        <%}else{%>
+                        <a class="fly-avatar" href="/u/${oUser.id}/peopleIndex"><img src="${oUser.icon}"></a>
+                        <%}%>
+                    </span>
+                    <div class="user-info">
+                        <div class="art-desc">
+                            <%if(article.anonymousSwitch == 1){%>
+                            <a class="c-fly-link" href="javascript:;">匿名用户</a>
+                            <%}else{%>
+                            <a class="c-fly-link" href="/u/${oUser.id}/peopleIndex">${oUser.nickname}</a>
+                            <%}%>
+                            <span class="time">${printTime(article.createTime)}</span>
+                        </div>
+                        <div class="detail-hits" id="article_admin" data-id="${article.id}">
+                        </div>
+                    </div>
+                    <div class="art-wrap">
+                        <div class="art-detail">
+                            <h1 class="art-title"> ${article.articleTitle}</h1>
+                            <div class="art-content">${article.articleContent}</div>
+                                <div class="bdsharebuttonbox article-share"><a href="#" class="bds_more" data-cmd="more"></a><a href="#" class="bds_qzone" data-cmd="qzone"></a><a href="#" class="bds_tsina" data-cmd="tsina"></a><a href="#" class="bds_tqq" data-cmd="tqq"></a><a href="#" class="bds_renren" data-cmd="renren"></a><a href="#" class="bds_weixin" data-cmd="weixin"></a></div>
+                            <script>window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdPic":"","bdStyle":"0","bdSize":"16"},"share":{},"image":{"viewList":["qzone","tsina","tqq","renren","weixin"],"viewText":"分享到：","viewSize":"16"},"selectShare":{"bdContainerClass":null,"bdSelectMiniList":["qzone","tsina","tqq","renren","weixin"]}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];</script>
+                        </div>
+                    </div>
+                </div>
+                <div id="pagesplit">
+                </div>
+            </div>
+            <div class="c-panel detail-box">
+                <fieldset class="layui-elem-field layui-field-title" style="text-align: center;">
+                    <legend>评论</legend>
+                </fieldset>
+                <ul class="comment-list">
+                    <%for(var comment in commentList){%>
+                    <li data-id="${comment.id}">
+                        <div class="comment-detail">
+                            <a class="fly-avatar" href="${ctxPath}/u/${comment.postUserId}/peopleIndex">
+                                <img src="${comment.postIcon}"/>
+                            </a>
+                            <div class="comment-detail-user">
+                                <a class="c-fly-link" href="${ctxPath}/u/${comment.postUserId}/peopleIndex">
+                                    <cite>${comment.postNickname}</cite></a>
+                            </div>
+                            <div class="detail-time"><span>${printTime(comment.createTime)}</span></div>
+                        </div>
+                        <div class="comment-body ql-editor">${comment.content}</div>
+                        <div class="c-reply">
+                            <span type="zan" class="zan"><i class="iconfont icon-zan"></i><em>${comment.likeCount}</em></span>
+                            <span type="reply" class="reply-comment"><i class="iconfont icon-svgmoban53"></i>回复</span>
+                            <%if(isLogin && (user.id == article.userId || comment.postUserId == user.id)){ %>
+                            <span type="del" class="reply-comment"><i class="iconfont"></i>删除</span>
+                            <%}%>
+                        </div>
+                    </li>
+                    <%}%>
+                </ul>
+                <div class="layui-form-item layui-form-text"><a name="comment"></a>
+                </div>
+                <div class="layui-form layui-form-pane">
+                    <form action="${ctxPath}/article/comment">
+                        <div class="layui-form-item">
+                            <input type="hidden" name="postUserId" value="${user.id!0}">
+                            <input type="hidden" name="topicId" value="${article.id}">
+                            <textarea class="layui-textarea fly-editor" name="content" ></textarea>
+                        </div>
+                        <div class="layui-form-item"><button class="layui-btn" lay-filter="formDemo" lay-submit>提交回复</button></div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="layui-col-md4">
+            <div class="c-panel">
+                <div class="c-panel-title">
+                    <span>作者简介</span>
+                </div>
+                <div class="detail-box">
+                    <%if(article.anonymousSwitch == 1){%>
+                    <p>匿名用户不提供任何信息</p>
+                    <%}else{%>
+                    <p>来自${oUser.city!}</p>
+                    <p>${printTime(oUser.createTime)}加入飞趣社区</p>
+                    <p>${decode(oUser.sex,1,"是个男孩纸哦",2,"是个女孩纸哦","作者未设置性别哦")}</p>
+                    <p>学校是${oUser.school!"未设置"}</p>
+                    <%}%>
+                </div>
+            </div>
+            <div class="c-panel" style="min-height: 5rem">
+                <div class="c-panel-title">类似文章</div>
+                <div class="right-nav detail-box">
+                    <%if(isEmpty(articles)){%>
+                    <p>暂无类似文章</p>
+                    <%}else{%>
+                    <ul>
+                        <%for(var ha in articles){%>
+                        <li><a title="${ha.articleTitle}" href="${ctxPath}/article/${ha.id}">${ha.articleTitle}</a><em>${ha.browseCount}阅</em></li>
+                        <%}%>
+                    </ul>
+                    <%}%>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<%include("/common/_footor.html"){}%>
+</body>
+<%include("/common/_scripts.html",{user:user}){}%>
+<script>
+    layui.cache.page='article'
+    var articleType = ${article.contentType!1};
+    var textarea = $("article textarea");
+    if(textarea[0]){
+        textarea.each(function (index) {
+            var $textarea = $(this);
+            var content = $textarea.val();
+            if(content.length > 0){
+                var rows = content.length / 30;
+                $textarea.attr('rows',parseInt(rows));
+            }
+            var copyCode = '<input type="button" class="layui-btn c-btn-run" value="运行">';
+            $textarea.after(copyCode);
+            $('.c-btn-run').on('click',function () {
+                var $preTextArea = $(this).prev('textarea');
+                var content = $preTextArea.val();
+                var codeWin = window.open();
+                codeWin.document.write(content);
+                codeWin.document.close();
+            })
+        })
+    }
+</script>
+</html>

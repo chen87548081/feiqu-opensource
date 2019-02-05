@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%include("/common/_head.html"){}%>
+    <title>我的小窝 飞趣-让生活更有趣</title>
+    <style>
+        .tip{margin:15px 15px;line-height:26px;list-style:decimal-leading-zero inside;color:#009E94;padding-bottom:15px}
+        .detail-body{min-height:0;margin-top:0;line-height:24px;font-size:14px}
+        .c-reply-block{-webkit-box-shadow:0 1px 3px 0 rgba(0,33,77,.05);box-shadow:0 1px 3px 0 rgba(0,33,77,.05);margin-top:12px;overflow:visible;border-radius:4px}
+        .reply-input{padding:5px 12px !important;position:relative}
+        .reply-input input{width:80%;background:none}
+        .reply-input button{position:absolute;right:10px;top:5px}
+        .comments span{padding-right:0}
+        .c-signin cite{padding:0 5px;color:#FF5722;font-style:normal}
+        .detail-about .fly-avatar{left:0;top:0}
+        .detail-about{padding:0 0 0 55px;background:none}
+        .thought-body{margin:25px 0 20px;min-height:0;line-height:24px;font-size:14px}
+        .sign-days-div{text-align:center;padding-top:20px}
+        .sayout{font-family:Helvetica,'Hiragino Sans GB','Microsoft Yahei','微软雅黑',Arial,sans-serif}
+        .t-intro{display:inline-block;vertical-align:top;height:21px;letter-spacing:3.8px;color:#1b7fb6}
+        .layui-textarea{margin-top:5px}
+        .tip a{padding-right:10px}
+        #pagesplit-head .layui-laypage{margin:0}
+        .home-main{margin-left:208px}
+        .reply-input span{position:absolute;right:22%;cursor:pointer;padding:0 10px;line-height:38px;color:#ffa405}
+        .c-reply span{width: 25%;float: left;padding-right: 0;}
+        .page-head {position: absolute;right: 15px;top:0;}
+        #FQ_signdays td{width:36px;height:30px;padding:5px;margin:10px;color:#666;text-align:center}
+        .NumberBoard{display:-webkit-box;display:-ms-flexbox;display:flex}
+        .NumberBoard-item{-webkit-box-flex:1;-ms-flex:1;flex:1}
+        .NumberBoard-itemValue{display:inline-block;font-size:18px;color:#1a1a1a;font-weight:600;font-synthesis:style}
+    </style>
+</head>
+<body>
+<%
+var user = c.currentUser(request, servlet.response);
+var isLogin = false;
+if(user != null){
+isLogin=true;
+}
+include("/common/_headwithlogin.html",{user:user,isLogin:isLogin}){}
+%>
+<div class="layui-container layui-clear topToFix home-all">
+    <%include("/common/_home_nav.html",{user:user}){}%>
+    <div class="home-main layui-row layui-col-space15">
+        <div class="layui-col-md8">
+            <div class="c-panel">
+                <div class="c-panel-body publish-content-top">
+                    <form class="layui-form" role="form" action="${ctxPath}/thought/post">
+                        <div class="layui-form-item">
+                            <div class="">
+                                <p class="t-intro">你有什么新想法<em class="spac4">?</em></p>
+                                <textarea title="想法详情" id="thoughtContent" name="thoughtContent" lay-verify="required" class="layui-textarea" required maxlength="400"></textarea>
+                            </div>
+                        </div>
+                        <div class="func-area layui-clear">
+                            <div class="fq-left kind">
+                            </div>
+                            <div class="fq-right">
+                                <button class="layui-btn sayout" lay-filter="tform" lay-submit>发表</button>
+                            </div>
+                        </div>
+                        <div class="layer-pic-list c-panel layui-hide">
+                            <div class="imgUploadBox">
+                                <p class="uploader-title">本地上传</p>
+                                <p class="uploader-meta"></p>
+                                <a id="closeLayerPic" class="c-list-num" href="javascript:;"><i class="layui-icon layui-icon-close close-popup"></i></a>
+                                <ul class="to-upload-pictures">
+                                    <li class="upload-img-item upload-img-add addOnePic">
+                                        <i class="layui-icon layui-icon-add-1" style="font-size: 30px; color: rgb(221, 221, 221);"></i>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <input name="picList" type="hidden" value="">
+                    </form>
+                </div>
+            </div>
+            <div class="c-panel c-opacity-white-background">
+                <div class="c-panel-title">
+                    <a class="" href="javascript:;">置顶想法(置顶消耗20个趣豆,存在24个小时)</a>
+                </div>
+                <%if(isNotEmpty(topThought)){%>
+                <ul class="c-list2">
+                    <li data-id="${topThought.id}">
+                        <div class="detail-about">
+                            <a href="${ctxPath}/u/${topThought.userId}/peopleIndex" class="fly-avatar"><img src="${topThought.icon}"></a>
+                            <div class="fly-detail-user">
+                                <a href="${ctxPath}/u/${topThought.userId}/peopleIndex" class="c-fly-link">
+                                    <cite>${topThought.nickname!}</cite>
+                                </a>
+                                <%if(topThought.role == 1){%>
+                                <span class="staff">官方人员</span>
+                                <%}%>
+                            </div>
+                            <div class="detail-hits"><span class="${isNotEmpty(topThought.area!)?'t-area'}">${topThought.area!}</span><span>${printTime(topThought.createTime!)}</span></div>
+                        </div>
+                        <div class="detail-body thought-body photos">
+                            <div class="thought-text">${emojiShow(topThought.thoughtContent)}</div>
+                            <div class="thought-pic">
+                                <%for(var pic in topThought.pictures!){%>
+                                <img layer-src="${pic}" src="${pic}" data-cursor="big">
+                                <%}%>
+                            </div>
+                        </div>
+                        <div class="c-list-info">
+                            <div class="c-reply layui-clear">
+                                <a href="${ctxPath}/thought/${topThought.id}"><span>查看详情</span></a>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+                <%}%>
+            </div>
+            <div class="c-panel c-opacity-white-background">
+                <div class="thought-head c-panel-title">
+                    <a class="" href="${ctxPath}/u/${user.id}/home">最新的</a>
+                    <span class="c-mid"></span>
+                    <a class="" href="${ctxPath}/u/${user.id}/home?order=zan">最热的</a>
+                    <div class="page-head" id="pagesplit-head">
+                    </div>
+                </div>
+                <div class="c-panel-body">
+                    <ul class="c-list3 " id="thoughtList">
+                        <%for(var thought in thoughtList!){%>
+                        <li data-id="${thought.id}">
+                            <div class="detail-about">
+                                <a href="javascrip:;" class="c-list-num handTop">置顶</a>
+                                <a href="${ctxPath}/u/${thought.userId}/peopleIndex" class="fly-avatar"><img src="${thought.icon}"></a>
+                                <div class="fly-detail-user">
+                                    <a href="${ctxPath}/u/${thought.userId}/peopleIndex" class="c-fly-link">
+                                        <cite>${thought.nickname}</cite>
+                                    </a>
+                                    <%if(thought.role == 1){%>
+                                    <span class="staff">官方人员</span>
+                                    <%}%>
+                                </div>
+                                <div class="detail-hits"><span class="${isNotEmpty(thought.area)?'t-area'}">${thought.area}</span><span>${printTime(thought.createTime)}</span></div>
+                            </div>
+                            <div class="detail-body thought-body photos">
+                                <div class="thought-text">${emojiShow(thought.thoughtContent)}</div>
+                                <div class="thought-pic">
+                                    <%for(var pic in thought.pictures!){%>
+                                        <img data-cursor="big" layer-src="${pic}" src="${pic}">
+                                    <%}%>
+                                </div>
+                            </div>
+                            <div class="c-list-info">
+                                <div class="c-reply layui-clear">
+                                    ${thought.collected?'<span class="collect" type="collect" data-type="remove"><i class="fa fa-heart"></i>取消收藏</span>':
+                                    '<span class="collect" type="collect" data-type="add"><i class="fa fa-heart-o"></i>收藏</span>'}
+                                    <span class="zan"><i class="fa fa-thumbs-o-up" aria-hidden="true"></i><cite>${thought.likeCount!0}</cite></span>
+                                    <span class="comment-show" lay-data="${thought.id}"><i class="fa fa-comment-o" aria-hidden="true"></i>回复&nbsp;&nbsp;</span>
+                                    <span id="comments" class="comments"><cite class="comment-num">${thought.commentCount!0}</cite>条回复</span>
+                                </div>
+                            </div>
+                        </li>
+                        <%}%>
+                    </ul>
+                </div>
+                <div id="pagesplit">
+                </div>
+            </div>
+        </div>
+        <div class="layui-col-md4">
+            <div class="c-panel detail-box ">
+                <div class="NumberBoard c-panel-body">
+                    <a class="NumberBoard-item" href="${ctxPath}/follow/following">
+                        <div class="c-text-center">
+                            <div>关注了</div>
+                            <strong class="NumberBoard-itemValue c-text-center">${followCount}</strong>
+                        </div>
+                    </a>
+                    <a class="NumberBoard-item" href="${ctxPath}/follow/fans">
+                        <div class="c-text-center">
+                            <div>粉丝数</div>
+                            <strong class="NumberBoard-itemValue ">${fansCount}</strong>
+                        </div>
+                    </a>
+               </div>
+            </div>
+            <div class="c-panel">
+                <div class="c-panel-title">
+                    <span>活跃达人(<a class="c-fly-link" href="/findFriend">活跃度<i class="layui-icon layui-icon-help"></i></a>)</span>
+                </div>
+                <div class="c-panel-body">
+                    <ul class="rank-list">
+                        <%for(var u in activeUserList!){%>
+                        <li>
+                            <div class="rank-list-item">
+                                <%if(u.rank <= 3){%>
+                                <span class="c-list-num rank-red">${u.rank}</span>
+                                <%}else{%>
+                                <span class="c-list-num">${u.rank}</span>
+                                <%}%>
+                                <div class="icon-wrap">
+                                    <a href="/u/${u.userId}/peopleIndex">
+                                        <div class="icon-container"><img src="${u.icon}"/></div>
+                                    </a>
+                                </div>
+                                <div class="c-content">
+                                    <div class="content-nick">
+                                        <a href="/u/${u.userId}/peopleIndex">${u.name}</a>
+                                    </div>
+                                    <div class="rank-data">
+                                        <span>活跃度+${u.score}</span><span>(${u.city!})</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <%}%>
+                    </ul>
+                </div>
+            </div>
+            <div class="c-panel c-signin">
+                <div class="c-panel-title">
+                    <a href="javascript:;">签到</a>
+                    <span class="c-mid"></span>
+                    <a href="javascript:;" id="LAY_signinHelp">说明</a>
+                    <span class="c-mid"></span>
+                    <a href="javascript:;" id="LAY_signinTop">活跃榜</a>
+                </div>
+                <div class="sign-days-div"><span class="fly-signin-days"></span></div>
+                <div class="fly-signin-main">
+                    <button class="layui-btn layui-btn-warm" id="LAY_signin">今日签到</button>
+                </div>
+            </div>
+            <div class="c-panel">
+                <div class="c-panel-title">本月签到了哪些天</div>
+                <div class="c-panel-body" id="FQ_signdays">
+                </div>
+            </div>
+            <div class="c-panel">
+                <div class="c-panel-title">7天最热想法（每天更新）</div>
+                <div class="c-panel-body ctr-a-v1">
+                    <ul class="photos">
+                        <%for(var t in sevenDaysT){%>
+                        <li>
+                            <a href="${ctxPath}/thought/${t.id}" class="">查看详情<i class="layui-icon layui-icon-right"></i></a>
+                            <div class="thought-text">${t.content}</div>
+                            <%if(isNotEmpty(t.pic)){%>
+                            <div><img src="${t.pic!}" data-cursor="big"> </div>
+                            <%}%>
+                            <hr>
+                        </li>
+                        <%}%>
+                    </ul>
+                </div>
+            </div>
+            <div class="c-panel">
+                <div class="c-panel-title">
+                    访客记录（访客总数：<cite class="visitNum"></cite> 个人）
+                </div>
+                <div id="visit" class="tip fly-signin-list">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="site-tree-mobile layui-hide"><i class="layui-icon">&#xe602;</i></div>
+<div class="site-mobile-shade"></div>
+<%include("/common/_footor.html"){}%>
+</body>
+<script src="/js/twemoji.min.js?2.4"></script>
+<%include("/common/_scripts.html",{user:user}){}%>
+<script>
+    layui.cache.page = 'home'
+    layui.cache.pageInfo = {curr:${p},count:${count},limit:${pageSize}}
+</script>
+</html>

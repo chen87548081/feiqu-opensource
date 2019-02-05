@@ -1,0 +1,309 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.feiqu.system.mapper.FqMusicMapper">
+  <resultMap id="BaseResultMap" type="com.feiqu.system.model.FqMusic">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="music_name" jdbcType="VARCHAR" property="musicName" />
+    <result column="music_url" jdbcType="VARCHAR" property="musicUrl" />
+    <result column="del_flag" jdbcType="INTEGER" property="delFlag" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="like_count" jdbcType="INTEGER" property="likeCount" />
+    <result column="play_count" jdbcType="INTEGER" property="playCount" />
+    <result column="user_id" jdbcType="INTEGER" property="userId" />
+    <result column="lyric" jdbcType="VARCHAR" property="lyric" />
+    <result column="singer" jdbcType="VARCHAR" property="singer" />
+  </resultMap>
+  <resultMap id="UserResultMap" extends="BaseResultMap" type="com.feiqu.system.pojo.response.FqMusicResponse">
+    <result column="nickname" jdbcType="VARCHAR" property="nickname" />
+    <result column="icon" jdbcType="VARCHAR" property="icon" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    id, music_name, music_url, del_flag, create_time, like_count, play_count, user_id, 
+    lyric, singer
+  </sql>
+  <select id="selectWithUserByExample" parameterType="com.feiqu.system.model.FqMusicExample" resultMap="UserResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    aa.singer,aa.id, aa.music_name, aa.music_url, aa.del_flag, aa.create_time, aa.like_count, aa.play_count, aa.user_id,bb.icon,bb.nickname
+    from fq_music aa LEFT JOIN fq_user bb on aa.user_id = bb.id
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByExample" parameterType="com.feiqu.system.model.FqMusicExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from fq_music
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from fq_music
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from fq_music
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.feiqu.system.model.FqMusicExample">
+    delete from fq_music
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.feiqu.system.model.FqMusic">
+    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into fq_music (music_name, music_url, del_flag, 
+      create_time, like_count, play_count, 
+      user_id, lyric, singer
+      )
+    values (#{musicName,jdbcType=VARCHAR}, #{musicUrl,jdbcType=VARCHAR}, #{delFlag,jdbcType=INTEGER}, 
+      #{createTime,jdbcType=TIMESTAMP}, #{likeCount,jdbcType=INTEGER}, #{playCount,jdbcType=INTEGER}, 
+      #{userId,jdbcType=INTEGER}, #{lyric,jdbcType=VARCHAR}, #{singer,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.feiqu.system.model.FqMusic">
+    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into fq_music
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="musicName != null">
+        music_name,
+      </if>
+      <if test="musicUrl != null">
+        music_url,
+      </if>
+      <if test="delFlag != null">
+        del_flag,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="likeCount != null">
+        like_count,
+      </if>
+      <if test="playCount != null">
+        play_count,
+      </if>
+      <if test="userId != null">
+        user_id,
+      </if>
+      <if test="lyric != null">
+        lyric,
+      </if>
+      <if test="singer != null">
+        singer,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="musicName != null">
+        #{musicName,jdbcType=VARCHAR},
+      </if>
+      <if test="musicUrl != null">
+        #{musicUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="delFlag != null">
+        #{delFlag,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="likeCount != null">
+        #{likeCount,jdbcType=INTEGER},
+      </if>
+      <if test="playCount != null">
+        #{playCount,jdbcType=INTEGER},
+      </if>
+      <if test="userId != null">
+        #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="lyric != null">
+        #{lyric,jdbcType=VARCHAR},
+      </if>
+      <if test="singer != null">
+        #{singer,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.feiqu.system.model.FqMusicExample" resultType="java.lang.Long">
+    select count(*) from fq_music
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update fq_music
+    <set>
+      <if test="record.id != null">
+        id = #{record.id,jdbcType=INTEGER},
+      </if>
+      <if test="record.musicName != null">
+        music_name = #{record.musicName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.musicUrl != null">
+        music_url = #{record.musicUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="record.delFlag != null">
+        del_flag = #{record.delFlag,jdbcType=INTEGER},
+      </if>
+      <if test="record.createTime != null">
+        create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.likeCount != null">
+        like_count = #{record.likeCount,jdbcType=INTEGER},
+      </if>
+      <if test="record.playCount != null">
+        play_count = #{record.playCount,jdbcType=INTEGER},
+      </if>
+      <if test="record.userId != null">
+        user_id = #{record.userId,jdbcType=INTEGER},
+      </if>
+      <if test="record.lyric != null">
+        lyric = #{record.lyric,jdbcType=VARCHAR},
+      </if>
+      <if test="record.singer != null">
+        singer = #{record.singer,jdbcType=VARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update fq_music
+    set id = #{record.id,jdbcType=INTEGER},
+      music_name = #{record.musicName,jdbcType=VARCHAR},
+      music_url = #{record.musicUrl,jdbcType=VARCHAR},
+      del_flag = #{record.delFlag,jdbcType=INTEGER},
+      create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      like_count = #{record.likeCount,jdbcType=INTEGER},
+      play_count = #{record.playCount,jdbcType=INTEGER},
+      user_id = #{record.userId,jdbcType=INTEGER},
+      lyric = #{record.lyric,jdbcType=VARCHAR},
+      singer = #{record.singer,jdbcType=VARCHAR}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.feiqu.system.model.FqMusic">
+    update fq_music
+    <set>
+      <if test="musicName != null">
+        music_name = #{musicName,jdbcType=VARCHAR},
+      </if>
+      <if test="musicUrl != null">
+        music_url = #{musicUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="delFlag != null">
+        del_flag = #{delFlag,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="likeCount != null">
+        like_count = #{likeCount,jdbcType=INTEGER},
+      </if>
+      <if test="playCount != null">
+        play_count = #{playCount,jdbcType=INTEGER},
+      </if>
+      <if test="userId != null">
+        user_id = #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="lyric != null">
+        lyric = #{lyric,jdbcType=VARCHAR},
+      </if>
+      <if test="singer != null">
+        singer = #{singer,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.feiqu.system.model.FqMusic">
+    update fq_music
+    set music_name = #{musicName,jdbcType=VARCHAR},
+      music_url = #{musicUrl,jdbcType=VARCHAR},
+      del_flag = #{delFlag,jdbcType=INTEGER},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      like_count = #{likeCount,jdbcType=INTEGER},
+      play_count = #{playCount,jdbcType=INTEGER},
+      user_id = #{userId,jdbcType=INTEGER},
+      lyric = #{lyric,jdbcType=VARCHAR},
+      singer = #{singer,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

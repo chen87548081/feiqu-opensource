@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%include("/common/_head.html"){}%>
+    <title>添加接口 -飞趣</title>
+    <link rel="stylesheet" href="${ctxPath}/css/api-doc.css?v=${VERSION}">
+</head>
+<body>
+<%
+var user = c.currentUser(request, servlet.response);
+var isLogin = false;
+if(user != null){
+isLogin=true;
+}
+include("/common/_headwithlogin.html",{user:user,isLogin:isLogin}){}
+%>
+<div class="api-doc-nav api-doc-index layui-container">
+    <div class="layui-row layui-col-space10">
+        <div class="layui-col-md3">
+            <%include("/common/_api_doc_menu.html",{user:user}){}%>
+        </div>
+        <div class="layui-col-md9">
+            <div class="c-panel">
+                <div class="c-panel-title">
+                    <span class="layui-breadcrumb" lay-separator="|">
+                      <a href="${ctxPath}/apiDocProject">项目</a>
+                      <a href="${ctxPath}/apiDocModule">模块</a>
+                      <a href="#">新增接口</a>
+                        <a href="javascript:history.go(-1);"><i class="layui-icon layui-icon-left"></i>返回</a>
+                    </span>
+                </div>
+                <div class="c-panel-body">
+                    <form class="layui-form layui-form-pane" action="">
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label">接口名称</label>
+                                <div class="layui-input-inline">
+                                    <input lay-verify="required" type="text" name="interfacename" placeholder="接口名称" autocomplete="off" class="layui-input">
+                                </div>
+                            </div>
+
+                            <div class="layui-inline">
+                                <label class="layui-form-label">模块名</label>
+                                <div class="layui-input-inline">
+                                    <select lay-verify="required" name="moduleid">
+                                        <option value="">请选择</option>
+                                        <%for(var module in modules){%>
+                                        <option value="${module.key}">${module.value}</option>
+                                        <%}%>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">url</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="url" required lay-verify="required" placeholder="示例：methodName" autocomplete="off" class="layui-input">
+                            </div>
+                            <div class="layui-form-mid layui-word-aux"></div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label">请求方式</label>
+                                <div class="layui-input-inline">
+                                    <select name="method" lay-verify="required">
+                                        <option value="">请选择</option>
+                                        <option value="POST">POST</option>
+                                        <option value="GET">GET</option>
+                                        <option value="HEAD">HEAD</option>
+                                        <option value="PUT">PUT</option>
+                                        <option value="DELETE">DELETE</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label">状态</label>
+                                <div class="layui-input-inline">
+                                    <select name="status" lay-verify="required">
+                                        <option value="">请选择</option>
+                                        <option value="0">废弃</option>
+                                        <option value="1">已上线</option>
+                                        <option value="2">开发中</option>
+                                        <option value="3">测试中</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label">版本号</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" name="version" placeholder="版本号" autocomplete="off" class="layui-input">
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label">排序</label>
+                                <div class="layui-input-inline">
+                                    <input type="number" lay-verify="number" name="sequence" placeholder="接口排序" autocomplete="off" class="layui-input">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label">返回类型</label>
+                                <div class="layui-input-inline">
+                                    <select name="contenttype" lay-verify="required">
+                                        <option value="">请选择</option>
+                                        <option value="application/json">application/json</option>
+                                        <option value="text/html">text/html</option>
+                                        <option value="x-application">x-application</option>
+                                        <option value="application/xml">application/xml</option>
+                                        <option value="DELETE">DELETE</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <!--<div class="layui-inline">
+                                <label class="layui-form-label">状态</label>
+                                <div class="layui-input-inline">
+                                    <select name="status" lay-verify="required">
+                                        <option value="">请选择</option>
+                                        <option value="0">废弃</option>
+                                        <option value="1">已上线</option>
+                                        <option value="2">开发中</option>
+                                        <option value="3">测试中</option>
+                                    </select>
+                                </div>
+                            </div>-->
+                        </div>
+                        <div class="layui-form-item layui-form-text">
+                            <label class="layui-form-label">请求参数(自定义[ROW])</label>
+                            <div class="layui-input-block">
+                                <textarea name="param" placeholder="请求参数" class="layui-textarea"></textarea>
+                            </div>
+                        </div>
+                        <div class="layui-form-item layui-form-text">
+                            <label class="layui-form-label">接口说明</label>
+                            <div class="layui-input-block">
+                                <textarea name="remark" placeholder="请输入内容" class="layui-textarea"></textarea>
+                            </div>
+                        </div>
+                        <div class="layui-form-item layui-form-text">
+                            <label class="layui-form-label">正确返回示例</label>
+                            <div class="layui-input-block">
+                                <textarea name="trueexam" placeholder="正确返回示例" class="layui-textarea"></textarea>
+                            </div>
+                        </div>
+                        <div class="layui-form-item layui-form-text">
+                            <label class="layui-form-label">错误返回示例</label>
+                            <div class="layui-input-block">
+                                <textarea name="falseexam" placeholder="错误返回示例" class="layui-textarea"></textarea>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-input-block">
+                                <button class="layui-btn" lay-submit lay-filter="formApiDocInterface">立即提交</button>
+                                <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<%include("/common/_footor.html"){}%>
+</body>
+<%include("/common/_scripts.html",{user:user}){}%>
+<script>
+    var projectId = ${projectId!0};
+    layui.use(['fly','form'], function () {
+        var fly = layui.fly,form=layui.form;
+        form.on('submit(formApiDocInterface)', function(data){
+            data.field.projectid = projectId;
+            fly.json('/apiDocInterface/save', data.field, function(res){
+                layer.msg('保存成功！', {
+                    icon: 1
+                })
+                location.href = "/apiDocInterface?projectId="+projectId;
+            });
+            return false;
+        })
+    })
+</script>
+</html>

@@ -1,0 +1,304 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.feiqu.system.mapper.FqNewsMapper">
+  <resultMap id="BaseResultMap" type="com.feiqu.system.model.FqNews">
+    <id column="ID" jdbcType="BIGINT" property="id" />
+    <result column="TITLE" jdbcType="VARCHAR" property="title" />
+    <result column="SOURCE" jdbcType="VARCHAR" property="source" />
+    <result column="COMMENT_COUNT" jdbcType="INTEGER" property="commentCount" />
+    <result column="IMG_SRC" jdbcType="VARCHAR" property="imgSrc" />
+    <result column="P_TIME" jdbcType="VARCHAR" property="pTime" />
+    <result column="GMT_CREATE" jdbcType="TIMESTAMP" property="gmtCreate" />
+  </resultMap>
+  <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.feiqu.system.model.FqNews">
+    <result column="CONTENT" jdbcType="LONGVARCHAR" property="content" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    ID, TITLE, SOURCE, COMMENT_COUNT, IMG_SRC, P_TIME, GMT_CREATE
+  </sql>
+  <sql id="Blob_Column_List">
+    CONTENT
+  </sql>
+  <select id="selectByExampleWithBLOBs" parameterType="com.feiqu.system.model.FqNewsExample" resultMap="ResultMapWithBLOBs">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from fq_news
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByExample" parameterType="com.feiqu.system.model.FqNewsExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from fq_news
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="ResultMapWithBLOBs">
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from fq_news
+    where ID = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from fq_news
+    where ID = #{id,jdbcType=BIGINT}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.feiqu.system.model.FqNewsExample">
+    delete from fq_news
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.feiqu.system.model.FqNews">
+    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into fq_news (TITLE, SOURCE, COMMENT_COUNT, 
+      IMG_SRC, P_TIME, GMT_CREATE, 
+      CONTENT)
+    values (#{title,jdbcType=VARCHAR}, #{source,jdbcType=VARCHAR}, #{commentCount,jdbcType=INTEGER}, 
+      #{imgSrc,jdbcType=VARCHAR}, #{pTime,jdbcType=VARCHAR}, #{gmtCreate,jdbcType=TIMESTAMP}, 
+      #{content,jdbcType=LONGVARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.feiqu.system.model.FqNews">
+    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into fq_news
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="title != null">
+        TITLE,
+      </if>
+      <if test="source != null">
+        SOURCE,
+      </if>
+      <if test="commentCount != null">
+        COMMENT_COUNT,
+      </if>
+      <if test="imgSrc != null">
+        IMG_SRC,
+      </if>
+      <if test="pTime != null">
+        P_TIME,
+      </if>
+      <if test="gmtCreate != null">
+        GMT_CREATE,
+      </if>
+      <if test="content != null">
+        CONTENT,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="title != null">
+        #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="source != null">
+        #{source,jdbcType=VARCHAR},
+      </if>
+      <if test="commentCount != null">
+        #{commentCount,jdbcType=INTEGER},
+      </if>
+      <if test="imgSrc != null">
+        #{imgSrc,jdbcType=VARCHAR},
+      </if>
+      <if test="pTime != null">
+        #{pTime,jdbcType=VARCHAR},
+      </if>
+      <if test="gmtCreate != null">
+        #{gmtCreate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="content != null">
+        #{content,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.feiqu.system.model.FqNewsExample" resultType="java.lang.Long">
+    select count(*) from fq_news
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update fq_news
+    <set>
+      <if test="record.id != null">
+        ID = #{record.id,jdbcType=BIGINT},
+      </if>
+      <if test="record.title != null">
+        TITLE = #{record.title,jdbcType=VARCHAR},
+      </if>
+      <if test="record.source != null">
+        SOURCE = #{record.source,jdbcType=VARCHAR},
+      </if>
+      <if test="record.commentCount != null">
+        COMMENT_COUNT = #{record.commentCount,jdbcType=INTEGER},
+      </if>
+      <if test="record.imgSrc != null">
+        IMG_SRC = #{record.imgSrc,jdbcType=VARCHAR},
+      </if>
+      <if test="record.pTime != null">
+        P_TIME = #{record.pTime,jdbcType=VARCHAR},
+      </if>
+      <if test="record.gmtCreate != null">
+        GMT_CREATE = #{record.gmtCreate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.content != null">
+        CONTENT = #{record.content,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExampleWithBLOBs" parameterType="map">
+    update fq_news
+    set ID = #{record.id,jdbcType=BIGINT},
+      TITLE = #{record.title,jdbcType=VARCHAR},
+      SOURCE = #{record.source,jdbcType=VARCHAR},
+      COMMENT_COUNT = #{record.commentCount,jdbcType=INTEGER},
+      IMG_SRC = #{record.imgSrc,jdbcType=VARCHAR},
+      P_TIME = #{record.pTime,jdbcType=VARCHAR},
+      GMT_CREATE = #{record.gmtCreate,jdbcType=TIMESTAMP},
+      CONTENT = #{record.content,jdbcType=LONGVARCHAR}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update fq_news
+    set ID = #{record.id,jdbcType=BIGINT},
+      TITLE = #{record.title,jdbcType=VARCHAR},
+      SOURCE = #{record.source,jdbcType=VARCHAR},
+      COMMENT_COUNT = #{record.commentCount,jdbcType=INTEGER},
+      IMG_SRC = #{record.imgSrc,jdbcType=VARCHAR},
+      P_TIME = #{record.pTime,jdbcType=VARCHAR},
+      GMT_CREATE = #{record.gmtCreate,jdbcType=TIMESTAMP}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.feiqu.system.model.FqNews">
+    update fq_news
+    <set>
+      <if test="title != null">
+        TITLE = #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="source != null">
+        SOURCE = #{source,jdbcType=VARCHAR},
+      </if>
+      <if test="commentCount != null">
+        COMMENT_COUNT = #{commentCount,jdbcType=INTEGER},
+      </if>
+      <if test="imgSrc != null">
+        IMG_SRC = #{imgSrc,jdbcType=VARCHAR},
+      </if>
+      <if test="pTime != null">
+        P_TIME = #{pTime,jdbcType=VARCHAR},
+      </if>
+      <if test="gmtCreate != null">
+        GMT_CREATE = #{gmtCreate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="content != null">
+        CONTENT = #{content,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where ID = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.feiqu.system.model.FqNews">
+    update fq_news
+    set TITLE = #{title,jdbcType=VARCHAR},
+      SOURCE = #{source,jdbcType=VARCHAR},
+      COMMENT_COUNT = #{commentCount,jdbcType=INTEGER},
+      IMG_SRC = #{imgSrc,jdbcType=VARCHAR},
+      P_TIME = #{pTime,jdbcType=VARCHAR},
+      GMT_CREATE = #{gmtCreate,jdbcType=TIMESTAMP},
+      CONTENT = #{content,jdbcType=LONGVARCHAR}
+    where ID = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.feiqu.system.model.FqNews">
+    update fq_news
+    set TITLE = #{title,jdbcType=VARCHAR},
+      SOURCE = #{source,jdbcType=VARCHAR},
+      COMMENT_COUNT = #{commentCount,jdbcType=INTEGER},
+      IMG_SRC = #{imgSrc,jdbcType=VARCHAR},
+      P_TIME = #{pTime,jdbcType=VARCHAR},
+      GMT_CREATE = #{gmtCreate,jdbcType=TIMESTAMP}
+    where ID = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

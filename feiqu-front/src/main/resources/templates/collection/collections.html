@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%include("/common/_head.html"){}%>
+    <title>我的收藏 -飞趣</title>
+    <style>
+        .left-block{padding:10px}
+        .left-block a{font-size:14px;font-weight:bold;padding:0 0 0 15px;height:34px;line-height:34px}
+        .home-nav{position:absolute;left:0;top:7px;z-index:1000;height:100%;padding:10px 0;background-color:#82b9dc;width:200px;border-radius:2px}
+        .left-nav{border-color:rgba(255,255,255,0.2)}
+        .site-mobile .c-user-main>.layui-nav{left:0}
+        .home-main{margin-left:200px}
+        .layui-tab{
+            min-height: 500px;
+        }
+        @media screen and (max-width:768px){.home-nav{left:-300px;transition:all .3s;-webkit-transition:all .3s}
+            .site-mobile .home-nav{left:0}
+            .home-all .home-main{margin-left:0}
+        }
+    </style>
+</head>
+<body>
+<%
+var user = c.currentUser(request, servlet.response);
+var isLogin = false;
+if(user != null){
+isLogin=true;
+}
+include("/common/_headwithlogin.html",{user:user,isLogin:isLogin}){}
+%>
+<div class="layui-container layui-clear topToFix home-all">
+    <%include("/common/_home_nav.html",{user:user}){}%>
+    <div class="home-main layui-row layui-col-space15">
+        <div class="layui-col-md12">
+            <div class="c-panel detail-box-thin">
+                <div class="layui-tab layui-tab-brief" lay-filter="collection" id="LAY_uc">
+                    <ul class="layui-tab-title" id="LAY_mine">
+                        <li data-type="thought-collection" data-url="/collection/find/" class="layui-this" lay-id="collection">我收藏的想法</li>
+                        <li data-type="article-collection" lay-id="index" >我收藏的文章</li>
+                    </ul>
+                    <div class="layui-tab-content" id="LAY_ucm" style="padding: 5px 0;">
+                        <div class="layui-tab-item layui-show"><table class="layui-hide" id="thoughtCollectioncard"></table></div>
+                        <div class="layui-tab-item"><table class="layui-hide" id="articleCollectioncard"></table></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="site-tree-mobile layui-hide"><i class="layui-icon">&#xe602;</i></div>
+<div class="site-mobile-shade"></div>
+<%include("/common/_footor.html"){}%>
+</body>
+<%include("/common/_scripts.html",{user:user}){}%>
+<script>
+    layui.cache.page = 'collection'
+</script>
+</html>

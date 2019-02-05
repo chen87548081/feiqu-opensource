@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%include("/common/_head.html"){}%>
+    <title> API 接口文档 -飞趣</title>
+    <style>
+
+    </style>
+</head>
+<body>
+<%
+var user = c.currentUser(request, servlet.response);
+var isLogin = false;
+if(user != null){
+isLogin=true;
+}
+include("/common/_headwithlogin.html",{user:user,isLogin:isLogin}){}
+%>
+<div class="api-doc-nav api-doc-index layui-container">
+    <div class="layui-row layui-col-space10">
+        <div class="layui-col-md3">
+            <%include("/common/_api_doc_menu.html",{user:user}){}%>
+        </div>
+        <div class="layui-col-md9">
+            <div class="c-panel">
+                <div class="c-panel-body">
+                    <table class="layui-hide" id="apiDocModuleManage" lay-filter="apiDocModule"></table>
+                    <script type="text/html" id="bar">
+                        <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+                        <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="edit">编辑</a>
+                    </script>
+                    <script type="text/html" id="headToolbar">
+                        <div class="layui-btn-container">
+                            <button class="layui-btn layui-btn-sm" lay-event="add">新增模块</button>
+                        </div>
+                    </script>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<%include("/common/_footor.html"){}%>
+</body>
+<%include("/common/_scripts.html",{user:user}){}%>
+<script>
+    var project = ${apiDocProject!''};
+    layui.use(['fly','table'], function(){
+        var fly=layui.fly,table=layui.table,device=layui.device,form=layui.form;
+        table.render({
+            elem: '#apiDocModuleManage'
+            ,url:'/apiDocModule/list'
+            ,toolbar: '#headToolbar'
+            ,title: '项目数据表'
+            ,totalRow: true
+            ,where: {projectId:${projectId}}
+            ,cols: [[
+                {field:'id', title:'ID', width:80, fixed: 'left', unresize: true, sort: true},
+                {field:'projectId', title:'项目ID', width:80, fixed: 'left', unresize: true, sort: true},
+                {field:'moduleName', title:'模块名称', width:100, fixed: 'left', unresize: true, sort: true},
+                {field:'remark', title:'备注', width:100, fixed: 'left', unresize: true, sort: true},
+                {field:'url', title:'url', width:100, fixed: 'left', unresize: true, sort: true},
+                {field:'status', title:'状态', width:100, fixed: 'left', unresize: true, sort: true},
+                {field:'createTime', title:'创建时间', width:160, fixed: 'left', unresize: false, sort: true},
+                {fixed: 'right', width:150, align:'center', toolbar: '#bar'}
+            ]]
+            ,page: true
+            ,response: {
+                statusCode: '0000',
+                msgName: 'message'
+            }
+            ,id: 'apiDocModuleReload'
+            ,parseData: function(res){
+                return {
+                    "code": res.code,
+                    "msg": res.message,
+                    "count": res.data.total,
+                    "data": res.data.list
+                };
+            }
+        });
+        var selectStr =  '<li class="layui-form-item">'
+            +'<label class="layui-form-label">项目</label>'
+            +'<div class="layui-input-block">'
+            +'<select name="projectId" class="layui-select">';
+
+            selectStr+='<option value="'+project.id+'">'+project.projectName+'</option>';
+
+        selectStr += '</select>'
+            +'</div>'
+            +'</li>';
+        table.on('toolbar(apiDocModule)', function(obj){
+            switch(obj.event){
+                case 'add':
+                    layer.open({
+                        type: 1
+                        ,id: 'fq_apiDocModule'
+                        ,title: '新增模块'
+                        ,area: (device.ios || device.android) ? ($(window).width() + 'px') : '660px'
+                        ,content: ['<ul class="layui-form" style="margin: 20px;">'
+                            ,'<li class="layui-form-item">'
+                            ,'<label class="layui-form-label">名称</label>'
+                            ,'<div class="layui-input-block">'
+                            ,'<input required name="moduleName" lay-verify="required" placeholder="模块名称"  class="layui-input">'
+                            ,'</div>'
+                            ,'</li>'
+                            ,'<li class="layui-form-item">'
+                            ,'<label class="layui-form-label">备注</label>'
+                            ,'<div class="layui-input-block">'
+                            ,'<input required name="remark" placeholder="备注"  class="layui-input">'
+                            ,'</div>'
+                            ,'</li>'
+                            ,'<li class="layui-form-item">'
+                            ,'<label class="layui-form-label">url</label>'
+                            ,'<div class="layui-input-block">'
+                            ,'<input required name="url" placeholder="示例：http://www.flyfun.site/moduleName/"  class="layui-input" maxlength="100">'
+                            ,'</div>'
+                            ,'</li>'
+                            ,selectStr
+                            ,'<li class="layui-form-item">'
+                            ,'<div class="layui-input-block">'
+                            ,'<button type="button" lay-submit lay-filter="apiDocModule" class="layui-btn">保存</button>'
+                            ,'</div>'
+                            ,'</li>'
+                            ,'</ul>'].join('')
+                        ,success: function(layero, index){
+                            form.render('select')
+                            form.on('submit(apiDocModule)', function(data){
+                                fly.json('/apiDocModule/save', data.field, function(res){
+                                    layer.close(index);
+                                    layer.msg('保存成功！', {
+                                        icon: 1
+                                    })
+                                    table.reload('apiDocModuleReload', {
+                                        page: {
+                                            curr: 1
+                                        }
+                                    });
+                                });
+                                return false;
+                            })
+                        }
+                    });
+                    break;
+            };
+        });
+        table.on('tool(apiDocModule)', function(obj){
+            var data = obj.data;
+            if(obj.event === 'del'){
+                layer.confirm('真的删除这个项目么', function(index){
+                    fly.json('/apiDocModule/delete?id='+data.id,{},function (res) {
+                        layer.msg('删除成功！');
+                        table.reload('apiDocModuleReload', {
+                            page: {
+                                curr: 1
+                            }
+                        });
+                    });
+                    layer.close(index);
+                });
+            }else if(obj.event === 'edit'){
+                var data = obj.data;
+                layer.open({
+                    type: 1
+                    ,id: 'fq_apiDocModule'
+                    ,title: '编辑项目'
+                    ,area: (device.ios || device.android) ? ($(window).width() + 'px') : '660px'
+                    ,content: ['<ul class="layui-form" style="margin: 20px;">'
+                        ,'<li class="layui-form-item">'
+                        ,'<label class="layui-form-label">名称</label>'
+                        ,'<div class="layui-input-block">'
+                        ,'<input required name="moduleName" value="'+data.moduleName+'" lay-verify="required" placeholder="模块名称"  class="layui-input">'
+                        ,'<input type="hidden" name="id" value="'+data.id+'">'
+                        ,'</div>'
+                        ,'</li>'
+                        ,'<li class="layui-form-item">'
+                        ,'<label class="layui-form-label">备注</label>'
+                        ,'<div class="layui-input-block">'
+                        ,'<input required name="remark" value="'+data.remark+'" placeholder="备注"  class="layui-input">'
+                        ,'</div>'
+                        ,'</li>'
+                        ,'<li class="layui-form-item">'
+                        ,'<label class="layui-form-label">url</label>'
+                        ,'<div class="layui-input-block">'
+                        ,'<input required name="url" value="'+data.url+'" placeholder="示例：http://www.flyfun.site/moduleName/"  class="layui-input">'
+                        ,'</div>'
+                        ,'</li>'
+                        ,selectStr
+                        ,'<li class="layui-form-item">'
+                        ,'<div class="layui-input-block">'
+                        ,'<button type="button" lay-submit lay-filter="apiDocModule" class="layui-btn">保存</button>'
+                        ,'</div>'
+                        ,'</li>'
+                        ,'</ul>'].join('')
+                    ,success: function(layero, index){
+                        $('select[name="projectId"]').val(data.projectId);
+                        form.render('select');
+                        form.on('submit(apiDocModule)', function(data){
+                            fly.json('/apiDocModule/save', data.field, function(res){
+                                layer.close(index);
+                                layer.msg('保存成功！', {
+                                    icon: 1
+                                })
+                                table.reload('apiDocModuleReload', {
+                                    page: {
+                                        curr: 1
+                                    }
+                                });
+                            });
+                            return false;
+                        })
+                    }
+                });
+            }
+        });
+    });
+</script>
+</html>

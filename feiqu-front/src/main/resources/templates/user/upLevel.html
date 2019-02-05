@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<%include("/common/_head.html"){}%>
+    <title>升级之路 -飞趣</title>
+<style>
+    .levelNum{
+        background: url(http://tb2.bdstatic.com/tb/static-puser/widget/pb_author/img/s6_f21bdf5.gif) no-repeat;
+        /* padding-left: 4px; */
+        padding-right: 2px;
+        color: #B65E00;
+        font-size: 11px;
+        font-weight: 700;
+        position: absolute;
+        text-align: left;
+        padding-left: 8px;
+        width: 25px;
+        height: 25px;
+        line-height: 18px;
+        font-family: arial;
+    }
+</style>
+</head>
+<body>
+<%
+var user = c.currentUser(request, servlet.response);
+var isLogin = false;
+if(user != null){
+isLogin=true;
+}
+include("/common/_headwithlogin.html",{user:user,isLogin:isLogin}){}
+%>
+<div class="layui-container fly-marginTop topToFix c-user-main">
+    <%include("/common/_user_menu.html",{user:user}){}%>
+        <div class="c-panel fly-panel-user detail-box" style="padding-top:20px;">
+            <div class="fly-msg" style="margin-bottom: 20px;"> Hi，${user.nickname!}，请开始你的升级之旅吧！ </div>
+            <div class="layui-row layui-col-space20">
+                <div class="layui-col-md12">
+                    <div class="c-panel c-signin fly-panel-border">
+                        <div class="c-panel-title">
+                            <a href="javascript:;">升级</a>
+                            <span class="c-mid"></span>
+                            <a class="c-fly-link" href="javascript:;" id="LAY_upLevelHelp">说明</a>
+                        </div>
+                        <div class="c-panel-body">
+                            <p>我的级数：<cite class="levelNum">${user.level!1}</cite></p>
+                            <div>
+                                当前活跃度：${totolScore!0}
+                            </div>
+                            <a href="javascript:;" id="upLevel" class="layui-btn layui-btn-warm">升级</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+</div>
+<%include("/common/_footor.html"){}%>
+</body>
+<%include("/common/_scripts.html"){}%>
+<script>
+    layui.use(['layer','form','element','fly'], function() {
+        var form = layui.form
+            ,layer = layui.layer
+            ,element=layui.element
+            ,fly=layui.fly;
+        $('#upLevel').on('click',function () {
+            fly.json('/u/upLevel',function (res) {
+                layer.msg("恭喜您成功升级到"+res.data+"级！");
+                $('.levelNum').html(res.data);
+            })
+        })
+        $('#LAY_upLevelHelp').on('click', function(){
+            layer.open({
+                type: 1
+                ,title: '签到说明'
+                ,area: '300px'
+                ,shade: 0.8
+                ,shadeClose: true
+                ,content: ['<div class="layui-text" style="padding: 20px;">'
+                    ,'<blockquote class="layui-elem-quote">通过活跃度升级，规则如下</blockquote>'
+                    ,'<table class="layui-table">'
+                    ,'<thead>'
+                    ,'<tr><th>升的级数</th><th>需要的活跃度</th></tr>'
+                    ,'</thead>'
+                    ,'<tbody>'
+                    ,'<tr><td>2级</td><td>300</td></tr>'
+                    ,'<tr><td>3级</td><td>800</td></tr>'
+                    ,'<tr><td>4级</td><td>1500</td></tr>'
+                    ,'<tr><td>5级</td><td>3000</td></tr>'
+                    ,'</tbody>'
+                    ,'</table>'
+                    ,'<ul>'
+                    ,'<li style="color: #FF5722;">不可利用程序增加活跃度，否则活跃度清零</li>'
+                    ,'</ul>'
+                    ,'</div>'].join('')
+            });
+        });
+    });
+</script>
+
+</html>

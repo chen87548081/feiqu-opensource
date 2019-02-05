@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%include("/common/_head.html"){}%>
+    <title> API 接口文档 -飞趣</title>
+    <link rel="stylesheet" href="${ctxPath}/css/api-doc.css?v=${VERSION}">
+</head>
+<body>
+<%
+var user = c.currentUser(request, servlet.response);
+var isLogin = false;
+if(user != null){
+isLogin=true;
+}
+include("/common/_headwithlogin.html",{user:user,isLogin:isLogin}){}
+%>
+<div class="api-doc-nav api-doc-index layui-container">
+    <div class="layui-row layui-col-space10">
+        <div class="layui-col-md3">
+            <%include("/common/_api_doc_menu.html",{user:user}){}%>
+        </div>
+        <div class="layui-col-md9">
+            <div class="c-panel">
+                <div class="c-panel-body">
+                    <table class="layui-hide" id="apiDocProjectManage" lay-filter="apiDocProject"></table>
+                    <script type="text/html" id="bar">
+                        <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="detail">查看详情</a>
+                        <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+                        <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="edit">编辑</a>
+                        <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="inviteMember"><i class="layui-icon layui-icon-friends"></i>邀请队员</a>
+                    </script>
+                    <script type="text/html" id="headToolbar">
+                        <div class="layui-btn-container">
+                            <button class="layui-btn layui-btn-sm" lay-event="add">新增项目</button>
+                            <button class="layui-btn layui-btn-sm" lay-event="listInterfaces">查看接口</button>
+                        </div>
+                    </script>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<%include("/common/_footor.html"){}%>
+</body>
+<%include("/common/_scripts.html",{user:user}){}%>
+<script>
+    layui.use(['fly','table'], function(){
+        var fly=layui.fly,table=layui.table,device=layui.device,form=layui.form;
+        table.render({
+            elem: '#apiDocProjectManage'
+            ,url:'/apiDocProject/list'
+            ,where: {userId:layui.cache.user.userId}
+            ,toolbar: '#headToolbar'
+            ,title: '项目数据表'
+            ,totalRow: true
+            ,cols: [[
+                {field:'id', title:'ID', width:80, fixed: 'left',  sort: true},
+                {field:'projectName', title:'项目名称', width:100, fixed: 'left',  sort: true},
+                {field:'remark', title:'备注', width:100, fixed: 'left',  sort: true},
+                {field:'type', title:'类型', width:80, fixed: 'left',  sort: true},
+                {field:'createTime', title:'创建时间', width:160, fixed: 'left',  sort: true},
+                {fixed: 'right', width:350, align:'center', toolbar: '#bar'}
+            ]]
+            ,page: true
+            ,response: {
+                statusCode: '0000',
+                msgName: 'message'
+            }
+            ,id: 'apiDocProjectReload'
+            ,parseData: function(res){
+                return {
+                    "code": res.code,
+                    "msg": res.message,
+                    "count": res.data.total,
+                    "data": res.data.list
+                };
+            }
+        });
+        table.on('toolbar(apiDocProject)', function(obj){
+            switch(obj.event){
+                case 'listInterfaces':
+                    location.href = '/apiDocInterface'
+                    break;
+                case 'addInterface':
+                    location.href = '/apiDocInterface/apiDocInterfaceAdd'
+                    break;
+                case 'add':
+                    layer.open({
+                        type: 1
+                        ,id: 'fq_apiDocProject'
+                        ,title: '新增项目'
+                        ,area: (device.ios || device.android) ? ($(window).width() + 'px') : '660px'
+                        ,content: ['<ul class="layui-form" style="margin: 20px;">'
+                            ,'<li class="layui-form-item">'
+                            ,'<label class="layui-form-label">名称</label>'
+                            ,'<div class="layui-input-block">'
+                            ,'<input required name="projectName" lay-verify="required" placeholder="项目名称"  class="layui-input">'
+                            ,'</div>'
+                            ,'</li>'
+                            ,'<li class="layui-form-item">'
+                            ,'<label class="layui-form-label">项目简介</label>'
+                            ,'<div class="layui-input-block">'
+                            ,'<textarea required name="remark" placeholder="项目简介"  class="layui-textarea"></textarea>'
+                            ,'</div>'
+                            ,'</li>'
+                            ,'<li class="layui-form-item">'
+                            ,'<label class="layui-form-label">类型</label>'
+                            ,'<div class="layui-input-block">'
+                            ,'<select name="type" class="layui-select">'
+                            ,'<option value="1">私有项目</option>'
+                            ,'<option value="2">公开项目</option>'
+                            ,'</select>'
+                            ,'</div>'
+                            ,'</li>'
+                            ,'<li class="layui-form-item">'
+                            ,'<div class="layui-input-block">'
+                            ,'<button type="button" lay-submit lay-filter="apiDocProject" class="layui-btn">保存</button>'
+                            ,'</div>'
+                            ,'</li>'
+                            ,'</ul>'].join('')
+                        ,success: function(layero, index){
+                            form.render('select')
+                            form.on('submit(apiDocProject)', function(data){
+                                fly.json('/apiDocProject/save', data.field, function(res){
+                                    layer.close(index);
+                                    layer.msg('保存成功！', {
+                                        icon: 1
+                                    })
+                                    table.reload('apiDocProjectReload', {
+                                        page: {
+                                            curr: 1
+                                        }
+                                    });
+                                });
+                                return false;
+                            })
+                        }
+                    });
+                    break;
+            };
+        });
+        table.on('tool(apiDocProject)', function(obj){
+            var data = obj.data;
+            if(obj.event === 'detail'){
+                location.href = '/apiDocProject/detail/'+obj.data.id;
+            } if(obj.event === 'del'){
+                layer.confirm('真的删除这个项目么', function(index){
+                    fly.json('/apiDocProject/delete?id='+data.id,{},function (res) {
+                        layer.msg('删除成功！');
+                        table.reload('apiDocProjectReload', {
+                            page: {
+                                curr: 1
+                            }
+                        });
+                    });
+                    layer.close(index);
+                });
+            }else if(obj.event === 'edit'){
+                layer.open({
+                    type: 1
+                    ,id: 'fq_fqFriendLink'
+                    ,title: '编辑项目'
+                    ,area: (device.ios || device.android) ? ($(window).width() + 'px') : '660px'
+                    ,content: ['<ul class="layui-form" style="margin: 20px;">'
+                        ,'<li class="layui-form-item">'
+                        ,'<label class="layui-form-label">项目名称</label>'
+                        ,'<div class="layui-input-block">'
+                        ,'<input required name="projectName" lay-verify="required" placeholder="友链名称" value="'+data.projectName+'" class="layui-input">'
+                        ,'<input type="hidden" name="id" value="'+data.id+'">'
+                        ,'</div>'
+                        ,'</li>'
+                        ,'<li class="layui-form-item">'
+                        ,'<label class="layui-form-label">项目备注</label>'
+                        ,'<div class="layui-input-block">'
+                        ,'<textarea required name="remark" lay-verify="required" placeholder="项目备注"  class="layui-textarea">'+data.remark+'</textarea>'
+                        ,'<input type="hidden" name="id" value="'+data.id+'">'
+                        ,'</div>'
+                        ,'</li>'
+                        ,'<li class="layui-form-item">'
+                        ,'<label class="layui-form-label">类型</label>'
+                        ,'<div class="layui-input-block">'
+                        ,'<select name="type" class="layui-select">'
+                        ,'<option value="1">私有项目</option>'
+                        ,'<option value="2">公开项目</option>'
+                        ,'</select>'
+                        ,'</div>'
+                        ,'</li>'
+                        ,'<li class="layui-form-item">'
+                        ,'<div class="layui-input-block">'
+                        ,'<button type="button" lay-submit lay-filter="apiDocProject" class="layui-btn">保存</button>'
+                        ,'</div>'
+                        ,'</li>'
+                        ,'</ul>'].join('')
+                    ,success: function(layero, index){
+                        $('select[name="type"]').val(data.type);
+                        form.render('select');
+                        form.on('submit(apiDocProject)', function(data){
+                            fly.json('/apiDocProject/save', data.field, function(res){
+                                layer.close(index);
+                                layer.msg('保存成功！', {
+                                    icon: 1
+                                })
+                                table.reload('apiDocProjectReload', {
+                                    page: {
+                                        curr: 1
+                                    }
+                                });
+                            });
+                            return false;
+                        })
+                    }
+                });
+            }else if(obj.event === 'inviteMember'){
+                layer.open({
+                    type: 1
+                    ,id: 'fq_fqInviteMember'
+                    ,title: '邀请队员'
+                    ,area: (device.ios || device.android) ? ($(window).width() + 'px') : '660px'
+                    ,content: ['<ul class="layui-form" style="margin: 20px;">'
+                        ,'<li class="layui-form-item">'
+                        ,'搜索产品内成员'
+                        ,'</li>'
+                        ,'<li class="layui-form-item">'
+                        ,'<label class="layui-form-label">被邀请用户</label>'
+                        ,'<div class="layui-input-block">'
+                        ,'<input required name="username" placeholder="账号或者昵称" value="" class="layui-input" autocomplete="off">'
+                        ,'<input type="hidden" name="projectId" value="'+data.id+'">'
+                        ,'<input type="hidden" name="userId" value="">'
+                        ,'</div>'
+                        ,'</li>'
+                        ,'<li class="layui-form-item">'
+                        ,'<div class="layui-input-block">'
+                        ,'<button type="button" lay-submit lay-filter="apiDocProjectUser" class="layui-btn">发送邀请</button>'
+                        ,'</div>'
+                        ,'</li>'
+                        ,'</ul>'].join('')
+                    ,success: function(layero, index){
+                        var $username = $('input[name="username"]');
+                        $username.on('input',function (eve) {
+                                fly.json('/api/findUsersByName?username='+$(this).val(),function (res) {
+                                    if(res.data){
+                                        var names = res.data;
+                                        var str = "";
+                                        layui.each(names,function (index,item) {
+                                            if(layui.cache.user.userId.toString() !== item.key){
+                                                str+='<li lay-data="'+item.key+'">'+item.value+'</li>'
+                                            }
+                                        })
+                                        if(str === ""){
+                                            return
+                                        }
+                                        str = '<ul id="search-usernames" class="layui-clear">'+ str +'</ul>';
+                                        layer.tips(str, $username, {
+                                            tips: 3
+                                            ,time: 0
+                                            ,skin: 'layer-names'
+                                        });
+                                        $(document).on('click', function(){
+                                            layer.closeAll('tips');
+                                        });
+                                        $('#search-usernames li').on('click', function(){
+                                            var name = $(this).html();
+                                            var userId = $(this).attr('lay-data');
+                                            $('input[name="userId"]').val(userId);
+                                            $username.val(name);
+                                        });
+                                    }
+                                })
+                        })
+                        form.on('submit(apiDocProjectUser)', function(data){
+                            fly.json('/apiDocProjectUser/save', data.field, function(res){
+                                layer.msg('发送邀请成功！', {icon: 1})
+                            });
+                            return false;
+                        })
+                    }
+                });
+            }else if(obj.event === 'addInterface'){
+                location.href = '/apiDocInterface/apiDocInterfaceAdd?projectId='+data.id
+            }else if(obj.event === 'listProjectInterfaces'){
+                location.href = '/apiDocInterface?projectId='+data.id
+            }
+        });
+    });
+</script>
+</html>

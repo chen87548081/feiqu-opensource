@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%include("/common/_head.html"){}%>
+    <title> 接受到的邀请 -飞趣</title>
+    <link rel="stylesheet" href="${ctxPath}/css/api-doc.css?v=${VERSION}">
+</head>
+<body>
+<%
+var user = c.currentUser(request, servlet.response);
+var isLogin = false;
+if(user != null){
+isLogin=true;
+}
+include("/common/_headwithlogin.html",{user:user,isLogin:isLogin}){}
+%>
+<div class="api-doc-nav api-doc-index layui-container">
+    <div class="layui-row layui-col-space10">
+        <div class="layui-col-md3">
+            <%include("/common/_api_doc_menu.html",{user:user}){}%>
+        </div>
+        <div class="layui-col-md9">
+            <div class="c-panel">
+                <div class="c-panel-body">
+                    <div class="c-panel-title">
+                        我收到的邀请
+                    </div>
+                    <table class="layui-hide" id="apiDocProjectUserManage" lay-filter="apiDocProjectUser"></table>
+                    <script type="text/html" id="bar">
+                        <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="receive">接受邀请</a>
+                        <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="refuse">拒绝邀请</a>
+                    </script>
+                    <script type="text/html" id="headToolbar">
+                        <div class="layui-btn-container">
+                            <!--<button class="layui-btn layui-btn-sm" lay-event="add">新增接口</button>-->
+                        </div>
+                    </script>
+                    <script type="text/html" id="statusTpl">
+                        {{#  if(d.status == 1){ }}
+                        已经接受邀请
+                        {{#  } else if(d.status == 0){ }}
+                        未处理
+                        {{#  }else{ }}
+                        已拒绝
+                        {{#  } }}
+                    </script>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<%include("/common/_footor.html"){}%>
+</body>
+<%include("/common/_scripts.html",{user:user}){}%>
+<script>
+    layui.use(['fly','table'], function(){
+        var fly=layui.fly,table=layui.table,device=layui.device,form=layui.form,$project = $('select[name="projectId"]');
+        form.render('select')
+        var active = {
+            reload: function(){
+                table.reload('apiDocProjectUserReload', {
+                    page: {
+                        curr: 1
+                    }
+                    ,where: {type:1,userId:layui.cache.user.userId}
+                });
+            }
+        }
+        $('.searchTable .layui-btn').on('click', function(){
+            var type = $(this).data('type');
+            active[type] ? active[type].call(this) : '';
+        });
+        table.render({
+            elem: '#apiDocProjectUserManage'
+            ,url:'/apiDocProjectUser/inviteQuery'
+            ,where: {type:1,userId:layui.cache.user.userId}
+            ,toolbar: '#headToolbar'
+            ,title: '成员数据表'
+            ,totalRow: true
+            ,cols: [[
+                {field:'id', title:'ID', width:80, fixed: 'left', unresize: true, sort: true},
+                {field:'userId', title:'发送邀请的成员id', width:150, fixed: 'left', unresize: true, sort: true},
+                {field:'projectId', title:'项目ID', width:100, fixed: 'left', unresize: true, sort: true},
+                {field:'createTime', title:'发起邀请时间', width:160, fixed: 'left', unresize: false, sort: true},
+                {field:'status', title:'状态', width:160, fixed: 'left', unresize: false, sort: true,templet: '#statusTpl'},
+                {fixed: 'right', width:200, align:'center', toolbar: '#bar'}
+            ]]
+            ,page: true
+            ,response: {
+                statusCode: '0000',
+                msgName: 'message'
+            }
+            ,id: 'apiDocProjectUserReload'
+            ,parseData: function(res){
+                return {
+                    "code": res.code,
+                    "msg": res.message,
+                    "count": res.data.total,
+                    "data": res.data.list
+                };
+            }
+        });
+        table.on('toolbar(apiDocProjectUser)', function(obj){
+            switch(obj.event){
+                case 'receive':
+                    location.href = '/apiDocInterface/apiDocInterfaceAdd/?projectId='+$project.val()
+                    break;
+            };
+        });
+        table.on('tool(apiDocProjectUser)', function(obj){
+            switch(obj.event){
+                case 'receive':
+                    layer.confirm('确认接受邀请吗', function(index){
+                        dealInvite(obj.data.id,1,index);
+                    });
+                    break;
+                case 'refuse':
+                    layer.confirm('确认拒绝邀请吗', function(index){
+                        dealInvite(obj.data.id,-1,index);
+                    });
+                    break;
+            };
+        });
+
+        function dealInvite(id,status,index) {
+            fly.json('/apiDocProjectUser/dealInvite',{id:id,status:status},function (res) {
+                if(status === 1){
+                    layer.msg('接受成功！');
+                }else {
+                    layer.msg('拒绝成功！');
+                }
+                table.reload('apiDocProjectUserReload', {
+                    page: {
+                        curr: 1
+                    }
+                });
+            });
+            layer.close(index);
+        }
+    });
+</script>
+</html>

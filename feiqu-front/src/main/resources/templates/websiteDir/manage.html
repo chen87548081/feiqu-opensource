@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<%include("/common/_head.html"){}%>
+    <title>网址管理 -飞趣</title>
+<style>
+</style>
+</head>
+<body>
+<%
+var user = c.currentUser(request, servlet.response);
+var isLogin = false;
+if(user != null){
+isLogin=true;
+}
+include("/common/_headwithlogin.html",{user:user,isLogin:isLogin}){}
+%>
+<div class="layui-container fly-marginTop topToFix c-user-main">
+    <%include("/common/_user_menu.html",{user:user}){}%>
+        <div class="c-panel fly-panel-user detail-box">
+            <div class="layui-row layui-col-space20">
+                <div class="layui-col-md12">
+                    <form class="layui-form layui-form-pane" action="">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">网址名称</label>
+                            <div class="layui-input-inline" style="width: 200px;">
+                                <input name="siteName" placeholder="请输入网站名称" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="searchTable">
+                            <button class="layui-btn" lay-filter="websiteDirForm" lay-submit>搜索</button>
+                        </div>
+                    </form>
+
+                    <table class="layui-hide" id="websiteDirManage" lay-filter="websiteDir"></table>
+                    <script type="text/html" id="bar">
+                        <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+                        <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="edit">编辑</a>
+                    </script>
+                    <script type="text/html" id="urlTpl">
+                        <a href="{{d.url}}" target="_blank">{{d.url}} </a>
+                    </script>
+                    <script type="text/html" id="imgUrlTpl">
+                        <img src="{{d.icon}}">
+                    </script>
+                </div>
+            </div>
+        </div>
+</div>
+<%include("/common/_footor.html"){}%>
+</body>
+<%include("/common/_scripts.html"){}%>
+<script>
+    layui.use(['table','fly','form'], function() {
+        var table=layui.table
+            ,fly=layui.fly,form=layui.form,device=layui.device;
+        form.on('submit(websiteDirForm)', function(data){
+            var field = data.field;
+            table.reload('websiteDirReload', {
+                page: {
+                    curr: 1
+                }
+                ,where: {
+                    name:data.field.siteName
+                }
+            });
+            return false;
+        });
+        table.render({
+            elem: '#websiteDirManage'
+            ,url:'/websiteDir/manage/list'
+            ,toolbar: true
+            ,title: '网址数据表'
+            ,totalRow: true
+            ,cols: [[
+                {field:'id', title:'ID', width:80, fixed: 'left', unresize: true, sort: true},
+                {field:'name', title:'网址名称', width:100, fixed: 'left', unresize: true, sort: true},
+                {field:'url', title:'网址地址', width:200, fixed: 'left', unresize: true, sort: true,templet: '#urlTpl'},
+                {field:'type', title:'网址类型', width:80, fixed: 'left', unresize: true, sort: true},
+                {field:'createTime', title:'创建时间', width:160, fixed: 'left', unresize: false, sort: true},
+                {field:'icon', title:'图标', width:80, fixed: 'left', unresize: true, sort: true,templet: '#imgUrlTpl'},
+                {fixed: 'right', width:150, align:'center', toolbar: '#bar'}
+            ]]
+            ,page: true
+            ,response: {
+                statusCode: '0000', //重新规定成功的状态码为 200，table 组件默认为 0
+                msgName: 'message' //重新规定成功的状态码为 200，table 组件默认为 0
+            }
+            ,id: 'websiteDirReload'
+            ,parseData: function(res){ //将原始数据解析成 table 组件所规定的数据
+                return {
+                    "code": res.code, //解析接口状态
+                    "msg": res.message, //解析提示文本
+                    "count": res.data.total, //解析数据长度
+                    "data": res.data.list //解析数据列表
+                };
+            }
+        });
+        //监听工具条
+        table.on('tool(websiteDir)', function(obj){
+            var data = obj.data;
+            if(obj.event === 'del'){
+                layer.confirm('真的删除这个网址么', function(index){
+                    fly.json('/websiteDir/delete?id='+data.id,{},function (res) {
+                        layer.msg('删除成功！');
+                        table.reload('websiteDirReload', {
+                            page: {
+                                curr: 1 //重新从第 1 页开始
+                            }
+                        });
+                    });
+                    layer.close(index);
+                });
+            }else if(obj.event === 'edit'){
+                layer.open({
+                    type: 1
+                    ,id: 'fq_website'
+                    ,title: '编辑网址'
+                    ,area: (device.ios || device.android) ? ($(window).width() + 'px') : '660px'
+                    ,content: ['<ul class="layui-form" style="margin: 20px;">'
+                        ,'<li class="layui-form-item">'
+                        ,'<label class="layui-form-label">网址名称</label>'
+                        ,'<div class="layui-input-block">'
+                        ,'<input required name="name" lay-verify="required" placeholder="网址名称" value="'+data.name+'" class="layui-input">'
+                        ,'<input type="hidden" name="id" value="'+data.id+'">'
+                        ,'</div>'
+                        ,'</li>'
+                        ,'<li class="layui-form-item">'
+                        ,'<label class="layui-form-label">案例网址</label>'
+                        ,'<div class="layui-input-block">'
+                        ,'<input required name="url" lay-verify="url" placeholder="网址url" value="'+data.url+'" class="layui-input">'
+                        ,'</div>'
+                        ,'</li>'
+                        ,'<li class="layui-form-item">'
+                        ,'<label class="layui-form-label">类型</label>'
+                        ,'<div class="layui-input-block">'
+                        ,'<input required name="type" lay-verify="required" placeholder="类型" value="'+data.type+'" class="layui-input">'
+                        ,'</div>'
+                        ,'</li>'
+                        ,'<li class="layui-form-item">'
+                        ,'<label class="layui-form-label">网址图标</label>'
+                        ,'<div class="layui-input-block">'
+                        ,'<input required name="icon" lay-verify="required" placeholder="网址图标" value="'+data.icon+'" class="layui-input">'
+                        ,'</div>'
+                        ,'</li>'
+                        ,'<li class="layui-form-item">'
+                        ,'<div class="layui-input-block">'
+                        ,'<button type="button" lay-submit lay-filter="website" class="layui-btn">保存</button>'
+                        ,'</div>'
+                        ,'</li>'
+                        ,'</ul>'].join('')
+                    ,success: function(layero, index){
+                        form.on('submit(website)', function(data){
+                            fly.json('/websiteDir/edit', data.field, function(res){
+                                layer.close(index);
+                                layer.msg('保存成功！', {
+                                    icon: 1
+                                })
+                            });
+                            return false;
+                        })
+                    }
+                });
+            }
+        });
+    });
+</script>
+</html>

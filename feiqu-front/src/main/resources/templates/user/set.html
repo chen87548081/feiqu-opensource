@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<%include("/common/_head.html"){}%>
+    <title>基本设置 -飞趣</title>
+<style>
+    .upload-div {
+        width: 30rem;
+        position: relative;
+    }
+    .upload-div button{
+        position: absolute;
+        left: 40%;
+        top:35px;
+    }
+    .layui-upload-list img{
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        width: 168px;
+        height: 168px;
+        margin: -50px 0 0 -84px;
+        border-radius: 100%;
+    }
+    .layui-upload-list{
+        height: 30rem;
+        background-color: #1b6d85;
+    }
+    .fly-msg a {
+        color: #4F99CF;
+    }
+    .app-bind .app-havebind {
+        color: #333;
+    }
+    .app-bind li {
+        margin-bottom: 10px;
+        line-height: 30px;
+        color: #999;
+    }
+    .app-bind .app-havebind .icon-qq {
+        color: #7CA9C9;
+    }
+    .app-bind .app-havebind .icon-weibo {
+        color: #E6162D;
+    }
+    .app-bind li .iconfont {
+        position: relative;
+        top: 3px;
+        margin-right: 5px;
+        font-size: 28px;
+    }
+    .fly-msg, .fly-error {
+        padding: 10px 15px;
+        line-height: 24px;
+    }
+</style>
+</head>
+<body>
+<%
+var user = c.currentUser(request, servlet.response);
+var isLogin = false;
+if(user != null){
+isLogin=true;
+}
+include("/common/_headwithlogin.html",{user:user,isLogin:isLogin}){}
+%>
+<div class="layui-container fly-marginTop topToFix c-user-main">
+    <%include("/common/_user_menu.html",{user:user}){}%>
+        <div class="c-panel fly-panel-user">
+            <div class="layui-tab layui-tab-brief" lay-filter="user">
+                <ul class="layui-tab-title">
+                    <li lay-id="info">我的资料</li>
+                    <li lay-id="avatar">头像</li>
+                    <li lay-id="pass">密码</li>
+                    <li lay-id="bind">账号绑定</li>
+                    <li lay-id="pay">支付绑定</li>
+                </ul>
+                <div class="layui-tab-content">
+                    <div class="layui-tab-item layui-show">
+                        <form class="layui-form">
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">邮箱</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" name="username" lay-verify="email" value="${user.username!''}" class="layui-input">
+                                </div>
+                                <div class="layui-form-mid layui-word-aux">如果您在邮箱已激活的情况下，变更了邮箱，需<a href="/u/activate/" style="font-size: 12px; color: #4f99cf;">重新验证邮箱</a>。</div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">昵称</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" name="nickname" value="${user.nickname!''}"  placeholder="昵称" autocomplete="off" class="layui-input">
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">城市</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" name="city" value="${user.city!''}" required lay-verify="required" placeholder="城市" autocomplete="off" class="layui-input">
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">生日</label>
+                                <div class="layui-input-inline">
+                                    <input id="birth" type="text" name="birth" value="${user.birth!''}"  placeholder="生日" autocomplete="off" class="layui-input">
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">学历</label>
+                                <div class="layui-input-inline">
+                                    <select name="education">
+                                        <option value="" ${user.education == ""?"selected":""}>请选择</option>
+                                        <option value="大专" ${user.education == "大专"?"selected":""}>大专</option>
+                                        <option value="本科" ${user.education == "本科"?"selected":""}>本科</option>
+                                        <option value="研究生" ${user.education == "研究生"?"selected":""}>研究生</option>
+                                        <option value="硕士" ${user.education == "硕士"?"selected":""}>硕士</option>
+                                        <option value="博士" ${user.education == "博士"?"selected":""}>博士</option>
+                                        <option value="其他" ${user.education == "其他"?"selected":""}>其他</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">学校</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" name="school" value="${user.school!''}" placeholder="学校" autocomplete="off" class="layui-input">
+                                </div>
+                            </div>
+                            <input type="hidden" name="id" value="${user.id}">
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">性别</label>
+                                <div class="layui-input-block">
+                                    <input type="radio" name="sex" value="1" title="男" ${user.sex==1?'checked':''}>
+                                    <input type="radio" name="sex" value="2" title="女" ${user.sex==2?'checked':''}>
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">情感情况</label>
+                                <div class="layui-input-block">
+                                    <input type="radio" name="isSingle" value="1" title="单身" ${user.isSingle==1?'checked':''}>
+                                    <input type="radio" name="isSingle" value="0" title="热恋期" ${user.isSingle==0?'checked':''}>
+                                    <input type="radio" name="isSingle" value="2" title="已婚" ${user.isSingle==2?'checked':''}>
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">个性签名</label>
+                                <div class="layui-input-block">
+                                    <textarea name="sign" class="layui-textarea">${user.sign!}</textarea>
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <div class="layui-input-block">
+                                    <button class="layui-btn" lay-submit lay-filter="formUserInfo">确认修改</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="layui-tab-item">
+                        <div class="upload-div">
+                            <button type="button" class="layui-btn" id="test1">上传头像</button>
+                            <div class="layui-upload-list">
+                                <img class="layui-upload-img" id="demo1" src="${user.icon}">
+                                <p id="demoText"></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-tab-item">
+                        <form class="layui-form" action="${ctxPath}/u/updatePass">
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">新密码</label>
+                                <div class="layui-input-inline">
+                                    <input type="password" name="password" required lay-verify="required" placeholder="新密码" autocomplete="off" class="layui-input">
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">密码确认</label>
+                                <div class="layui-input-inline">
+                                    <input type="password" name="repassword" required lay-verify="required" placeholder="密码确认" autocomplete="off" class="layui-input">
+                                </div>
+                            </div>
+                            <input type="hidden" name="id" value="${user.id}">
+                            <div class="layui-form-item">
+                                <div class="layui-input-block">
+                                    <button class="layui-btn" lay-submit lay-filter="formDemo">确认修改</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="layui-tab-item">
+                        <ul class="app-bind">
+                            <%if(qqBind){%>
+                            <li class="fly-msg  app-havebind"> <i class="iconfont icon-qq"></i> <span>已成功绑定，您可以使用QQ帐号直接登录飞趣社区</span></li>
+                            <%}else{%>
+                            <li class="fly-msg "> <i class="iconfont icon-qq"></i> <a href="/sns?t=qq" class="acc-qq" type="qq_id" onclick="layer.msg('正在绑定QQ', {icon:16, shade: 0.1, time:0})">立即绑定</a> <span>，即可使用QQ帐号登录飞趣社区</span> </li> </ul>
+                            <%}%>
+                            <%if(sinaBind){%>
+                            <li class="fly-msg  app-havebind"> <i class="iconfont icon-weibo"></i> <span>已成功绑定，您可以使用微博帐号直接登录飞趣社区</span></li>
+                            <%}else{%>
+                            <li class="fly-msg "> <i class="iconfont icon-weibo"></i> <a href="/sns?t=sina" class="acc-weibo" type="weibo_id" onclick="layer.msg('正在绑定微博', {icon:16, shade: 0.1, time:0})">立即绑定</a> <span>，即可使用微博帐号登录飞趣社区</span> </li> </ul>
+                            <%}%>
+                    </div>
+                    <div class="layui-tab-item">
+                        <div class="layui-row">
+                            <div class="layui-col-md6">
+                                <button type="button" class="layui-btn" id="alipayBtn">上传支付宝支付二维码</button>
+                                <br>
+                                <img style="max-width: 200px" name="alipay" src="${alipayImgUrl!}">
+                            </div>
+                            <div class="layui-col-md6">
+                                <button type="button" class="layui-btn" id="wechatBtn">上传微信支付二维码</button>
+                                <br>
+                                <img style="max-width: 200px" name="wechat" src="${wechatPayImgUrl!}">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+</div>
+<%include("/common/_footor.html"){}%>
+</body>
+<%include("/common/_scripts.html"){}%>
+<script>
+    layui.use(['upload','layer','form','element','laydate','fly'], function() {
+        var $ = layui.jquery
+            , upload = layui.upload
+            ,form = layui.form
+            ,layer = layui.layer
+            ,element=layui.element
+            ,laydate=layui.laydate
+            ,fly=layui.fly;
+
+        laydate.render({
+            elem:'#birth'
+        })
+
+        if(location.hash){
+            element.tabChange('user', location.hash.replace(/^#/, ''));
+        }
+        element.on('tab(user)', function(){
+            var othis = $(this), layid = othis.attr('lay-id');
+            if(layid){
+                location.hash = layid;
+            }
+        });
+
+        var uploadInst = upload.render({
+            elem: '#test1'
+            ,url: '${ctxPath}/u/uploadIcon'
+            ,size:300
+            ,acceptMime:'image/*'
+            ,before: function(obj){
+                obj.preview(function(index, file, result){
+                    $('#demo1').attr('src', result); //图片链接（base64）
+                });
+            }
+            ,done: function(res){
+                if(res.code !== '0000'){
+                    return layer.msg('上传失败');
+                }
+                layer.msg("上传成功")
+                $("#head-user-icon").attr("src",res.data)
+            }
+            ,error: function(e){
+                var demoText = $('#demoText');
+                demoText.html('<span style="color: #FF5722;">上传失败</span> <a class="layui-btn layui-btn-mini demo-reload">重试</a>');
+                demoText.find('.demo-reload').on('click', function(){
+                    uploadInst.upload();
+                });
+            }
+        });
+        initPayRender();
+        function initPayRender(){
+            var payways = [1,2];
+            for(var i in payways){
+                payRender(payways[i]);
+            }
+        }
+        function payRender(p){
+            var name = p == 1?"alipay":"wechat";
+            upload.render({
+                elem: '#'+name+'Btn'
+                ,url: '${ctxPath}/fqUserPayWay/uploadQrCode?payWay='+p
+                ,size:100
+                ,acceptMime:'image/*'
+                ,before: function(obj){
+                    obj.preview(function(index, file, result){
+                        $('img[name="'+name+'"]').attr('src', result); //图片链接（base64）
+                    });
+                }
+                ,done: function(res){
+                    if(res.code !== '0000'){
+                        return layer.msg('上传失败');
+                    }
+                    layer.msg("上传成功")
+                    $('img[name="'+name+'"]').attr("src",res.data)
+                }
+                ,error: function(e){
+                    layer.msg("上传失败")
+                }
+            });
+        }
+        form.on('submit(formDemo)', function(data){
+            if(data.field.password !== data.field.repassword){
+                layer.msg("密码不一致")
+                return false
+            }
+            if(data.field.password.length <6){
+                layer.msg("密码长度至少为6")
+                return false
+            }
+            fly.json('${ctxPath}/u/updatePass',data.field,function (result) {
+                layer.msg('密码修改成功~')
+                $("input[name='password']").val("")
+                $("input[name='repassword']").val("")
+            })
+            return false;
+        });
+        form.on('submit(formUserInfo)', function(data){
+            var nickname = data.field.nickname;
+            var city = data.field.city;
+            var sign = data.field.sign;
+            if(!nickname){
+                layer.msg('昵称不能为空')
+                return false
+            }
+            if(nickname.length > 10){
+                layer.msg('昵称长度不要超过10个字符')
+                return false
+            }
+            if(!city){
+                layer.msg('城市不能为空')
+                return false
+            }
+            if(sign && sign.length > 50){
+                layer.msg('签名长度控制在50个字符之内')
+                return false
+            }
+            fly.json('${ctxPath}/u/updateUserInfo',data.field,function (result) {
+                layer.msg('用户信息修改成功~')
+            })
+            return false;
+        });
+    });
+</script>
+
+</html>

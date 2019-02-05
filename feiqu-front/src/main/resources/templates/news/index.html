@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<%include("/common/_head.html"){}%>
+<title>看看新闻 -飞趣</title>
+<style>
+    #pagesplit{
+        background-color: #fff;
+    }
+    .hot-article li{position: relative}
+    .hot-article li a{
+        overflow: hidden;
+        max-width: 80%;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        display: inline-block;
+    }
+    .hot-article li em {
+        position: absolute;
+        right: 0;
+        top: 0;
+        font-size: 12px;
+        color: #999;
+        font-style: normal;
+    }
+    .news-single {
+        margin: 20px 0;
+        padding: 10px 0;
+        border-bottom: 1px solid #B3CC9C;
+        position: relative;
+        min-height: 200px;
+    }
+    .news-single .news-body{
+        width: 50%;
+        color: #0C0C0C !important;
+    }
+    .news-single .news-body time{
+        position: absolute;
+        bottom: 0;
+        font-size: 16px;
+    }
+    .news-body img{
+        max-height: 100%;
+        max-width: 50%;
+    }
+</style>
+</head>
+<body>
+<%
+var user = c.currentUser(request, servlet.response);
+var isLogin = false;
+if(user != null){
+isLogin=true;
+}
+include("/common/_headwithlogin.html",{user:user,isLogin:isLogin}){}
+%>
+<div class="layui-container topToFix">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md8">
+            <div class="c-panel">
+                <div class="c-panel-title">
+                    <span class="title-first">看看新闻哦(每三个小时更新一次)</span>
+                </div>
+                <div class="c-panel-body">
+                    <%for(var news in fqNews){%>
+                    <div class="news-single">
+                        <a href="/fqNews/detail/${news.id}" target="_blank">
+                            <div class="news-body">
+                                <h2>${news.title}</h2>
+                                <img class="c-list-num" alt="未知" src="${news.imgSrc}">
+                                <time>${news.pTime} 来自${news.source}</time>
+                            </div>
+                        </a>
+                    </div>
+                    <%}%>
+                </div>
+                <div id="pagesplit">
+                </div>
+            </div>
+        </div>
+        <div class="layui-col-md4">
+            <div class="c-panel">
+                <div class="c-panel-title">后续开发</div>
+                <div class="">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<%include("/common/_footor.html"){}%>
+</body>
+<%include("/common/_scripts.html",{user:user}){}%>
+<script>
+    layui.use(['layer', 'laypage','fly'], function(){
+        var layer = layui.layer
+            ,laypage=layui.laypage
+            ,fly=layui.fly;
+        laypage.render({
+            elem: 'pagesplit'
+            ,curr:${pageIndex}
+            ,count: ${count}
+            , limit:${pageSize}
+            ,layout: ['count', 'prev', 'page', 'next', 'skip']
+            ,jump: function(obj,first){
+                if(!first){
+                    location.href = "${ctxPath}/fqNews?pageIndex="+obj.curr
+                }
+            }
+        });
+    });
+</script>
+</html>

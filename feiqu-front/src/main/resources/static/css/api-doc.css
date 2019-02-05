@@ -1,0 +1,16 @@
+@media screen and (min-width: 768px){
+    .api-doc-nav.api-doc-index {
+        padding-bottom: 0;
+    }
+}
+.api-doc-nav {
+
+}
+
+.nav-menu {
+}
+.c-position-rt-format{
+    position: absolute;
+    right: 15px;
+    top:8px;
+}

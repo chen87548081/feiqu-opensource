@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<%include("/common/_head.html"){}%>
+    <title>重置密码 -飞趣</title>
+<style>
+    .layui-form{
+        margin: 20px 0 0 10px;
+    }
+    .nav-ul li{
+        padding: 0 1.5rem;
+    }
+    .layui-input-block input{
+        width: 20rem;
+    }
+    .aside {
+        padding-top: 3rem;
+    }
+    .aside a{
+        color: #1E9FFF;
+    }
+    .fly-msg {
+        background-color: #F8F8F8;
+        color: #666;
+        padding: 10px 15px;
+        line-height: 24px;
+        margin-bottom: 10px;
+    }
+</style>
+</head>
+<body>
+<%
+var user = c.currentUser(request, servlet.response);
+var isLogin = false;
+if(user != null){
+isLogin=true;
+}
+include("/common/_headwithlogin.html",{user:user,isLogin:isLogin}){}
+%>
+<div class="layui-container topToFix">
+    <div class="layui-row c-panel">
+        <div class="layui-md layui-col-md6 ">
+
+        <form class="layui-form">
+            <div class="fly-msg">请重置您的密码</div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">密码</label>
+                <div class="layui-input-block">
+                    <input type="password" name="password" required placeholder="请输入密码" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">确认密码</label>
+                <div class="layui-input-block">
+                    <input type="password" name="repassword" required placeholder="请输入确认密码" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">验证码</label>
+                <div class="layui-input-block">
+                    <input type="text" name="verifyCode" required  lay-verify="required" placeholder="请输入验证码" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-input-block"><img id="captchaImg" src="${ctxPath}/captcha"/></div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-input-block">
+                    <button class="layui-btn" lay-submit lay-filter="formDemo">提交</button>
+                </div>
+            </div>
+        </form>
+        </div>
+        <div class="layui-col-md4 layui-col-md-offset2">
+        </div>
+    </div>
+</div>
+<%include("/common/_footor.html"){}%>
+</body>
+<%include("/common/_scripts.html"){}%>
+<script>
+    //Demo
+    layui.use('form', function(){
+        var form = layui.form;
+
+        //监听提交
+        form.on('submit(formDemo)', function(data){
+            if (data.field.password != data.field.repassword){
+                layer.msg('两次密码不一致')
+                return false
+            }
+            $.ajax({
+                url:"${ctxPath}/u/resetPass?key=${key}",
+                type:"post",
+                data:data.field,
+                dataType:"json",
+                success:function (result) {
+                    console.log(result)
+                    if(result.code == '0000'){
+                        layer.msg("密码重置成功！")
+                        setTimeout(function () {
+                            location.href = "${ctxPath}/u/login"
+                        },500)
+                    }else {
+                        layer.msg(result.message||"重置失败",{icon:5})
+                    }
+                }
+            });
+            return false;
+        });
+
+        $("#captchaImg").click(function () {
+            var time = new Date().getTime()
+            $(this).attr('src','${ctxPath}/captcha?time='+time)
+        })
+    });
+</script>
+</html>

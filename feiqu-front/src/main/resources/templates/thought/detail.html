@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <%include("/common/_head.html"){}%>
+    <title>${thought.thoughtContent!''} -${oUser.nickname} -飞趣</title>
+    <meta name="description" content="${thought.thoughtContent}">
+    <style type="text/css">
+        .floor {
+            padding-left: 1rem;
+        }
+        .first-line {
+            color: #8590a6;
+        }
+        .intro {
+            margin-bottom: 5px;
+        }
+        .c-fly-link{
+            padding-right: 1rem;
+        }
+        .t-content a{
+            color: #01AAED;
+        }
+        .detail-box{
+        }
+        .thought-pic img{
+            max-width: 32%;
+        }
+
+
+
+    </style>
+</head>
+<body>
+<%
+var user = c.currentUser(request, servlet.response);
+var isLogin = false;
+if(user != null){
+isLogin=true;
+}
+include("/common/_headwithlogin.html",{user:user,isLogin:isLogin}){}
+%>
+<div class="layui-container layui-clear topToFix">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md8">
+            <div class="c-panel">
+                <div class="detail-about">
+                    <a class="fly-avatar" href="${ctxPath}/u/${oUser.id}/peopleIndex"><img src="${oUser.icon}"></a>
+                    <p class="first-line intro fly-detail-user">
+                        <a class="c-fly-link" href="${ctxPath}/u/${oUser.id}/peopleIndex">${oUser.nickname}</a>
+                        <%if(oUser.role == 1){%>
+                        <span class="staff">官方人员</span>
+                        <%}%>
+                    </p>
+                    <div class="detail-hits light-gray"><span class="t-area">${thought.area!}</span><span>${printTime(thought.createTime!)}</span></div>
+                </div>
+                <div class="c-panel-body photos word-deal">
+                    <div class="thought-text t-content">${emojiShow(thought.thoughtContent)}</div>
+                    <div class="thought-pic">
+                        <%for(var pic in thought.pictures!){%>
+                        <img src="${pic}" data-cursor="big">
+                        <%}%>
+                    </div>
+                </div>
+                <div class="c-panel-body c-reply layui-clear">
+                    ${isCollected?'<span class="collect" type="collect" data-type="remove"><i class="fa fa-heart"></i>取消收藏</span>':
+                    '<span class="collect" type="collect" data-type="add"><i class="fa fa-heart-o"></i>收藏</span>'}
+                    <span class="zan"><i class="fa fa-thumbs-o-up" aria-hidden="true"></i><cite>${thought.likeCount!0}</cite></span>
+                </div>
+            </div>
+            <div class="c-panel">
+                <div class="c-panel-title">
+                    <a class="c-fly-link" href="javascript:;">${count}条回复</a>
+                    <span class="c-mid"></span>
+                </div>
+                <div>
+                <ul class="c-list">
+                    <%for(var comment in comments){%>
+                    <li style="min-height: 40px"><a target="_blank" class="fly-avatar" href="${ctxPath}/u/${comment.postUserId}/peopleIndex"><img src="${comment.postIcon}"></a>
+                        <p class="first-line"><a class="c-fly-link" href="${ctxPath}/u/${comment.postUserId}/peopleIndex">
+                            <cite class="c-nickname">${comment.postNickname}</cite></a>${printTime(comment.createTime)}
+                            <span class="floor">${commentLP.index}楼</span></p>
+                        <a lay-data="${comment.id}" href="javascript:;" class="c-position-rt">回复</a>
+                        <div class="t-content">${emojiShow(comment.content)}</div>
+                    </li>
+                    <%}%>
+                </ul>
+                </div>
+            </div>
+            <div class="c-panel">
+                <div class="detail-box">
+                    <div class="reply-input">
+                        <input id="fq-comment" class="layui-input"/>
+                    </div>
+                    <div class="c-poster">
+                        <div class="c-poster-attach">
+                            <a class="emot" title="插入表情"><i class="iconfont icon-yxj-expression"></i></a>
+                        </div>
+                        <div class="op">
+                            <a href="javascript:;" class="layui-btn layui-btn-sm layui-btn-warm commentSingleBtn">评论</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="layui-col-md4">
+            <div class="c-panel">
+                <div class="c-panel-title">
+                    <span>想法主人简介</span>
+                </div>
+                <div class="c-panel-body">
+                    <p>来自${oUser.city!"未知"}</p>
+                    <p>${printTime(oUser.createTime)}加入飞趣社区</p>
+                    <p>${decode(oUser.sex,1,"是个男孩纸",2,"是个女孩纸","想法主人未设置性别")}</p>
+                    <p>
+                        情感状态：<%select{
+                        case oUser.isSingle == 1:print("单身");break;
+                        case oUser.isSingle == 0:print("恋爱中");break;
+                        case oUser.isSingle == 2:print("已婚");break;
+                        default:print("未知");break;
+                        }%>
+                    </p>
+                    <p>学校:${oUser.school!"未设置"}</p>
+                    <p>
+                        <img class="qudouImg" alt="趣豆" title="趣豆" src="/img/qd3.png">
+                        趣豆:${oUser.qudouNum!0}
+                    </p>
+                    <p>等级：${oUser.level!1}级</p>
+                    <p>活跃度：${activeNum!1}</p>
+                </div>
+            </div>
+            <div class="c-panel" style="min-height: 5rem">
+                <div class="c-panel-title">作者最近的想法</div>
+                <div class="right-nav detail-box">
+                    <%if(isEmpty(theirThoughts)){%>
+                    <p>作者暂无其他想法</p>
+                    <%}else{%>
+                    <ul>
+                        <%for(var t in theirThoughts){%>
+                        <li><a title="${emojiShow(t.thoughtContent)}" href="${ctxPath}/thought/${t.id}">${emojiShow(t.thoughtContent)}</a><em>${t.likeCount!0}赞</em></li>
+                        <%}%>
+                    </ul>
+                    <%}%>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<%include("/common/_footor.html"){}%>
+</body>
+<%include("/common/_scripts.html",{user:user}){}%>
+<script src="/js/twemoji.min.js?2.4"></script>
+<script>
+    layui.cache.thoughtId = ${thought.id}
+    layui.use(['layer','fly','face'], function () {
+        var layer = layui.layer,fly=layui.fly,face=layui.face
+        commentInput = $('#fq-comment');
+
+        $('.t-content').each(function(){
+            var othis = $(this), html = othis.html();
+            var content = fly.content(html);
+            var endContent = twemoji.parse(content);
+            othis.html(endContent);
+        });
+        $('.commentSingleBtn').on('click',function () {
+            var thoughtId = layui.cache.thoughtId
+            var commentData = commentInput.val()
+            var commentData = {
+                topicId: thoughtId,
+                content: commentData
+            };
+            fly.json('/thought/comment',commentData,function (res) {
+                layer.msg('评论成功啦');
+                $('#comment-reply').closest('li').remove()
+                $('.c-list').append('<li style="min-height: 40px"><a target="_blank" class="fly-avatar" href="/u/${user.id!}/peopleIndex"><img src="${user.icon!}"></a>'+
+                    '<p class="first-line"><a class="c-fly-link" href="/u/${user.id!}/peopleIndex"><cite class="c-nickname">${user.nickname!}</cite></a>刚刚</p>'+
+                    ' <div class="t-content">'+fly.content(commentData.content)+'</div>'+
+                    ' </li>')
+                commentInput.val('')
+            })
+        })
+
+        $('.emot').on('click', function(event){
+            var str = '', ul, face = fly.faces;
+            for (var key in face) {
+                str += '<li title="' + key + '"><img src="' + face[key] + '"></li>';
+            }
+            str = '<ul id="LAY-editface" class="layui-clear">' + str + '</ul>';
+            layer.tips(str, this, {
+                tips: 1
+                , time: 0
+                , skin: 'layui-edit-face'
+            });
+            $(document).on('click', function () {
+                layer.closeAll('tips');
+            });
+            $('#LAY-editface li').on('click', function () {
+                var title = $(this).attr('title') + ' ';
+                layui.focusInsert(commentInput[0], 'face' + title);
+            });
+            event.stopPropagation()
+        })
+
+        $('.c-position-rt').click(function () {
+            var li = $(this).parents('li');
+            commentInput.focus();
+            var val = commentInput.val();
+            var commentId = $(this).attr('lay-data')
+            var aite= '@'+li.find('cite').text().replace(/\s/g, '');
+            if(val.indexOf(aite)  !== -1) return;
+            commentInput.val(aite +' ' + val);
+        })
+        $('.collect').on('click',function () {
+            var othis = $(this), type = othis.data('type');
+            fly.json('/thought/collect/'+type, {tid : layui.cache.thoughtId}, function(res){
+                if(type === 'add'){
+                    othis.data('type', 'remove').html('<i class="fa fa-heart"></i>取消收藏');
+                } else if(type === 'remove'){
+                    othis.data('type', 'add').html('<i class="fa fa-heart-o"></i>收藏');
+                }
+            });
+        })
+        $('.zan').on('click',function () {
+            var othis = $(this);
+            var numEle = othis.find('cite');
+            fly.json('/thought/like?thoughtId='+layui.cache.thoughtId,{},function(res){
+                numEle.html(res.data)
+                othis.addClass('zanok')
+                layer.msg('点赞成功')
+            })
+        })
+
+    })
+</script>
+</html>

@@ -1,0 +1,23 @@
+<script src="https://cdn.bootcss.com/jquery/1.11.2/jquery.min.js"></script>
+<script src="${ctxPath}/layui/layui.js"></script>
+<script>
+    layui.cache.user ={username:'${user.nickname!}' ,userId:${user.id!0} ,icon:'${user.icon!}'};
+    layui.config({
+        version: "${LAYUI_VERSION}"
+        ,base:'${ctxPath}/lay/modules/fly/'
+    }).extend({'fly': 'cool'}).use('fly');
+</script>
+<script>
+    (function(){
+        var bp = document.createElement('script');
+        var curProtocol = window.location.protocol.split(':')[0];
+        if (curProtocol === 'https') {
+            bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+        }
+        else {
+            bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+        }
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(bp, s);
+    })();
+</script>

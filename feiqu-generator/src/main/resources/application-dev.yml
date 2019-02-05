@@ -1,0 +1,178 @@
+# 项目相关配置
+feiqu:
+  # 名称
+  name: Feiqu
+  # 版本
+  version: 1.0.0
+  # 版权年份
+  copyrightYear: 2019
+  # 文件上传路径
+  profile: D:/profile/
+  # 获取ip地址开关
+  addressEnabled: true
+#  css
+  cssVersion: 1547879679208
+#  layui js
+  layuiVersion: 1547879679211
+
+  domainUrl: http://localhost:8080
+#  domainUrl: http://www.flyfun.site
+  maxUploadSize: 200
+
+  uploadPath: D:/tempfile/
+  ip2regionDbPath: D:/file/ip2region.db
+#  ip2regionDbPath: /home/chenweidong/ip2region.db
+
+feiqu-redis:
+  servers: localhost:6379
+#  password: ngS44JjlPdQn7zSRNDfFOQ==
+  password:
+  mode: standalone
+
+# 开发环境配置
+server:
+  # 服务端口
+  port: 8080
+  servlet:
+    # 项目contextPath
+    context-path: /
+  tomcat:
+    # tomcat的URI编码
+    uri-encoding: UTF-8
+    # tomcat最大线程数，默认为200
+    max-threads: 800
+    # Tomcat启动初始化的线程数，默认值25
+    min-spare-threads: 30
+  address: 0.0.0.0
+ 
+# 日志配置
+logging:
+  config: classpath:log4j.properties
+  level:
+    root: debug
+
+
+# 用户配置
+user:
+  password:
+    # 密码错误{maxRetryCount}次锁定10分钟
+    maxRetryCount: 5
+
+# Spring配置
+spring:
+  mvc:
+      throw-exception-if-no-handler-found: true
+      static-path-pattern: /**
+  resources:
+      static-locations: classpath:/META-INF/resources/,classpath:/resources/,classpath:/static/
+  mail:
+    default-encoding: utf-8
+    host: smtp.***.com
+    username: ***
+    password: ***
+    protocol: smtps
+  # 资源信息
+  messages:
+    # 国际化资源文件路径
+    basename: i18n/messages
+  jackson:
+    time-zone: GMT+8
+    date-format: yyyy-MM-dd HH:mm:ss
+  profiles: 
+#    active: druid
+  # 文件上传
+  servlet:
+     multipart:
+       max-file-size:  30MB
+       max-request-size:  30MB
+  # 服务模块
+  devtools:
+    restart:
+      # 热部署开关
+      enabled: true
+#      log-condition-evaluation-delta: false
+#      exclude: ip2region
+#    livereload:
+#      enabled: true
+  datasource:
+          type: com.alibaba.druid.pool.DruidDataSource
+          driverClassName: com.mysql.cj.jdbc.Driver
+          druid:
+              # 主库数据源
+              master:
+                  url: jdbc:mysql://localhost:3306/cwd_boring?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
+                  username: root
+                  encoded-password: B2v71f9TGEinS8kn/4xssw==
+              # 从库数据源
+              slave:
+                  # 从数据源开关/默认关闭
+                  enabled: false
+                  url: jdbc:mysql://localhost:3306/second?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
+                  username: root
+                  encoded-password: B2v71f9TGEinS8kn/4xssw==
+              # 初始连接数
+              initialSize: 5
+              # 最小连接池数量
+              minIdle: 10
+              # 最大连接池数量
+              maxActive: 20
+              # 配置获取连接等待超时的时间
+              maxWait: 60000
+              # 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒
+              timeBetweenEvictionRunsMillis: 60000
+              # 配置一个连接在池中最小生存的时间，单位是毫秒
+              minEvictableIdleTimeMillis: 300000
+              # 配置一个连接在池中最大生存的时间，单位是毫秒
+              maxEvictableIdleTimeMillis: 900000
+              # 配置检测连接是否有效
+              validationQuery: SELECT 1 FROM DUAL
+              testWhileIdle: true
+              testOnBorrow: false
+              testOnReturn: false
+              statViewServlet:
+                  login-username: chenweidong
+                  login-password: wei930720
+                  enabled: true
+                  url-pattern: /druid/*
+                  reset-enable: true
+              filter:
+                  stat:
+                      # 慢SQL记录
+                      log-slow-sql: true
+                      slow-sql-millis: 1000
+                      merge-sql: true
+                  wall:
+                      config:
+                          multi-statement-allow: true
+
+# MyBatis
+mybatis:
+    # 搜索指定包别名
+    typeAliasesPackage: com.feiqu.system.model
+    # 配置mapper的扫描，找到所有的mapper.xml映射文件
+    mapperLocations: classpath*:mapper/*Mapper.xml
+    # 加载全局的配置文件
+    configLocation: classpath:/mybatis-config.xml
+
+# PageHelper分页插件
+pagehelper: 
+  helperDialect: mysql
+  reasonable: true
+  supportMethodsArguments: true
+  params: count=countSql
+
+
+
+
+
+# 代码生成
+gen: 
+  # 作者
+  author: chenweidong
+  # 默认生成包路径 system 需改成自己的模块名称 如 system monitor tool
+  packageName: com.feiqu.system
+  # 自动去除表前缀，默认是true
+  autoRemovePre: true
+  # 表前缀(类名不会包含表前缀)
+  tablePrefix: sys_
+

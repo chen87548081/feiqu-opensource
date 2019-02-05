@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<%include("/common/_head.html"){}%>
+    <title>小工具 让生活更简单 -飞趣</title>
+<style>
+</style>
+</head>
+<body>
+<%
+var user = c.currentUser(request, servlet.response);
+var isLogin = false;
+if(user != null){
+isLogin=true;
+}
+include("/common/_headwithlogin.html",{user:user,isLogin:isLogin}){}
+%>
+<div class="layui-container topToFix">
+    <div class="c-panel">
+        <div class="layui-tab layui-tab-brief" lay-filter="smallToolTab">
+            <ul class="layui-tab-title">
+                <li class="layui-this">计算你的工资</li>
+            </ul>
+            <div class="layui-tab-content" >
+                <div class="layui-tab-item layui-show">
+                    <div  class="">
+                        <input class="layui-input" id="gz" placeholder="请输入你的工资">
+                    </div>
+                    <div>
+                        <a class="layui-btn calculator" href="javascripr:;">计算</a>
+                    </div>
+                    <div  class="">
+                        <textarea id="outputText" class="layui-textarea"></textarea>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+<%include("/common/_footor.html"){}%>
+</body>
+<%include("/common/_scripts.html",{user:user}){}%>
+<script>
+    //Demo
+    layui.use(['form','fly'], function(){
+        var form = layui.form,fly=layui.fly;
+
+        $('.calculator').on('click',function () {
+            var gz = $('#gz').val();
+            fly.json('/smallTool/calculateGz?gz='+gz,function (res) {
+
+            })
+        })
+
+
+    });
+</script>
+</html>

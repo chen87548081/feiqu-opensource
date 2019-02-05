@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%include("/common/_head.html"){}%>
+    <title>${music.musicName!} -听音乐-飞趣</title>
+    <meta name="description" content="${music.musicName}">
+    <style>
+        .art-item {
+            position: relative;
+            padding: 16px 0;
+        }
+        .card {
+            margin-bottom: 10px;
+            background: #fff;
+            overflow: hidden;
+            border-radius: 2px;
+            -webkit-box-shadow: 0 1px 3px rgba(0, 0, 0, .1);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, .1);
+            -webkit-box-sizing: border-box;
+            box-sizing: border-box;
+        }
+         .time{
+            color: #999;
+            font-size: 13px;
+             padding-top: 10px;
+        }
+        .user-info {
+            display: -webkit-box;
+            display: -ms-flexbox;
+            display: flex;
+            margin: auto 0;
+            flex-direction: column;
+            margin-left: 5rem;
+        }
+        .name {
+            font-size: 16px;
+            line-height: 1.1;
+            font-weight: 100;
+            color: #999;
+        }
+        .art-detail img{
+            max-width: 100%;
+        }
+        .fly-case-active {
+            position: absolute;
+            right: 15px;
+            top:15px;
+        }
+        .art-wrap, .art-detail{
+            padding: 50px 0 0 0;
+            background: #fff;
+            border-radius: 20px;
+            text-align: justify;
+            min-height: 500px;
+        }
+        .art-wrap{
+            margin: 0 auto;
+            position: relative;
+            margin-top: 35px;
+            width: 90%;
+            filter: drop-shadow(0px 0px 15px #bbb);
+        }
+        .art-detail {
+            text-align: center;
+            padding: 0 0 40px 0;
+            width: 100%;
+            line-height: 26px;
+            font-size: 16px;
+        }
+        .fly-beauty-nums{
+            padding: 0 5px;
+            color: #01AAED;
+        }
+        video {
+            display: none;
+        }
+        .progressbar {
+            -webkit-box-flex: 3;
+            height: 5px;
+            background-color: #b2b2b2;
+            margin-top: 8px;
+        }
+        .progressbar .bar {
+            display: block;
+            width: 0;
+            height: 100%;
+            background: #5fb878;
+            position: relative;
+        }
+        .control{
+            line-height: 4;
+        }
+
+        .play-count {
+            position: absolute;
+            right: 40px;
+            top:20px;
+        }
+        .play-count .layui-icon{
+            padding-right: 10px;
+        }
+        .lyric{
+            height: 500px;
+            overflow: scroll;
+            overflow-x: hidden;
+        }
+
+        .middle-up-down {
+            margin: 0 auto;
+            width: 50%;
+        }
+    </style>
+</head>
+<body>
+<%
+var user = c.currentUser(request, servlet.response);
+var isLogin = false;
+if(user != null){
+isLogin=true;
+}
+include("/common/_headwithlogin.html",{user:user,isLogin:isLogin}){}
+%>
+<div class="layui-container topToFix">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md12">
+            <div class="c-panel">
+                <div class="art-item card" data-id="${music.id}">
+                    <button data-type="praise" class="layui-btn layui-btn-primary fly-case-active">点赞</button>
+                    <span>
+                        <a class="fly-avatar" href="/u/${oUser.id}/peopleIndex"><img src="${oUser.icon}"></a>
+                    </span>
+                    <div class="user-info">
+                        <div class="art-desc"><span class="name"><a class="c-fly-link" href="/u/${oUser.id}/peopleIndex">${oUser.nickname}</a></span></div>
+                        <div class="time">${printTime(music.createTime)}<span style="padding-left: 1rem">获得了<a class="fly-beauty-nums" href="javascript:;">${music.likeCount!0}</a>个赞</span></div>
+                    </div>
+                    <div class="art-wrap">
+                        <span class="play-count"><i class="layui-icon">&#xe6fc;</i>${music.playCount!0}</span>
+                        <div class="art-detail">
+                            <div class="layui-row">
+                                <div class="bdsharebuttonbox fq-right"><a href="#" class="bds_more" data-cmd="more"></a><a href="#" class="bds_qzone" data-cmd="qzone"></a><a href="#" class="bds_tsina" data-cmd="tsina"></a><a href="#" class="bds_tqq" data-cmd="tqq"></a><a href="#" class="bds_renren" data-cmd="renren"></a><a href="#" class="bds_weixin" data-cmd="weixin"></a></div>
+                            </div>
+                            <script>window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdPic":"","bdStyle":"0","bdSize":"16"},"share":{},"image":{"viewList":["qzone","tsina","tqq","renren","weixin"],"viewText":"分享到：","viewSize":"16"},"selectShare":{"bdContainerClass":null,"bdSelectMiniList":["qzone","tsina","tqq","renren","weixin"]}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];</script>
+                            <h1>${music.musicName}</h1>
+                            <h4>${music.singer!}</h4>
+                            <audio  class="c-mp3"   src="${music.musicUrl}"></audio>
+                            <div></div>
+                            <div class="control detail-box" data-id="${music.id}">
+                                <span class="layui-btn" type="play"><i class="layui-icon">&#xe652;</i>播放</span>
+                                <span class="layui-btn " type="addVolume"><i class="layui-icon">&#xe619;</i>增加音量</span>
+                                <span class="layui-btn " type="reduceVolume"><i class="layui-icon">&#xe61a;</i>减少音量</span>
+                                <span class="layui-btn " type="mute">静音</span>
+                            </div>
+                            <div class="layui-row">
+                                <div class="currTime layui-col-md1 layui-col-md-offset1">00:00</div>
+                                <div class="progressbar layui-col-md8 ">
+                                    <span class="bar" style=""></span>
+                                </div>
+                                <div class="totalTime layui-col-md1"></div>
+                            </div>
+                            <div class="layui-row middle-up-down">
+                                <%if(isEmpty(lastMusic)){%>
+                                <a class="layui-btn fq-left layui-disabled" href="javascript:;">暂无上一首</a>
+                                <%}else{%>
+                                <a class="layui-btn fq-left" href="/music/${lastMusic.id}">上一首(${lastMusic.musicName})</a>
+                                <%}%>
+                                <%if(isEmpty(nextMusic)){%>
+                                <a class="layui-btn fq-right layui-disabled" href="javascript:;">暂无下一首</a>
+                                <%}else{%>
+                                <a class="layui-btn fq-right" href="/music/${nextMusic.id}">下一首(${nextMusic.musicName})</a>
+                                <%}%>
+                            </div>
+                            <div class="layui-row">
+                                <div class="lyric">${music.lyric!''}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<%include("/common/_footor.html"){}%>
+</body>
+<%include("/common/_scripts.html",{user:user}){}%>
+<script>
+    layui.cache.page = 'music'
+</script>
+</html>

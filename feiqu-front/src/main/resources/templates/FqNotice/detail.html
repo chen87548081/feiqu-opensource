@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%include("/common/_head.html"){}%>
+    <title>${notice.title} -飞趣</title>
+    <link href="${ctxPath}/quill/quill.snow.css" rel="stylesheet">
+    <style>
+        .c-panel {
+            margin-bottom: 10px;
+            background-color: #fff;
+        }
+        .art-detail {
+            line-height: 24px;
+        }
+        .art-detail img{
+            max-width: 20rem;
+        }
+        .comment-detail {
+            padding: 0 0 0 55px;
+            background: none;
+            position: relative;
+            line-height: 20px;
+            font-size: 13px;
+            color: #999;
+        }
+        .comment-detail .fly-avatar{
+            left: 0;
+            top:0;
+        }
+        .comment-detail-user {
+            white-space: nowrap;
+            overflow: hidden;
+        }
+        .comment-body {
+            margin: 25px 0 20px;
+            min-height: 0;
+            line-height: 24px;
+            font-size: 14px;
+        }
+        .comment-body a{
+            color: #4f99cf;text-decoration: none;
+            transition: all .5s;
+        }
+
+        .detail-time {
+            left: 0;
+            bottom: 0;
+            position: relative;
+            top: 5px;
+            line-height: 20px;
+        }
+        .detail-time span{
+            height: 20px;
+            line-height: 20px;
+        }
+
+        .comment-list {
+            margin-bottom: 30px;
+        }
+        .comment-list li{
+            position: relative;
+            padding: 20px 0 10px;
+            border-bottom: 1px dotted #DFDFDF;
+        }
+
+        .comment-dir {
+            position: absolute;
+            right: 15px;
+            top:15px;
+            color: #5acc7b;
+            opacity: 0.8;
+        }
+        reply_time{
+            padding-top: 10px;
+        }
+
+        .notice-title {
+            margin-top: 20px;
+            font-size: 20px;
+        }
+    </style>
+
+</head>
+<body>
+<%
+var user = c.currentUser(request, servlet.response);
+var isLogin = false;
+if(user != null){
+isLogin=true;
+}
+include("/common/_headwithlogin.html",{user:user,isLogin:isLogin}){}
+%>
+<div class="layui-container topToFix">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md8">
+            <div class="c-panel detail-box">
+                <div class="detail-about">
+                    <a class="comment-dir" href="javascript:void;">评论走起</a>
+                    <a class="fly-avatar" href="/u/${oUser.id}/peopleIndex"><img src="${oUser.icon}"></a>
+                    <a class="c-fly-link" href="/u/${oUser.id}/peopleIndex">${oUser.nickname}</a>
+                    <div class="reply_time">${printTime(notice.createTime)}</div>
+                </div>
+                <div class="notice-title word-deal c-text-center">${notice.title}</div>
+                <div class="art-detail detail-body">
+                    ${notice.content}
+                </div>
+                <div id="pagesplit">
+                </div>
+            </div>
+            <div class="c-panel detail-box">
+                <fieldset class="layui-elem-field layui-field-title" style="text-align: center;">
+                    <legend>回帖</legend>
+                </fieldset>
+                <ul class="comment-list">
+                    <%for(var comment in commentList){%>
+                    <li>
+                        <div class="comment-detail">
+                            <a class="fly-avatar" href="${ctxPath}/u/${comment.postUserId}/peopleIndex">
+                                <img src="${comment.postIcon}"/>
+                            </a>
+                            <div class="comment-detail-user">
+                                <a class="c-fly-link" href="${ctxPath}/u/${comment.postUserId}/peopleIndex"><cite>${comment.postNickname}</cite></a>
+                            </div>
+                            <div class="detail-time"><span>${printTime(comment.createTime)}</span></div>
+                        </div>
+                        <div class="comment-body detail-body word-deal">${comment.content}</div>
+                        <div class="c-reply">
+                            <span type="reply"><i class="fa fa-comment-o " aria-hidden="true"></i>回复</span>
+                        </div>
+                    </li>
+                    <%}%>
+                </ul>
+                <form action="${ctxPath}/article/comment">
+                    <div class="layui-form layui-form-pane">
+                        <div class="layui-form-item layui-form-text">
+                            <textarea name="content" class="layui-textarea fly-editor"> </textarea>
+                        </div>
+                        <div class="layui-form-item">
+                            <input type="hidden" name="topicId" value="${notice.id}">
+                            <button class="layui-btn" lay-filter="formDemo" lay-submit>提交回复</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="layui-col-md4">
+            <div class="c-panel">
+                <div class="c-panel-title">
+                    <span>历史发布版本</span>
+                </div>
+                <div class="detail-box">
+                    <ul class="right-nav">
+                    <%for(var old in oldNotices){%>
+                    <li><a class="c-fly-link" href="${ctxPath}/notice/view/${old.id}">${old.title}</a></li>
+                    <%}%>
+                    </ul>
+                </div>
+        </div>
+    </div>
+</div>
+<%include("/common/_footor.html"){}%>
+</body>
+<%include("/common/_scripts.html",{user:user}){}%>
+<script>
+    layui.use(['form','layer','fly','face'], function(){
+        var form = layui.form,layer=layui.layer,fly=layui.fly,face=layui.face;
+        var editor = $('.fly-editor')
+        $('.comment-dir').on('click',function () {
+            $('html,body').animate({scrollTop:editor.offset().top}, 800);
+            editor.focus()
+        })
+        var gather = {
+            reply:function(li){ //回复
+                var val = editor.val();
+                var aite = '@'+ li.find('.comment-detail-user cite').text().replace(/\s/g, '');
+                editor.focus()
+                if(val.indexOf(aite) !== -1) return;
+                editor.val(aite +' ' + val);
+            }
+        }
+        $('.detail-body').each(function(){
+            var othis = $(this), html = othis.html();
+            othis.html(fly.content(html));
+        });
+
+        $('.c-reply span').on('click', function(){
+            var othis = $(this), type = othis.attr('type');
+            gather[type].call(this, othis.parents('li'));
+        });
+
+        form.on('submit(formDemo)', function(data){
+            fly.json('${ctxPath}/notice/comment',data.field,function (result) {
+                    layer.msg("评论成功~");
+                    var newCom = result.data;
+                    var liNew = '<li><div class="comment-detail">'+
+                        '<a class="fly-avatar" href="#">'+
+                        '<img src="${user.icon!}">'+
+                        '</a>'+
+                        '<div class="comment-detail-user"><a class="c-fly-link" href="/u/${user.id!0}/peopleIndex">${user.nickname!}</a>'+
+                        '</div>'+
+                        ' <div class="detail-time"><span>刚刚</span></div></div>' +
+                        '<div class="comment-body">'+fly.content(newCom.content)+'</div>' +
+                        '</li>';
+                    $(".comment-list").append(liNew)
+                editor.val( '')
+            })
+            return false;
+        });
+    });
+</script>
+</html>

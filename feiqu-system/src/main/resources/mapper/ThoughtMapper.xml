@@ -1,0 +1,331 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.feiqu.system.mapper.ThoughtMapper">
+  <resultMap id="BaseResultMap" type="com.feiqu.system.model.Thought">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="thought_content" jdbcType="VARCHAR" property="thoughtContent" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="user_id" jdbcType="INTEGER" property="userId" />
+    <result column="like_count" jdbcType="INTEGER" property="likeCount" />
+    <result column="comment_count" jdbcType="INTEGER" property="commentCount" />
+    <result column="del_flag" jdbcType="INTEGER" property="delFlag" />
+    <result column="area" jdbcType="VARCHAR" property="area" />
+    <result column="pic_list" jdbcType="VARCHAR" property="picList" />
+    <result column="last_reply_time" jdbcType="VARCHAR" property="lastReplyTime" />
+    <result column="last_reply_user_name" jdbcType="VARCHAR" property="lastReplyUserName" />
+  </resultMap>
+  <resultMap id="thoughtUserResultMap" extends="BaseResultMap" type="com.feiqu.system.pojo.response.ThoughtWithUser">
+    <result column="username" jdbcType="VARCHAR" property="username" />
+    <result column="nickname" jdbcType="VARCHAR" property="nickname" />
+    <result column="icon" jdbcType="VARCHAR" property="icon" />
+    <result column="role" jdbcType="INTEGER" property="role" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    id, thought_content, create_time, user_id, like_count, comment_count, del_flag, area, 
+    pic_list, last_reply_time, last_reply_user_name
+  </sql>
+
+  <select id="selectByExampleWithUser" parameterType="com.feiqu.system.model.ThoughtExample" resultMap="thoughtUserResultMap">
+    select
+    t.id,t.thought_content,t.create_time,t.user_id,u.username,u.nickname,u.icon,u.role,t.like_count,t.comment_count,t.area,t.last_reply_time,t.last_reply_user_name,t.pic_list
+    from thought t LEFT JOIN fq_user u on t.user_id=u.id
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+
+  <select id="getByIdWithUser" parameterType="java.lang.Integer" resultMap="thoughtUserResultMap">
+    select
+    t.id,t.thought_content,t.create_time,t.user_id,u.username,u.nickname,u.icon,u.role,t.like_count,t.comment_count,t.area,t.last_reply_time,t.last_reply_user_name,t.pic_list
+    from thought t LEFT JOIN fq_user u on t.user_id=u.id WHERE t.id = #{id,jdbcType=INTEGER}
+  </select>
+
+  <select id="selectByExample" parameterType="com.feiqu.system.model.ThoughtExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from thought
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from thought
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from thought
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.feiqu.system.model.ThoughtExample">
+    delete from thought
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.feiqu.system.model.Thought">
+    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into thought (thought_content, create_time, user_id, 
+      like_count, comment_count, del_flag, 
+      area, pic_list, last_reply_time, 
+      last_reply_user_name)
+    values (#{thoughtContent,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{userId,jdbcType=INTEGER}, 
+      #{likeCount,jdbcType=INTEGER}, #{commentCount,jdbcType=INTEGER}, #{delFlag,jdbcType=INTEGER}, 
+      #{area,jdbcType=VARCHAR}, #{picList,jdbcType=VARCHAR}, #{lastReplyTime,jdbcType=VARCHAR}, 
+      #{lastReplyUserName,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.feiqu.system.model.Thought">
+    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into thought
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="thoughtContent != null">
+        thought_content,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="userId != null">
+        user_id,
+      </if>
+      <if test="likeCount != null">
+        like_count,
+      </if>
+      <if test="commentCount != null">
+        comment_count,
+      </if>
+      <if test="delFlag != null">
+        del_flag,
+      </if>
+      <if test="area != null">
+        area,
+      </if>
+      <if test="picList != null">
+        pic_list,
+      </if>
+      <if test="lastReplyTime != null">
+        last_reply_time,
+      </if>
+      <if test="lastReplyUserName != null">
+        last_reply_user_name,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="thoughtContent != null">
+        #{thoughtContent,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="userId != null">
+        #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="likeCount != null">
+        #{likeCount,jdbcType=INTEGER},
+      </if>
+      <if test="commentCount != null">
+        #{commentCount,jdbcType=INTEGER},
+      </if>
+      <if test="delFlag != null">
+        #{delFlag,jdbcType=INTEGER},
+      </if>
+      <if test="area != null">
+        #{area,jdbcType=VARCHAR},
+      </if>
+      <if test="picList != null">
+        #{picList,jdbcType=VARCHAR},
+      </if>
+      <if test="lastReplyTime != null">
+        #{lastReplyTime,jdbcType=VARCHAR},
+      </if>
+      <if test="lastReplyUserName != null">
+        #{lastReplyUserName,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.feiqu.system.model.ThoughtExample" resultType="java.lang.Long">
+    select count(*) from thought
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update thought
+    <set>
+      <if test="record.id != null">
+        id = #{record.id,jdbcType=INTEGER},
+      </if>
+      <if test="record.thoughtContent != null">
+        thought_content = #{record.thoughtContent,jdbcType=VARCHAR},
+      </if>
+      <if test="record.createTime != null">
+        create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.userId != null">
+        user_id = #{record.userId,jdbcType=INTEGER},
+      </if>
+      <if test="record.likeCount != null">
+        like_count = #{record.likeCount,jdbcType=INTEGER},
+      </if>
+      <if test="record.commentCount != null">
+        comment_count = #{record.commentCount,jdbcType=INTEGER},
+      </if>
+      <if test="record.delFlag != null">
+        del_flag = #{record.delFlag,jdbcType=INTEGER},
+      </if>
+      <if test="record.area != null">
+        area = #{record.area,jdbcType=VARCHAR},
+      </if>
+      <if test="record.picList != null">
+        pic_list = #{record.picList,jdbcType=VARCHAR},
+      </if>
+      <if test="record.lastReplyTime != null">
+        last_reply_time = #{record.lastReplyTime,jdbcType=VARCHAR},
+      </if>
+      <if test="record.lastReplyUserName != null">
+        last_reply_user_name = #{record.lastReplyUserName,jdbcType=VARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update thought
+    set id = #{record.id,jdbcType=INTEGER},
+      thought_content = #{record.thoughtContent,jdbcType=VARCHAR},
+      create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      user_id = #{record.userId,jdbcType=INTEGER},
+      like_count = #{record.likeCount,jdbcType=INTEGER},
+      comment_count = #{record.commentCount,jdbcType=INTEGER},
+      del_flag = #{record.delFlag,jdbcType=INTEGER},
+      area = #{record.area,jdbcType=VARCHAR},
+      pic_list = #{record.picList,jdbcType=VARCHAR},
+      last_reply_time = #{record.lastReplyTime,jdbcType=VARCHAR},
+      last_reply_user_name = #{record.lastReplyUserName,jdbcType=VARCHAR}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.feiqu.system.model.Thought">
+    update thought
+    <set>
+      <if test="thoughtContent != null">
+        thought_content = #{thoughtContent,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="userId != null">
+        user_id = #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="likeCount != null">
+        like_count = #{likeCount,jdbcType=INTEGER},
+      </if>
+      <if test="commentCount != null">
+        comment_count = #{commentCount,jdbcType=INTEGER},
+      </if>
+      <if test="delFlag != null">
+        del_flag = #{delFlag,jdbcType=INTEGER},
+      </if>
+      <if test="area != null">
+        area = #{area,jdbcType=VARCHAR},
+      </if>
+      <if test="picList != null">
+        pic_list = #{picList,jdbcType=VARCHAR},
+      </if>
+      <if test="lastReplyTime != null">
+        last_reply_time = #{lastReplyTime,jdbcType=VARCHAR},
+      </if>
+      <if test="lastReplyUserName != null">
+        last_reply_user_name = #{lastReplyUserName,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.feiqu.system.model.Thought">
+    update thought
+    set thought_content = #{thoughtContent,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      user_id = #{userId,jdbcType=INTEGER},
+      like_count = #{likeCount,jdbcType=INTEGER},
+      comment_count = #{commentCount,jdbcType=INTEGER},
+      del_flag = #{delFlag,jdbcType=INTEGER},
+      area = #{area,jdbcType=VARCHAR},
+      pic_list = #{picList,jdbcType=VARCHAR},
+      last_reply_time = #{lastReplyTime,jdbcType=VARCHAR},
+      last_reply_user_name = #{lastReplyUserName,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

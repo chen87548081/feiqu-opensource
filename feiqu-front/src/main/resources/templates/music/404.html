@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%include("/common/_head.html"){}%>
+    <title>404  - 飞趣社区</title>
+    <style>
+        .fly-none {
+            min-height: 600px;
+            text-align: center;
+            padding-top: 50px;
+            color: #999;
+        }
+        fly-none .icon-tishilian {
+            display: inline-block;
+            margin: 30px 0 20px;
+        }
+        .fly-none .iconfont {
+            line-height: 300px;
+            font-size: 300px;
+            color: #393D49;
+        }
+        .notice {
+            width: 600px;
+            margin: 30px auto;
+            padding: 30px 15px;
+            border-top: 5px solid #009688;
+            line-height: 30px;
+            text-align: center;
+            font-size: 16px;
+            font-weight: 300;
+            color: #999;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+<%
+var user = c.currentUser(request, servlet.response);
+var isLogin = false;
+if(user != null){
+isLogin=true;
+}
+include("/common/_headwithlogin.html",{user:user,isLogin:isLogin}){}
+%>
+<div class="layui-container topToFix">
+    <div class="c-panel">
+        <div class="fly-panel"> <div class="fly-none"> <h2><i class="iconfont icon-404"></i></h2> <div class="notice">没找到对应的音乐哦</div> </div></div>
+    </div>
+</div>
+<%include("/common/_footor.html"){}%>
+</body>
+<%include("/common/_scripts.html",{user:user}){}%>
+<script>
+    layui.use(['layer','fly'], function() {
+        var layer = layui.layer
+            , fly = layui.fly;
+    })
+</script>
+</html>
