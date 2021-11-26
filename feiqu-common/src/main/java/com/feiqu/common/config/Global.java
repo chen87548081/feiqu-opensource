@@ -43,13 +43,8 @@ public class Global
 
     public static synchronized Global getInstance()
     {
-        if (global == null)
-        {
-            synchronized (Global.class)
-            {
-                if (global == null)
-                    global = new Global();
-            }
+        if (global == null) {
+            global = new Global();
         }
         return global;
     }
