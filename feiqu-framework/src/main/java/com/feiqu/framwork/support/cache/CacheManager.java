@@ -70,6 +70,9 @@ public class CacheManager {
             if(StringUtils.isEmpty(userCacheStr)){
                 FqUserService fqUserService = SpringUtils.getBean("fqUserServiceImpl");
                 FqUser fqUser = fqUserService.selectByPrimaryKey(userId);
+                if(fqUser == null){
+                    return null;
+                }
                 fqUserCache = new FqUserCache(fqUser);
                 commands.set(cacheKey,JSON.toJSONString(fqUserCache));
                 commands.expire(cacheKey,300);

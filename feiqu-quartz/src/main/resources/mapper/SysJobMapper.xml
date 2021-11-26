@@ -1,0 +1,353 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.feiqu.quartz.mapper.SysJobMapper">
+  <resultMap id="BaseResultMap" type="com.feiqu.quartz.model.SysJob">
+    <id column="job_id" jdbcType="INTEGER" property="jobId" />
+    <result column="job_name" jdbcType="VARCHAR" property="jobName" />
+    <result column="job_group" jdbcType="VARCHAR" property="jobGroup" />
+    <result column="method_name" jdbcType="VARCHAR" property="methodName" />
+    <result column="method_params" jdbcType="VARCHAR" property="methodParams" />
+    <result column="cron_expression" jdbcType="VARCHAR" property="cronExpression" />
+    <result column="misfire_policy" jdbcType="VARCHAR" property="misfirePolicy" />
+    <result column="status" jdbcType="CHAR" property="status" />
+    <result column="create_by" jdbcType="VARCHAR" property="createBy" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_by" jdbcType="VARCHAR" property="updateBy" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="remark" jdbcType="VARCHAR" property="remark" />
+    <result column="concurrent" jdbcType="CHAR" property="concurrent" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    job_id, job_name, job_group, method_name, method_params, cron_expression, misfire_policy, 
+    status, create_by, create_time, update_by, update_time, remark, concurrent
+  </sql>
+  <select id="selectByExample" parameterType="com.feiqu.quartz.model.SysJobExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from sys_job
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from sys_job
+    where job_id = #{jobId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from sys_job
+    where job_id = #{jobId,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.feiqu.quartz.model.SysJobExample">
+    delete from sys_job
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.feiqu.quartz.model.SysJob">
+    <selectKey keyProperty="jobId" order="AFTER" resultType="java.lang.Integer">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into sys_job (job_name, job_group, method_name, 
+      method_params, cron_expression, misfire_policy, 
+      status, create_by, create_time, 
+      update_by, update_time, remark, 
+      concurrent)
+    values (#{jobName,jdbcType=VARCHAR}, #{jobGroup,jdbcType=VARCHAR}, #{methodName,jdbcType=VARCHAR}, 
+      #{methodParams,jdbcType=VARCHAR}, #{cronExpression,jdbcType=VARCHAR}, #{misfirePolicy,jdbcType=VARCHAR}, 
+      #{status,jdbcType=CHAR}, #{createBy,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, 
+      #{updateBy,jdbcType=VARCHAR}, #{updateTime,jdbcType=TIMESTAMP}, #{remark,jdbcType=VARCHAR}, 
+      #{concurrent,jdbcType=CHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.feiqu.quartz.model.SysJob">
+    <selectKey keyProperty="jobId" order="AFTER" resultType="java.lang.Integer">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into sys_job
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="jobName != null">
+        job_name,
+      </if>
+      <if test="jobGroup != null">
+        job_group,
+      </if>
+      <if test="methodName != null">
+        method_name,
+      </if>
+      <if test="methodParams != null">
+        method_params,
+      </if>
+      <if test="cronExpression != null">
+        cron_expression,
+      </if>
+      <if test="misfirePolicy != null">
+        misfire_policy,
+      </if>
+      <if test="status != null">
+        status,
+      </if>
+      <if test="createBy != null">
+        create_by,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="updateBy != null">
+        update_by,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+      <if test="remark != null">
+        remark,
+      </if>
+      <if test="concurrent != null">
+        concurrent,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="jobName != null">
+        #{jobName,jdbcType=VARCHAR},
+      </if>
+      <if test="jobGroup != null">
+        #{jobGroup,jdbcType=VARCHAR},
+      </if>
+      <if test="methodName != null">
+        #{methodName,jdbcType=VARCHAR},
+      </if>
+      <if test="methodParams != null">
+        #{methodParams,jdbcType=VARCHAR},
+      </if>
+      <if test="cronExpression != null">
+        #{cronExpression,jdbcType=VARCHAR},
+      </if>
+      <if test="misfirePolicy != null">
+        #{misfirePolicy,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=CHAR},
+      </if>
+      <if test="createBy != null">
+        #{createBy,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateBy != null">
+        #{updateBy,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="remark != null">
+        #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="concurrent != null">
+        #{concurrent,jdbcType=CHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.feiqu.quartz.model.SysJobExample" resultType="java.lang.Long">
+    select count(*) from sys_job
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update sys_job
+    <set>
+      <if test="record.jobId != null">
+        job_id = #{record.jobId,jdbcType=INTEGER},
+      </if>
+      <if test="record.jobName != null">
+        job_name = #{record.jobName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.jobGroup != null">
+        job_group = #{record.jobGroup,jdbcType=VARCHAR},
+      </if>
+      <if test="record.methodName != null">
+        method_name = #{record.methodName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.methodParams != null">
+        method_params = #{record.methodParams,jdbcType=VARCHAR},
+      </if>
+      <if test="record.cronExpression != null">
+        cron_expression = #{record.cronExpression,jdbcType=VARCHAR},
+      </if>
+      <if test="record.misfirePolicy != null">
+        misfire_policy = #{record.misfirePolicy,jdbcType=VARCHAR},
+      </if>
+      <if test="record.status != null">
+        status = #{record.status,jdbcType=CHAR},
+      </if>
+      <if test="record.createBy != null">
+        create_by = #{record.createBy,jdbcType=VARCHAR},
+      </if>
+      <if test="record.createTime != null">
+        create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.updateBy != null">
+        update_by = #{record.updateBy,jdbcType=VARCHAR},
+      </if>
+      <if test="record.updateTime != null">
+        update_time = #{record.updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.remark != null">
+        remark = #{record.remark,jdbcType=VARCHAR},
+      </if>
+      <if test="record.concurrent != null">
+        concurrent = #{record.concurrent,jdbcType=CHAR},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update sys_job
+    set job_id = #{record.jobId,jdbcType=INTEGER},
+      job_name = #{record.jobName,jdbcType=VARCHAR},
+      job_group = #{record.jobGroup,jdbcType=VARCHAR},
+      method_name = #{record.methodName,jdbcType=VARCHAR},
+      method_params = #{record.methodParams,jdbcType=VARCHAR},
+      cron_expression = #{record.cronExpression,jdbcType=VARCHAR},
+      misfire_policy = #{record.misfirePolicy,jdbcType=VARCHAR},
+      status = #{record.status,jdbcType=CHAR},
+      create_by = #{record.createBy,jdbcType=VARCHAR},
+      create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      update_by = #{record.updateBy,jdbcType=VARCHAR},
+      update_time = #{record.updateTime,jdbcType=TIMESTAMP},
+      remark = #{record.remark,jdbcType=VARCHAR},
+      concurrent = #{record.concurrent,jdbcType=CHAR}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.feiqu.quartz.model.SysJob">
+    update sys_job
+    <set>
+      <if test="jobName != null">
+        job_name = #{jobName,jdbcType=VARCHAR},
+      </if>
+      <if test="jobGroup != null">
+        job_group = #{jobGroup,jdbcType=VARCHAR},
+      </if>
+      <if test="methodName != null">
+        method_name = #{methodName,jdbcType=VARCHAR},
+      </if>
+      <if test="methodParams != null">
+        method_params = #{methodParams,jdbcType=VARCHAR},
+      </if>
+      <if test="cronExpression != null">
+        cron_expression = #{cronExpression,jdbcType=VARCHAR},
+      </if>
+      <if test="misfirePolicy != null">
+        misfire_policy = #{misfirePolicy,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null">
+        status = #{status,jdbcType=CHAR},
+      </if>
+      <if test="createBy != null">
+        create_by = #{createBy,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateBy != null">
+        update_by = #{updateBy,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="remark != null">
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="concurrent != null">
+        concurrent = #{concurrent,jdbcType=CHAR},
+      </if>
+    </set>
+    where job_id = #{jobId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.feiqu.quartz.model.SysJob">
+    update sys_job
+    set job_name = #{jobName,jdbcType=VARCHAR},
+      job_group = #{jobGroup,jdbcType=VARCHAR},
+      method_name = #{methodName,jdbcType=VARCHAR},
+      method_params = #{methodParams,jdbcType=VARCHAR},
+      cron_expression = #{cronExpression,jdbcType=VARCHAR},
+      misfire_policy = #{misfirePolicy,jdbcType=VARCHAR},
+      status = #{status,jdbcType=CHAR},
+      create_by = #{createBy,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_by = #{updateBy,jdbcType=VARCHAR},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      remark = #{remark,jdbcType=VARCHAR},
+      concurrent = #{concurrent,jdbcType=CHAR}
+    where job_id = #{jobId,jdbcType=INTEGER}
+  </update>
+</mapper>

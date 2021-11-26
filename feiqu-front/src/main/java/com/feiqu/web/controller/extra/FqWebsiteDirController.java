@@ -64,7 +64,7 @@ public class FqWebsiteDirController extends BaseController {
             model.addAttribute("errorMsg","用户权限不足！");
             return GENERAL_CUSTOM_ERROR_URL;
         }
-        return "/websiteDir/manage.html";
+        return "/websiteDir/manage";
     }
     @GetMapping("/manage/list")
     @ResponseBody
@@ -181,7 +181,7 @@ public class FqWebsiteDirController extends BaseController {
         }finally {
             JedisProviderFactory.getJedisProvider(null).release();
         }
-        return "/websiteDir/index.html";
+        return "/websiteDir/index";
     }
 
     @ResponseBody
@@ -296,7 +296,7 @@ public class FqWebsiteDirController extends BaseController {
     public Object fqWebsiteDirEdit(@PathVariable Integer fqWebsiteDirId, Model model) {
         FqWebsiteDir fqWebsiteDir = fqWebsiteDirService.selectByPrimaryKey(fqWebsiteDirId);
         model.addAttribute("fqWebsiteDir", fqWebsiteDir);
-        return "/system/FqWebsiteDir/edit.html";
+        return "/system/FqWebsiteDir/edit";
     }
 
     /**

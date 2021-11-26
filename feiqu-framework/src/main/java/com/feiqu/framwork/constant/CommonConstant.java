@@ -25,9 +25,9 @@ import java.util.List;
 public class CommonConstant {
 
     public static String THOUGHT_TOP_LIST = "thought_top_list";
-    public static String USER_ID_COOKIE = "***";
-    public static String USER_COOKIE_SECRET = "***";
-    public static String FORGET_PASSWORD_SECRET = "***";
+    public static String USER_ID_COOKIE = "cwd33";
+    public static String USER_COOKIE_SECRET = "cwd11";
+    public static String FORGET_PASSWORD_SECRET = "cwd22";
 //    public static String DOMAIN_URL = "http://www.flyfun.site/";
 
     public static String DOMAIN_URL = "";

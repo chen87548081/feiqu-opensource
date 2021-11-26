@@ -1,5 +1,6 @@
 package com.feiqu.web.controller.extra;
 
+import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.io.FileUtil;
 import com.feiqu.common.base.BaseResult;
 import com.feiqu.common.enums.ResultEnum;
@@ -92,16 +93,16 @@ public class MusicController extends BaseController{
                 return result;
             }
             String musicUrl = "";
-            String fileName = file.getOriginalFilename();
+            String extName = FileUtil.extName(file.getOriginalFilename());
             String time = DateFormatUtils.format(new Date(), "yyyyMMdd");
             String path = request.getSession().getServletContext().getRealPath("upload") + File.separator + time;
+            String fileName = CommonConstant.FILE_NAME_PREFIX + DateUtil.format(new Date(), "yyyyMMddHHmmss") + "." + extName;
             File localFile = new File(path, fileName);
             if (!localFile.exists()) {
                 localFile.mkdirs();
             }
             //MultipartFile自带的解析方法
             file.transferTo(localFile);
-
 //            String time = DateFormatUtils.format(new Date(),"yyyy/MM/dd");
             musicUrl = FileSystemClient.getClient("aliyun").upload("music/"+fileName,localFile);
 //            aliyunOssClient.putObject(CommonConstant.ALIYUN_OSS_BUCKET_NAME,"music/"+fileName,file.getInputStream());

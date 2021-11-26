@@ -192,25 +192,6 @@ create table job_talk
 ;
 
 
-create table fq_theme
-(
-	id int auto_increment
-		primary key,
-	content text null,
-	user_id int null,
-	title varchar(255) null,
-	create_time datetime null,
-	del_flag int default '0' null,
-	comment_count int default '0' null,
-	label varchar(255) null,
-	type int null,
-	last_pub_nickname varchar(255) null,
-	last_pub_time datetime null,
-	see_count int null
-)
-;
-
-
 create table upload_img_record
 (
 	id int auto_increment
@@ -293,13 +274,15 @@ create table fq_sign
 (
 	id int auto_increment
 		primary key,
-	days int null,
+	days int not null comment '实时的连续的签到天数',
 	user_id int null,
 	sign_time datetime null,
-	sign_days varchar(255) null comment '一个月签到哪些天 逗号隔开'
+	sign_days varchar(255) null,
+	max_days int default 0 not null comment '签到最长的天数，用于补签'
 )
-	comment '签到'
-;
+comment '签到' charset=utf8;
+
+
 
 
 
@@ -472,7 +455,27 @@ CREATE TABLE fq_topic_reply
     GMT_CREATE DATETIME NOT NULL
 );
 
-
+create table wang_hong_wan
+(
+	ID bigint not null auto_increment
+		primary key,
+	AUTHOR varchar(50) default '' not null,
+	AREA varchar(50) default '' not null,
+	CONTENT varchar(500) default '' not null,
+	PIC_LIST varchar(1000) default '' not null
+)
+	comment '网红玩'
+;
+CREATE TABLE FQ_SEARCH_RECORD
+(
+    ID BIGINT PRIMARY KEY NOT NULL AUTO_INCREMENT,
+    NAME VARCHAR(50) DEFAULT '' NOT NULL COMMENT '搜索名称',
+    GMT_CREATE DATETIME NOT NULL,
+    DEL_FLAG int DEFAULT 0 NOT NULL,
+    TYPE int DEFAULT 0 NOT NULL COMMENT '搜索类别',
+    USER_ID int DEFAULT 0 NOT NULL COMMENT '用户id'
+);
+ALTER TABLE FQ_SEARCH_RECORD COMMENT = '搜索记录';
 CREATE TABLE FQ_BLACK_LIST
 (
     ID BIGINT PRIMARY KEY NOT NULL AUTO_INCREMENT,
@@ -482,7 +485,7 @@ CREATE TABLE FQ_BLACK_LIST
 );
 ALTER TABLE FQ_BLACK_LIST COMMENT = '黑名单';
 
-CREATE TABLE FQ_USER_ACTIVE_NUM
+CREATE TABLE fq_user_active_num
 (
     ID BIGINT PRIMARY KEY NOT NULL AUTO_INCREMENT,
     ACTIVE_NUM int DEFAULT 0 NOT NULL COMMENT '活跃度',
@@ -490,9 +493,17 @@ CREATE TABLE FQ_USER_ACTIVE_NUM
     USER_ID int DEFAULT 0 NOT NULL COMMENT '用户id',
     MARK VARCHAR(20) DEFAULT '' NOT NULL COMMENT '标识'
 );
-ALTER TABLE FQ_USER_ACTIVE_NUM COMMENT = '用户活跃度';
+ALTER TABLE fq_user_active_num COMMENT = '用户活跃度';
 
-
+CREATE TABLE FQ_USER_ACTIVITY_RECORD
+(
+    ID BIGINT PRIMARY KEY NOT NULL AUTO_INCREMENT,
+    USER_ID INT DEFAULT 0 NOT NULL,
+    CREATE_TIME DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    DEL_FLAG int DEFAULT 0 NOT NULL,
+    ACTIVITY_CONTENT VARCHAR(500) DEFAULT '' NOT NULL
+);
+ALTER TABLE FQ_USER_ACTIVITY_RECORD COMMENT = '用户活动记录';
 
 create table api_doc_project
 (
@@ -566,15 +577,133 @@ create table api_doc_project_user
 )
   comment '项目与用户的关联表'
 ;
-CREATE TABLE FQ_USER_PAY_WAY
+create table fq_user_pay_way
+(
+  ID bigint auto_increment
+    primary key,
+  PAY_WAY int default '1' not null comment '1 支付宝 2 微信',
+  PAY_IMG_URL varchar(100) default '' not null comment '支付的二维码照片',
+  GMT_CREATE datetime not null comment '创建时间',
+  USER_ID int default '0' not null comment '用户id',
+  DEL_FLAG int default '0' not null comment '是否删除'
+)
+  comment '支付方式'
+;
+CREATE TABLE cwd_boring.fq_lolita
 (
     ID BIGINT PRIMARY KEY NOT NULL AUTO_INCREMENT,
-    PAY_WAY int DEFAULT 1 NOT NULL COMMENT '1 支付宝 2 微信 ',
-    PAY_IMG_URL VARCHAR(100) DEFAULT '' NOT NULL COMMENT '支付的二维码照片',
+    PIC_URL VARCHAR(500) DEFAULT '' NOT NULL,
+    USER_ID INT DEFAULT 0 NOT NULL,
     GMT_CREATE DATETIME NOT NULL COMMENT '创建时间',
-    USER_ID int DEFAULT 0 NOT NULL COMMENT '用户id',
-    DEL_FLAG int DEFAULT 0 NOT NULL COMMENT '是否删除'
+    DEL_FLAG INT DEFAULT 0 NOT NULL,
+    REMARK VARCHAR(100) DEFAULT '' NOT NULL COMMENT '备注',
+    LINK VARCHAR(100) DEFAULT '' NOT NULL COMMENT '自动生成的链接 用于分享',
+    LIKE_COUNT INT DEFAULT 0 NOT NULL ,
+    COMMENT_COUNT INT DEFAULT 0 NOT NULL
 );
-ALTER TABLE FQ_USER_PAY_WAY COMMENT = '支付方式';
+ALTER TABLE cwd_boring.fq_lolita COMMENT = 'LOLITA FASHION洋装';
+
+create table fq_advertisement
+(
+	ID int auto_increment
+		primary key,
+	PIC_URL varchar(100) default '' not null comment '广告图片',
+	REMARK varchar(100) default '' not null comment '备注',
+	GMT_CREATE datetime not null comment '创建时间',
+	AD_HREF varchar(100) default '' not null comment '广告跳转链接',
+	POSITION int default '1' not null comment '0 首页banner 1 列表页 2 详情页'
+)
+comment '广告配置'
+;
+create table fq_doutu_cloud
+(
+	ID bigint auto_increment
+		primary key,
+	USER_ID int default 0 not null,
+	IMG_URL varchar(500) default '' not null,
+	GMT_CREATE datetime not null,
+	DEL_FLAG int default 0 not null,
+	TAG varchar(100) default '' not null comment '标签 逗号隔开',
+	VIDEO_URL varchar(100) default '' not null,
+	TITLE varchar(100) default '' not null comment '标题'
+)
+comment '斗图云';
+create table fq_user_auth
+(
+	ID int auto_increment,
+	USER_ID int default 0 not null comment '授权的用户',
+	AUTHED_USER_ID int default 0 not null comment '被授权的用户',
+	AUTH_TIME DATETIME not null comment '被授权时间',
+	DEL_FLAG INT default 0 not null comment '删除标志',
+	AUTH_TYPE int default 0 not null comment '授权类型',
+	constraint fq_user_auth_pk
+		primary key (ID)
+)
+comment '用户授权';
+create table fq_good_pic
+(
+	ID BIGINT auto_increment,
+	TITLE VARCHAR(100) default '' not null,
+	PIC_URL_LIST VARCHAR(1000) default '' not null comment '图片列表',
+	GMT_CREATE DATETIME not null comment '创建时间',
+	constraint fq_good_pic__pk
+		primary key (ID)
+)
+comment '好资源的图片';
+
+create table sys_job (
+                       job_id 		      int(11) 	    not null auto_increment    comment '任务ID',
+                       job_name            varchar(64)   default ''                 comment '任务名称',
+                       job_group           varchar(64)   default ''                 comment '任务组名',
+                       method_name         varchar(500)  default ''                 comment '任务方法',
+                       method_params       varchar(50)   default null               comment '方法参数',
+                       cron_expression     varchar(255)  default ''                 comment 'cron执行表达式',
+                       misfire_policy      varchar(20)   default '3'                comment '计划执行错误策略（1立即执行 2执行一次 3放弃执行）',
+                       status              char(1)       default '0'                comment '状态（0正常 1暂停）',
+                       create_by           varchar(64)   default ''                 comment '创建者',
+                       create_time         datetime                                 comment '创建时间',
+                       update_by           varchar(64)   default ''                 comment '更新者',
+                       update_time         datetime                                 comment '更新时间',
+                       remark              varchar(500)  default ''                 comment '备注信息',
+                       concurrent              char(1)  default '1'                 comment '是否并发执行（0允许 1禁止）',
+                       primary key (job_id)
+) engine=innodb auto_increment=100 default charset=utf8 comment = '定时任务调度表';
+
+
+
+
+-- ----------------------------
+-- 17、定时任务调度日志表
+-- ----------------------------
+create table sys_job_log (
+                           job_log_id          int(11) 	    not null auto_increment    comment '任务日志ID',
+                           job_name            varchar(64)   not null                   comment '任务名称',
+                           job_group           varchar(64)   not null                   comment '任务组名',
+                           method_name         varchar(500)                             comment '任务方法',
+                           method_params       varchar(50)   default null               comment '方法参数',
+                           job_message         varchar(500)                             comment '日志信息',
+                           status              char(1)       default '0'                comment '执行状态（0正常 1失败）',
+                           exception_info      varchar(2000) default ''                 comment '异常信息',
+                           create_time         datetime                                 comment '创建时间',
+                           primary key (job_log_id)
+) engine=innodb default charset=utf8 comment = '定时任务调度日志表';
+
+create table fq_change_log_collect
+(
+	id int auto_increment,
+	title varchar(50) default '' not null comment '标题',
+	gmt_create datetime not null,
+	content text null,
+	watch_count int default 0 not null comment '观看数量',
+	constraint fq_change_log_collect_pk
+		primary key (id)
+)
+	comment '更新日志收集';
+
+
+
+
+
+
 
 

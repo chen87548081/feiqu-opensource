@@ -122,12 +122,9 @@ include("/common/_headwithlogin.html",{user:user,isLogin:isLogin}){}
             </div>
             <div class="c-panel">
                 <div class="c-panel-title">热门的5张图片</div>
-                    <%if(isEmpty(beautyList)){%>
-                    <div class="c-panel-title">暂无热门图片</div>
-                    <%}else{%>
                 <div class="c-panel-body">
                     <ul class="c-list2">
-                        <%for(var be in beautyList){%>
+                        <%for(var be in beautyList!){%>
                         <li>
                             <div class="detail-about fly-detail-user">
                                 <a href="${ctxPath}/u/${be.uploadUserId}/peopleIndex" class="fly-avatar"><img src="${be.icon}"></a>
@@ -141,7 +138,6 @@ include("/common/_headwithlogin.html",{user:user,isLogin:isLogin}){}
                         </li>
                         <%}%>
                     </ul>
-                    <%}%>
                 </div>
             </div>
         </div>

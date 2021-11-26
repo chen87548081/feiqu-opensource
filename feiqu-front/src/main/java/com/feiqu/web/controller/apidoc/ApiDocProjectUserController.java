@@ -61,17 +61,17 @@ public class ApiDocProjectUserController extends BaseController {
             });
         }
         model.addAttribute("projects", keyValues);
-        return "/apiDocProjectUser/index.html";
+        return "/apiDocProjectUser/index";
     }
 
     @GetMapping("receiveInvite")
     public String receiveInvite(){
-        return "/apiDocProjectUser/receiveInvite.html";
+        return "/apiDocProjectUser/receiveInvite";
     }
 
     @GetMapping("postInvite")
     public String postInvite(){
-        return "/apiDocProjectUser/postInvite.html";
+        return "/apiDocProjectUser/postInvite";
     }
 
     /**
@@ -79,7 +79,7 @@ public class ApiDocProjectUserController extends BaseController {
     */
     @RequestMapping("/apiDocProjectUser_add")
     public String apiDocProjectUser_add() {
-        return "/apiDocProjectUser/add.html";
+        return "/apiDocProjectUser/add";
     }
 
     /**
@@ -105,7 +105,7 @@ public class ApiDocProjectUserController extends BaseController {
     public Object apiDocProjectUserEdit(@PathVariable Long apiDocProjectUserId, Model model) {
         ApiDocProjectUser apiDocProjectUser = apiDocProjectUserService.selectByPrimaryKey(apiDocProjectUserId);
         model.addAttribute("apiDocProjectUser", apiDocProjectUser);
-        return "/apiDocProjectUser/edit.html";
+        return "/apiDocProjectUser/edit";
     }
 
     /**

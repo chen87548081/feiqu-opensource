@@ -2,6 +2,7 @@ package com.feiqu.system.mapper;
 
 import com.feiqu.system.model.FqTheme;
 import com.feiqu.system.model.FqThemeExample;
+import com.feiqu.system.pojo.condition.ThemeCondition;
 import com.feiqu.system.pojo.response.FqThemeUserResponse;
 import org.apache.ibatis.annotations.Param;
 
@@ -36,5 +37,5 @@ public interface FqThemeMapper {
 
     int updateByPrimaryKey(FqTheme record);
 
-    List<FqThemeUserResponse> selectWithUserByExample(FqThemeExample themeExample);
+    List<FqThemeUserResponse> selectWithUserByExample(ThemeCondition themeExample);
 }

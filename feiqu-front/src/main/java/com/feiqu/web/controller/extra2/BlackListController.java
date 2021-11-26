@@ -33,7 +33,7 @@ public class BlackListController extends BaseController {
 
     @GetMapping("denyService")
     public String denyService(){
-        return "/blackList/denyService.html";
+        return "/blackList/denyService";
     }
 
     @GetMapping("manage")
@@ -61,7 +61,7 @@ public class BlackListController extends BaseController {
         }finally {
             JedisProviderFactory.getJedisProvider(null).release();;
         }
-        return "/blackList/manage.html";
+        return "/blackList/manage";
     }
 
     @PostMapping("/manage/remove")

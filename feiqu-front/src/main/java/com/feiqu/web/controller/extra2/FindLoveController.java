@@ -48,7 +48,7 @@ public class FindLoveController extends BaseController{
             FqUserCache fqUserCache = getCurrentUser();
             if(fqUserCache == null){
                 request.setAttribute("redirectSuccessUrl","/findFriend");
-                return "/login.html";
+                return "/login";
             }
             FqShortVideoExample shortVideoExample = new FqShortVideoExample();
             shortVideoExample.createCriteria().andDelFlagEqualTo(YesNoEnum.NO.getValue());
@@ -109,11 +109,11 @@ public class FindLoveController extends BaseController{
             }
         } catch (Exception e) {
             logger.error("寻找报错",e);
-            return "/error.html";
+            return "/error";
         } finally {
             JedisProviderFactory.getJedisProvider(null).release();
         }
-        return "/findLove/index.html";
+        return "/findLove/index";
     }
 
 }

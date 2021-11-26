@@ -53,7 +53,7 @@ public class CustomErrorController  extends AbstractErrorController {
 		//但这样ajax就无法检测错误状态，有待商榷
 		response.setStatus(HttpServletResponse.SC_OK);
 		mv.addObject("error", error);
-		mv.setViewName("/error.html");
+		mv.setViewName("/error");
 		return mv;
 		
 		

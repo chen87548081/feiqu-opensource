@@ -1,5 +1,6 @@
 package com.feiqu.framwork.web.base;
 
+import com.feiqu.common.base.AjaxResult;
 import com.feiqu.common.utils.SpringUtils;
 import com.feiqu.framwork.util.SpringContextUtil;
 import com.feiqu.framwork.util.StringEscapeEditor;
@@ -26,10 +27,10 @@ public class BaseController
     private final static Logger _log = LoggerFactory.getLogger(BaseController.class);
 
     protected static final String USER_LOGIN_REDIRECT_URL = "redirect:/u/login";
-    protected static final String GENERAL_ERROR_URL = "/error.html";
-    protected static final String GENERAL_CUSTOM_ERROR_URL = "/error/generalCustomError.html";
-    protected static final String GENERAL_NOT_FOUNF_404_URL = "/404.html";
-    protected static final String GENERAL_TOPIC_DELETED_URL = "/topic-deleted.html";
+    protected static final String GENERAL_ERROR_URL = "/error";
+    protected static final String GENERAL_CUSTOM_ERROR_URL = "/error/generalCustomError";
+    protected static final String GENERAL_NOT_FOUNF_404_URL = "/404";
+    protected static final String GENERAL_TOPIC_DELETED_URL = "/topic-deleted";
     /**
      * 统一异常处理
      * @param request
@@ -43,7 +44,7 @@ public class BaseController
         if (null != request.getHeader("X-Requested-With") && request.getHeader("X-Requested-With").equalsIgnoreCase("XMLHttpRequest")) {
             request.setAttribute("requestHeader", "ajax");
         }*/
-        return "/error.html";
+        return "/error";
     }
 
     @InitBinder
@@ -80,4 +81,26 @@ public class BaseController
         return webUtil.currentUser(request,response);
     }
 
+    /**
+     * 返回失败消息
+     */
+    public AjaxResult error(String errorMsg)
+    {
+        return AjaxResult.error(errorMsg);
+    }
+
+    /**
+     * 返回失败消息
+     */
+    public AjaxResult error()
+    {
+        return AjaxResult.error();
+    }
+    /**
+     * 返回成功
+     */
+    public AjaxResult success()
+    {
+        return AjaxResult.success();
+    }
 }

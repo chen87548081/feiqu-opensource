@@ -1,35 +1,57 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!-- status为不记录log4j本身的日志 -->
-<configuration status="trace" name="feiqu">
-    <!--<properties>
-        <property name="LOG_HOME">logs</property>
-        <property name="FILE_NAME">cwd-web</property>
-    </properties>
-    <appenders>
-        <Console name="Console" target="SYSTEM_OUT">
-            &lt;!&ndash; ThresholdFilter相当于拦截器.info以上的命令不会被拦截. &ndash;&gt;
+<?xml version="1.0" encoding="utf-8"?>
+<Configuration>
+    <Properties>
+        <!-- 文件输出格式 -->
+        <Property name="PATTERN">%d{yyyy-MM-dd HH:mm:ss.SSS} |-%-5level [%thread] %c [%L] -| %msg%n</Property>
+        <Property name="PATH">logs</Property>
+    </Properties>
+
+    <Appenders>
+        <Console name="console" target="SYSTEM_OUT">
             <ThresholdFilter level="info" onMatch="ACCEPT" onMismatch="DENY"/>
-            <PatternLayout pattern="%d{HH:mm:ss.SSS} %-5level %class{36} %L %M - %msg%xEx%n"/>
+            <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
         </Console>
-        <File name="Error" fileName="${LOG_HOME}/cwd-web.error.log">
-            <ThresholdFilter level="info" onMatch="ACCEPT" onMismatch="DENY"/>
-            <PatternLayout pattern="%d{yyyy.MM.dd 'at' HH:mm:ss z} %-5level %class{36} %L %M - %msg%xEx%n"/>
-        </File>
-        <RollingFile name="RollingFile" fileName="${LOG_HOME}/${FILE_NAME}.log"
-                     filePattern="${LOG_HOME}/$${date:yyyy-MM}/app-%d{yyyyMMdd}.log.gz">
-            <PatternLayout pattern="%d{yyyy-MM-dd 'at' HH:mm:ss z} %-5level %class{36} %L %M - %msg%xEx%n"/>
+
+        <RollingFile name="feiqu-info" fileName="${PATH}/feiqu-info.log"
+                     filePattern="${PATH}/feiqu-info-%d{yyyy-MM-dd}.log">
+
+            <Filters>
+                <ThresholdFilter level="info" onMatch="ACCEPT" onMismatch="DENY"/>
+                <ThresholdFilter level="error" onMatch="DENY"/>
+            </Filters>
             <Policies>
-                <OnStartupTriggeringPolicy/>
-                <TimeBasedTriggeringPolicy/>
-                <SizeBasedTriggeringPolicy size="20 MB"/>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
             </Policies>
+            <PatternLayout pattern="${PATTERN}"/>
         </RollingFile>
-    </appenders>
-    <loggers>
-        <root level="info">
-            <appender-ref ref="RollingFile"/>
-            <appender-ref ref="Console"/>
-            <appender-ref ref="Error" />
-        </root>
-    </loggers>-->
-</configuration>
+
+        <RollingFile name="feiqu-error" fileName="${PATH}/feiqu-error.log"
+                     filePattern="${PATH}/feiqu-error-%d{yyyy-MM-dd}.log">
+            <Filters>
+                <ThresholdFilter level="error" onMatch="ACCEPT" onMismatch="DENY"/>
+            </Filters>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+            </Policies>
+            <PatternLayout pattern="${PATTERN}"/>
+        </RollingFile>
+    </Appenders>
+
+    <Loggers>
+        <!--过滤掉spring和mybatis的一些无用的DEBUG信息-->
+        <logger name="org.springframework" level="INFO"></logger>
+        <logger name="org.mybatis" level="INFO"></logger>
+        <Root level="info">
+            <AppenderRef ref="console" level="info"/>
+            <AppenderRef ref="feiqu-info" level="info"/>
+            <AppenderRef ref="feiqu-error" level="error"/>
+        </Root>
+
+        <!--<AsyncLogger name="com.feiqu" additivity="false" level="debug">
+            <appender-ref ref="console" level="debug"/>
+            <appender-ref ref="feiqu-info" level="debug"/>
+            <appender-ref ref="feiqu-error" level="error"/>
+        </AsyncLogger>-->
+    </Loggers>
+
+</Configuration>

@@ -12,7 +12,12 @@ public class FqTheme implements Serializable {
 
     private Date createTime;
 
-    private Integer delFlag;
+    /**
+     * -1 删除 0 审核中 1 审核通过
+     *
+     * @mbg.generated
+     */
+    private Integer status;
 
     private Integer commentCount;
 
@@ -64,13 +69,7 @@ public class FqTheme implements Serializable {
         this.createTime = createTime;
     }
 
-    public Integer getDelFlag() {
-        return delFlag;
-    }
 
-    public void setDelFlag(Integer delFlag) {
-        this.delFlag = delFlag;
-    }
 
     public Integer getCommentCount() {
         return commentCount;
@@ -102,6 +101,14 @@ public class FqTheme implements Serializable {
 
     public void setLastPubNickname(String lastPubNickname) {
         this.lastPubNickname = lastPubNickname == null ? null : lastPubNickname.trim();
+    }
+
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
     }
 
     public Date getLastPubTime() {
@@ -146,7 +153,6 @@ public class FqTheme implements Serializable {
         sb.append(", userId=").append(userId);
         sb.append(", title=").append(title);
         sb.append(", createTime=").append(createTime);
-        sb.append(", delFlag=").append(delFlag);
         sb.append(", commentCount=").append(commentCount);
         sb.append(", label=").append(label);
         sb.append(", type=").append(type);

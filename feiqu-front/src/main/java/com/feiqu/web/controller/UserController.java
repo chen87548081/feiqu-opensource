@@ -102,8 +102,6 @@ public class UserController extends BaseController {
     //支付方式
     @Resource
     private FqUserPayWayService fqUserPayWayService;
-    /*@Autowired
-    private OSSClient aliyunOssClient;*/
 
     @GetMapping("upLevel")
     public String upLevel(Model model){
@@ -115,7 +113,7 @@ public class UserController extends BaseController {
         Double lastMonthScore = commands.zscore(CommonConstant.FQ_ACTIVE_USER_SORT+lastMonth,fqUserCache.getId().toString());
         Double totolScore = (score == null?0:score)+(lastMonthScore==null?0:lastMonthScore);
         model.addAttribute("totolScore",totolScore);
-        return "/user/upLevel.html";
+        return "/user/upLevel";
     }
 
     @PostMapping("upLevel")
@@ -174,7 +172,7 @@ public class UserController extends BaseController {
         if(fqUserCache.getRole() != 1){
             return GENERAL_ERROR_URL;
         }
-        return "/user/manage.html";
+        return "/user/manage";
     }
     @RequestMapping("/manage/list")
     @ResponseBody
@@ -287,7 +285,7 @@ public class UserController extends BaseController {
         }
         request.setAttribute("qqBind",qqBind);
         request.setAttribute("sinaBind",sinaBind);
-        return "/user/set.html";
+        return "/user/set";
     }
 
     @PostMapping("uploadIcon")
@@ -365,7 +363,7 @@ public class UserController extends BaseController {
     @GetMapping("/login")
     public String login(String redirectSuccessUrl, HttpServletRequest request) {
         request.setAttribute("redirectSuccessUrl", redirectSuccessUrl);
-        return "/login.html";
+        return "/login";
     }
 
     @ResponseBody
@@ -427,7 +425,7 @@ public class UserController extends BaseController {
         } catch (Exception e) {
             logger.error("跳转注册页面出错", e);
         }
-        return "/register.html";
+        return "/register";
     }
 
     @PostMapping("register")
@@ -459,9 +457,10 @@ public class UserController extends BaseController {
                 result.setResult(ResultEnum.USERNAME_EXIST);
                 return result;
             }
-            user.setNickname(StrUtil.cleanBlank(user.getNickname()));
-            user.setUsername(user.getUsername().trim());
-            user.setPassword(user.getPassword().trim());
+            FqUser toRegister = new FqUser();
+            toRegister.setNickname(StrUtil.cleanBlank(user.getNickname()));
+            toRegister.setUsername(user.getUsername().trim());
+            toRegister.setPassword(user.getPassword().trim());
             if(StringUtils.isBlank(user.getNickname())){
                 result.setResult(ResultEnum.PARAM_NULL);
                 return result;
@@ -474,19 +473,19 @@ public class UserController extends BaseController {
                 return result;
             }
             Date now = new Date();
-            user.setCreateIp(WebUtil.getIP(request));
-            user.setCreateTime(now);
-            user.setPassword(DigestUtil.md5Hex(user.getPassword()));
+            toRegister.setCreateIp(WebUtil.getIP(request));
+            toRegister.setCreateTime(now);
+            toRegister.setPassword(DigestUtil.md5Hex(toRegister.getPassword()));
             if (StringUtils.isBlank(user.getIcon())) {
-                user.setIcon(IconUrlConfig.icons.get(new Random().nextInt(IconUrlConfig.size())));
+                toRegister.setIcon(IconUrlConfig.icons.get(new Random().nextInt(IconUrlConfig.size())));
             }
-            user.setIsMailBind(YesNoEnum.NO.getValue());
-            user.setQudouNum(CommonConstant.INIT_QUDOU_NUM);
-            user.setLevel(1);//初始1J
-            user.setStatus(UserStatusEnum.NORMAL.getValue());
-            userService.insert(user);
+            toRegister.setIsMailBind(YesNoEnum.NO.getValue());
+            toRegister.setQudouNum(CommonConstant.INIT_QUDOU_NUM);
+            toRegister.setLevel(1);//初始1J
+            toRegister.setStatus(UserStatusEnum.NORMAL.getValue());
+            userService.insert(toRegister);
             String token = UUID.fastUUID().toString(true);
-            UserActivate userActivate = new UserActivate(user.getId(),token,now);
+            UserActivate userActivate = new UserActivate(toRegister.getId(),token,now);
             userActivateService.insert(userActivate);
 
             //todo delete
@@ -512,14 +511,14 @@ public class UserController extends BaseController {
                 message.setPostUserId(-1);
                 message.setCreateTime(now);
                 message.setDelFlag(YesNoEnum.NO.getValue());
-                message.setReceivedUserId(user.getId());
+                message.setReceivedUserId(toRegister.getId());
                 message.setType(MsgEnum.OFFICIAL_MSG.getValue());
                 message.setContent("系统消息通知：欢迎你来到飞趣社区，希望你在这体验愉快！另外，你可以加入官方qq交流群：632118669,一起讨论。 "+ DateUtil.formatDateTime(now));
                 messageService.insert(message);
             }
             );
 //发送邮件，参数可以是数组
-            WebUtil.loginUser(request,response,user,true);
+            WebUtil.loginUser(request,response,toRegister,true);
         } catch (MailException e) {
             logger.error("注册失败{} ",user.getUsername());
             result.setResult(ResultEnum.FAIL);
@@ -532,7 +531,7 @@ public class UserController extends BaseController {
     public String activate(String token, HttpServletRequest request, HttpServletResponse response) {
         FqUserCache currUser = webUtil.currentUser(request,response);
         if(currUser == null){
-            return "/error/activateNotLogin.html";
+            return "/error/activateNotLogin";
         }
         if(StringUtils.isNotBlank(token)){
             UserActivateExample example = new UserActivateExample();
@@ -545,7 +544,7 @@ public class UserController extends BaseController {
                 CacheManager.refreshUserCacheByUser(currUser);
             }
         }
-        return "/user/activate.html";
+        return "/user/activate";
     }
 
     @GetMapping("reSendEmail")
@@ -611,8 +610,10 @@ public class UserController extends BaseController {
             baseResult.setResult(ResultEnum.PASSWORD_LENGTH_ERROR);
             return baseResult;
         }
-        queryUser.setPassword(DigestUtil.md5Hex(queryUser.getPassword()));
-        userService.updateByPrimaryKeySelective(queryUser);
+        FqUser toUpdate = new FqUser();
+        toUpdate.setId(queryUser.getId());
+        toUpdate.setPassword(DigestUtil.md5Hex(queryUser.getPassword()));
+        userService.updateByPrimaryKeySelective(toUpdate);
         return baseResult;
     }
 
@@ -620,9 +621,9 @@ public class UserController extends BaseController {
     public String forget(HttpServletRequest request, String key){
         if(StringUtils.isNotBlank(key)){
             request.setAttribute("key",key);
-            return "/user/passReset.html";
+            return "/user/passReset";
         }
-        return "/user/passForget.html";
+        return "/user/passForget";
     }
 
     @PostMapping("resetPass")
@@ -767,7 +768,18 @@ public class UserController extends BaseController {
         if(!queryUser.getUsername().equals(currUser.getUsername())){
             queryUser.setIsMailBind(YesNoEnum.NO.getValue());
         }
-        userService.updateByPrimaryKeySelective(queryUser);
+        FqUser toUpdate = new FqUser();
+        toUpdate.setId(queryUser.getId());
+        toUpdate.setUsername(queryUser.getUsername());
+        toUpdate.setNickname(queryUser.getNickname());
+        toUpdate.setBirth(queryUser.getBirth());
+        toUpdate.setCity(queryUser.getCity());
+        toUpdate.setEducation(queryUser.getEducation());
+        toUpdate.setSchool(queryUser.getSchool());
+        toUpdate.setSex(queryUser.getSex());
+        toUpdate.setIsSingle(queryUser.getIsSingle());
+        toUpdate.setSign(queryUser.getSign());
+        userService.updateByPrimaryKeySelective(toUpdate);
         FqUser fqUserNew = userService.selectByPrimaryKey(queryUser.getId());
         CacheManager.refreshUserCacheByUser(new FqUserCache(fqUserNew));
         return baseResult;
@@ -846,7 +858,7 @@ public class UserController extends BaseController {
             request.setAttribute("messages", messages);
             request.setAttribute("pageIndex", pageIndex);
             request.setAttribute("pageSize", pageSize);
-            return "/user/msgs.html";
+            return "/user/msgs";
     }
 
     @PostMapping("msgsCount")
@@ -879,7 +891,7 @@ public class UserController extends BaseController {
         FqUser oUser = userService.selectByPrimaryKey(pUserId);
         if (oUser == null) {
             request.setAttribute("msg", "error");
-            return "/error.html";
+            return "/error";
         }
         request.setAttribute("oUser", oUser);
         request.setAttribute("user", user);
@@ -908,7 +920,7 @@ public class UserController extends BaseController {
                 .andDelFlagEqualTo(YesNoEnum.NO.getValue());
         UserFollow userFollow = userFollowService.selectFirstByExample(followExample);
         request.setAttribute("follow",userFollow != null);
-        return "/user/peopleIndex.html";
+        return "/user/peopleIndex";
     }
 
     @GetMapping("/center")
@@ -917,7 +929,7 @@ public class UserController extends BaseController {
         if(user == null){
             return login(CommonConstant.DOMAIN_URL+request.getRequestURI(),request);
         }
-        return "/user/center.html";
+        return "/user/center";
     }
 
     //每个人登陆显示的主页
@@ -1007,7 +1019,7 @@ public class UserController extends BaseController {
         }finally {
             JedisProviderFactory.getJedisProvider(null).release();
         }
-        return "/user/home.html";
+        return "/user/home";
     }
 
     @GetMapping("/myIndex")
@@ -1028,7 +1040,7 @@ public class UserController extends BaseController {
         articleExample.createCriteria().andUserIdEqualTo(user.getId()).andDelFlagEqualTo(YesNoEnum.NO.getValue());
         List<Article> articles = articleService.selectByExample(articleExample);
         request.setAttribute("articles", articles);
-        return "/user/myIndex.html";
+        return "/user/myIndex";
     }
 
     private String getEmailHtml(String nickname,String token){

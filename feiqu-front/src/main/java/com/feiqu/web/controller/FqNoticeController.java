@@ -54,7 +54,7 @@ public class FqNoticeController extends BaseController {
     */
     @RequestMapping("")
     public String index() {
-        return "/FqNotice/index.html";
+        return "/FqNotice/index";
     }
 
     /**
@@ -62,7 +62,7 @@ public class FqNoticeController extends BaseController {
     */
     @RequestMapping("/fqNotice_add")
     public String fqNotice_add() {
-        return "/FqNotice/add.html";
+        return "/FqNotice/add";
     }
 
     /**
@@ -130,7 +130,7 @@ public class FqNoticeController extends BaseController {
             FqUser fqUser = fqUserService.selectByPrimaryKey(fqNotice.getUserId());
             model.addAttribute("oUser",fqUser);
         }else {
-            return "/404.html";
+            return "/404";
         }
         model.addAttribute("notice",fqNotice);
         FqNoticeExample example = new FqNoticeExample();
@@ -144,7 +144,7 @@ public class FqNoticeController extends BaseController {
                 .andTopicIdEqualTo(fqNoticeId).andTopicTypeEqualTo(TopicTypeEnum.NOTICE_TYPE.getValue());
         List<DetailCommentResponse> comments = commentService.selectUserByExample(commentExample);
         model.addAttribute("commentList",comments);
-        return "/FqNotice/detail.html";
+        return "/FqNotice/detail";
     }
 
     @ResponseBody
@@ -211,7 +211,7 @@ public class FqNoticeController extends BaseController {
     public Object fqNoticeEdit(@PathVariable Integer fqNoticeId, Model model) {
         FqNotice fqNotice = fqNoticeService.selectByPrimaryKey(fqNoticeId);
         model.addAttribute("fqNotice",fqNotice);
-        return "/FqNotice/edit.html";
+        return "/FqNotice/edit";
     }
 
     /**

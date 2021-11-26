@@ -1,8 +1,12 @@
 spring:
   profiles:
+    #通过这个来切换开发和生产的环境，我觉得很不错，每次上线前改下这个配置就好了
     active: dev
-#    active: prod
-
+  #      active: prod
+  servlet:
+    multipart:
+      max-request-size: 50MB
+      max-file-size: 10MB
 
 server:
   # 服务端口
@@ -20,3 +24,7 @@ server:
   address: 0.0.0.0
   compression:
     enabled: true
+  jetty:
+    max-http-post-size: 2MB
+
+

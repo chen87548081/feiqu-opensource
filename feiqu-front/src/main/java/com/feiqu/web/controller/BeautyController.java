@@ -78,7 +78,7 @@ public class BeautyController extends BaseController {
             model.addAttribute("errorMsg","用户权限不足！");
             return GENERAL_CUSTOM_ERROR_URL;
         }
-        return "/beauty/manage.html";
+        return "/beauty/manage";
     }
     @GetMapping("/manage/list")
     @ResponseBody
@@ -215,7 +215,7 @@ public class BeautyController extends BaseController {
             model.addAttribute(CommonConstant.SYSTEM_ERROR_CODE,"出错了");
             return GENERAL_CUSTOM_ERROR_URL;
         }
-        return "/superBeauty.html";
+        return "/superBeauty";
     }
 
     @GetMapping("{beautyId}")
@@ -269,7 +269,7 @@ public class BeautyController extends BaseController {
             model.addAttribute(CommonConstant.SYSTEM_ERROR_CODE,"出错了");
             return GENERAL_CUSTOM_ERROR_URL;
         }
-        return "/beauty/detail.html";
+        return "/beauty/detail";
     }
 
     @ResponseBody

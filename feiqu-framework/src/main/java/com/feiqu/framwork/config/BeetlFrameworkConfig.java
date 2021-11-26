@@ -64,6 +64,7 @@ public class BeetlFrameworkConfig {
         beetlSpringViewResolver.setContentType("text/html;charset=UTF-8");
         beetlSpringViewResolver.setOrder(0);
         beetlSpringViewResolver.setConfig(beetlGroupUtilConfiguration);
+        beetlSpringViewResolver.setSuffix(".html");
         return beetlSpringViewResolver;
     }
 }

@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Configuration>
+    <Properties>
+        <!-- 文件输出格式 -->
+        <Property name="PATTERN">%d{yyyy-MM-dd HH:mm:ss.SSS} |-%-5level [%thread] %c [%L] -| %msg%n</Property>
+        <Property name="PATH">logs</Property>
+        <!--<Property name="PATH">/home/chenweidong/feiqu/logs</Property>-->
+    </Properties>
+
+    <Appenders>
+        <Console name="console" target="SYSTEM_OUT">
+            <ThresholdFilter level="debug" onMatch="ACCEPT" onMismatch="DENY"/>
+            <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
+        </Console>
+
+        <RollingFile name="feiqu-info" fileName="${PATH}/feiqu-info.log"
+                     filePattern="${PATH}/feiqu-info-%d{yyyy-MM-dd}.log">
+                     <!--filePattern="${PATH}/$${date:yyyy-MM}/feiqu-info-%d{yyyy-MM-dd}.log">-->
+
+            <Filters>
+                <ThresholdFilter level="info" onMatch="ACCEPT" onMismatch="DENY"/>
+                <ThresholdFilter level="error" onMatch="DENY"/>
+            </Filters>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+            </Policies>
+            <PatternLayout pattern="${PATTERN}"/>
+        </RollingFile>
+
+        <RollingFile name="feiqu-error" fileName="${PATH}/feiqu-error.log"
+            filePattern="${PATH}/feiqu-error-%d{yyyy-MM-dd}.log">
+            <Filters>
+                <ThresholdFilter level="error" onMatch="ACCEPT" onMismatch="DENY"/>
+            </Filters>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+            </Policies>
+            <PatternLayout pattern="${PATTERN}"/>
+        </RollingFile>
+    </Appenders>
+
+    <Loggers>
+        <!--过滤掉spring和mybatis的一些无用的DEBUG信息-->
+        <logger name="org.springframework" level="warn"></logger>
+        <logger name="org.eclipse" level="debug"></logger>
+        <logger name="org.mybatis" level="debug"></logger>
+        <Root level="debug">
+            <AppenderRef ref="console" level="debug"/>
+            <AppenderRef ref="feiqu-info" level="debug"/>
+            <AppenderRef ref="feiqu-error" level="error"/>
+        </Root>
+
+        <!--<AsyncLogger name="com.feiqu" additivity="false" level="debug">
+            <appender-ref ref="console" level="debug"/>
+            <appender-ref ref="feiqu-info" level="debug"/>
+            <appender-ref ref="feiqu-error" level="error"/>
+        </AsyncLogger>-->
+    </Loggers>
+
+</Configuration>

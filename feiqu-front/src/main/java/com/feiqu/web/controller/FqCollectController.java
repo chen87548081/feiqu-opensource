@@ -39,7 +39,7 @@ public class FqCollectController  {
 
     @GetMapping("/find")
     public String collectArticle(){
-        return "/collection/collections.html";
+        return "/collection/collections";
 
     }
 

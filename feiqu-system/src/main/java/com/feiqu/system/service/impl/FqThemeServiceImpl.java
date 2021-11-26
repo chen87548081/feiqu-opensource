@@ -6,6 +6,7 @@ import com.feiqu.system.base.BaseServiceImpl;
 import com.feiqu.system.mapper.FqThemeMapper;
 import com.feiqu.system.model.FqTheme;
 import com.feiqu.system.model.FqThemeExample;
+import com.feiqu.system.pojo.condition.ThemeCondition;
 import com.feiqu.system.pojo.response.FqThemeUserResponse;
 import com.feiqu.system.service.FqThemeService;
 import org.slf4j.Logger;
@@ -31,7 +32,7 @@ public class FqThemeServiceImpl extends BaseServiceImpl<FqThemeMapper, FqTheme, 
     @Autowired
     FqThemeMapper fqThemeMapper;
 
-    public List<FqThemeUserResponse> selectWithUserByExample(FqThemeExample themeExample) {
+    public List<FqThemeUserResponse> selectWithUserByExample(ThemeCondition themeExample) {
         return fqThemeMapper.selectWithUserByExample(themeExample);
     }
 }

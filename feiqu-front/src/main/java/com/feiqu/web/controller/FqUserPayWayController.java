@@ -56,7 +56,7 @@ public class FqUserPayWayController extends BaseController {
      */
     @RequestMapping("")
     public String index() {
-        return "/fqUserPayWay/index.html";
+        return "/fqUserPayWay/index";
     }
 
     /**
@@ -64,7 +64,7 @@ public class FqUserPayWayController extends BaseController {
      */
     @RequestMapping("/fqUserPayWay_add")
     public String fqUserPayWay_add() {
-        return "/fqUserPayWay/add.html";
+        return "/fqUserPayWay/add";
     }
 
     /**
@@ -178,7 +178,7 @@ public class FqUserPayWayController extends BaseController {
     public Object fqUserPayWayEdit(@PathVariable Long fqUserPayWayId, Model model) {
         FqUserPayWay fqUserPayWay = fqUserPayWayService.selectByPrimaryKey(fqUserPayWayId);
         model.addAttribute("fqUserPayWay", fqUserPayWay);
-        return "/fqUserPayWay/edit.html";
+        return "/fqUserPayWay/edit";
     }
 
     /**

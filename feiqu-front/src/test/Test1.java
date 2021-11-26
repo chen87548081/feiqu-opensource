@@ -50,8 +50,17 @@ public class Test1 {
 
     @Test
     public void test2(){
-
-
+        String[] keys = {
+                "root", "123456", ""
+        };
+        System.out.println("key | AESEncode | AESDecode");
+        for (String key : keys) {
+            System.out.print(key + " | ");
+            String encryptString = aesEncode(key);
+            System.out.print(encryptString + " | ");
+            String decryptString = aesDecode(encryptString);
+            System.out.println(decryptString);
+        }
     }
 
 }

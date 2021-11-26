@@ -4,6 +4,7 @@ package com.feiqu.system.service;
 import com.feiqu.system.base.BaseService;
 import com.feiqu.system.model.FqTheme;
 import com.feiqu.system.model.FqThemeExample;
+import com.feiqu.system.pojo.condition.ThemeCondition;
 import com.feiqu.system.pojo.response.FqThemeUserResponse;
 
 import java.util.List;
@@ -14,5 +15,5 @@ import java.util.List;
 */
 public interface FqThemeService extends BaseService<FqTheme, FqThemeExample> {
 
-    List<FqThemeUserResponse> selectWithUserByExample(FqThemeExample themeExample);
+    List<FqThemeUserResponse> selectWithUserByExample(ThemeCondition themeExample);
 }

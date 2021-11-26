@@ -142,7 +142,7 @@ public class ArticleController extends BaseController {
         example.createCriteria().andTypeEqualTo(TopicTypeEnum.ARTICLE_TYPE.getValue());
         List<FqLabel> labels = fqLabelService.selectByExample(example);
         model.addAttribute("labels",labels);
-        return "/article/writeArticle.html";
+        return "/article/writeArticle";
     }
 
     @ResponseBody
@@ -209,7 +209,7 @@ public class ArticleController extends BaseController {
                 return GENERAL_NOT_FOUNF_404_URL;
             }
             if(!user.getId().equals(article.getUserId())){
-                return "/unauthed.html";
+                return "/unauthed";
             }
             if(article.getContentType() == 2){
                 article.setArticleContent(HtmlUtils.htmlUnescape(article.getArticleContent()));
@@ -222,7 +222,7 @@ public class ArticleController extends BaseController {
         } catch (Exception e) {
             _log.error("article edit error",e);
         }
-        return "/article/edit.html";
+        return "/article/edit";
     }
 
     //编辑操作
@@ -278,7 +278,7 @@ public class ArticleController extends BaseController {
         if(fqUserCache.getRole() != 1){
             return GENERAL_ERROR_URL;
         }
-        return "/article/manage.html";
+        return "/article/manage";
     }
     @RequestMapping("/manage/list")
     @ResponseBody
@@ -462,7 +462,7 @@ public class ArticleController extends BaseController {
         List<Article> articles = articleService.selectByExample(articleExample);
         articles =  articles.stream().filter(e-> !e.getId().equals(article.getId())).collect(Collectors.toList());
         model.addAttribute("articles",articles);
-        return "/article/detail.html";
+        return "/article/detail";
     }
 
     @ResponseBody
@@ -654,7 +654,7 @@ public class ArticleController extends BaseController {
         try {
             FqUserCache user = webUtil.currentUser(request,response);
             if(user == null){
-                return "/login.html";
+                return "/login";
             }
             PageHelper.startPage(page,20);
             ArticleExample example = new ArticleExample();
@@ -678,7 +678,7 @@ public class ArticleController extends BaseController {
         } catch (Exception e) {
             _log.error("获取我的文章失败！",e);
         }
-        return "/article/articles.html";
+        return "/article/articles";
     }
 
     @GetMapping("caiji")

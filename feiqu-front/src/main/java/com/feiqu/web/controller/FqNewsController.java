@@ -70,7 +70,7 @@ public class FqNewsController extends BaseController {
         model.addAttribute("pageIndex",pageIndex);
         model.addAttribute("pageSize",20);//文章放多点好，感觉，要不然老是需要翻页
         model.addAttribute("count",page.getTotal());
-        return "/news/index.html";
+        return "/news/index";
     }
 
     /**
@@ -78,7 +78,7 @@ public class FqNewsController extends BaseController {
     */
     @RequestMapping("/fqNews_add")
     public String fqNews_add() {
-        return "/system/FqNews/add.html";
+        return "/system/FqNews/add";
     }
 
     /**
@@ -110,7 +110,7 @@ public class FqNewsController extends BaseController {
     public Object fqNewsEdit(@PathVariable Integer fqNewsId, Model model) {
         FqNews fqNews = fqNewsService.selectByPrimaryKey(fqNewsId);
         model.addAttribute("fqNews", fqNews);
-        return "/system/FqNews/edit.html";
+        return "/system/FqNews/edit";
     }
 
     /**
@@ -120,7 +120,7 @@ public class FqNewsController extends BaseController {
     public String detail(@PathVariable Long fqNewsId, Model model) {
         FqNews fqNews = fqNewsService.selectByPrimaryKey(fqNewsId);
         if(fqNews == null){
-            return "/404.html";
+            return "/404";
         }
         model.addAttribute("fqNews", fqNews);
         GeneralCommentExample commentExample = new GeneralCommentExample();
@@ -133,7 +133,7 @@ public class FqNewsController extends BaseController {
         PageHelper.startPage(1,CommonConstant.DEAULT_PAGE_SIZE,false);
         List<FqNews> fqNewsSame = fqNewsService.selectByExample(fqNewsExample);
         model.addAttribute("sameSource",fqNewsSame);
-        return "/news/detail.html";
+        return "/news/detail";
     }
 
     /**

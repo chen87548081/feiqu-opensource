@@ -73,7 +73,7 @@ public class ApiDocInterfaceController extends BaseController {
             });
         }
         model.addAttribute("projects", keyValues);
-        return "/apiDocInterface/index.html";
+        return "/apiDocInterface/index";
     }
 
 
@@ -94,7 +94,7 @@ public class ApiDocInterfaceController extends BaseController {
             });
         }
         model.addAttribute("modules", keyValues);
-        return "/apiDocInterface/add.html";
+        return "/apiDocInterface/add";
     }
 
     /**
@@ -134,7 +134,7 @@ public class ApiDocInterfaceController extends BaseController {
         }
         model.addAttribute("modules", keyValues);
         model.addAttribute("apiDocInterfaceId", apiDocInterfaceId);
-        return "/apiDocInterface/edit.html";
+        return "/apiDocInterface/edit";
     }
 
     /**
@@ -158,7 +158,7 @@ public class ApiDocInterfaceController extends BaseController {
         }
         model.addAttribute("modules", keyValues);
         model.addAttribute("apiDocInterfaceId", apiDocInterfaceId);
-        return "/apiDocInterface/debug.html";
+        return "/apiDocInterface/debug";
     }
 
     /**

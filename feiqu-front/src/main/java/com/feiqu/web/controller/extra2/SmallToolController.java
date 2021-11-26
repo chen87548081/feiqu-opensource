@@ -15,7 +15,7 @@ public class SmallToolController extends BaseController {
 
     @GetMapping("index")
     public String index(){
-        return "/smallTool/index.html";
+        return "/smallTool/index";
     }
 
 }

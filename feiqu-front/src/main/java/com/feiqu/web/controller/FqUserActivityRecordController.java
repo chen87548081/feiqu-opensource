@@ -38,7 +38,7 @@ private FqUserActivityRecordService fqUserActivityRecordService;
 */
 @RequestMapping("")
 public String index() {
-return "/system/FqUserActivityRecord/index.html";
+return "/system/FqUserActivityRecord/index";
 }
 
 /**
@@ -46,7 +46,7 @@ return "/system/FqUserActivityRecord/index.html";
 */
 @RequestMapping("/fqUserActivityRecord_add")
 public String fqUserActivityRecord_add() {
-return "/system/FqUserActivityRecord/add.html";
+return "/system/FqUserActivityRecord/add";
 }
 
 /**
@@ -78,7 +78,7 @@ return result;
 public Object fqUserActivityRecordEdit(@PathVariable Integer fqUserActivityRecordId, Model model) {
 FqUserActivityRecord fqUserActivityRecord = fqUserActivityRecordService.selectByPrimaryKey(fqUserActivityRecordId);
 model.addAttribute("fqUserActivityRecord",fqUserActivityRecord);
-return "/system/FqUserActivityRecord/edit.html";
+return "/system/FqUserActivityRecord/edit";
 }
 
 /**

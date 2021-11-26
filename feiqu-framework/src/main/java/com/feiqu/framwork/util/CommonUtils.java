@@ -6,11 +6,15 @@ import cn.hutool.core.util.ReUtil;
 import cn.hutool.log.Log;
 import cn.hutool.log.LogFactory;
 import com.feiqu.common.config.Global;
+import com.feiqu.common.enums.MsgEnum;
+import com.feiqu.common.enums.YesNoEnum;
 import com.feiqu.common.utils.SpringUtils;
 import com.feiqu.framwork.constant.CommonConstant;
 import com.feiqu.framwork.support.cache.CacheManager;
+import com.feiqu.system.model.CMessage;
 import com.feiqu.system.model.FqUser;
 import com.feiqu.system.pojo.cache.FqUserCache;
+import com.feiqu.system.service.CMessageService;
 import com.feiqu.system.service.FqUserService;
 import com.jeesuite.cache.redis.JedisProviderFactory;
 import org.apache.commons.lang3.StringUtils;
@@ -21,6 +25,7 @@ import org.lionsoul.ip2region.DbSearcher;
 import redis.clients.jedis.JedisCommands;
 
 import java.io.FileNotFoundException;
+import java.util.Date;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -111,5 +116,19 @@ public class CommonUtils {
         fqUserService.updateByPrimaryKeySelective(toUpdateUser);
         user.setQudouNum(toUpdateUser.getQudouNum());
         CacheManager.refreshUserCacheByUser(user);
+    }
+    public static void sendMsg(Integer type, Integer receiveUserId, Date time, String content){
+        if(MsgEnum.OFFICIAL_MSG.getValue().equals(type)){
+            CMessage message = new CMessage();
+            message.setPostUserId(-1);
+            message.setCreateTime(time == null?new Date():time);
+            message.setDelFlag(YesNoEnum.NO.getValue());
+            message.setReceivedUserId(receiveUserId);
+            message.setType(type);
+            message.setContent(content);
+            CMessageService messageService = SpringUtils.getBean(CMessageService.class);
+            messageService.insert(message);
+        }
+
     }
 }

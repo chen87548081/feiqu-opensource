@@ -36,37 +36,4 @@ public class DataSourceAspect
             DynamicDataSourceContextHolder.setDateSoureType(DataSourceType.MASTER.name());
         }
     }*/
-
-    /*@Pointcut("@annotation(com.feiqu.common.annotation.DataSource)")
-    public void dsPointCut()
-    {
-
-    }
-
-
-
-    @Around("dsPointCut()")
-    public Object around(ProceedingJoinPoint point) throws Throwable
-    {
-        MethodSignature signature = (MethodSignature) point.getSignature();
-
-        Method method = signature.getMethod();
-
-        DataSource dataSource = method.getAnnotation(DataSource.class);
-
-        if (ObjectUtils.allNotNull(dataSource))
-        {
-            DynamicDataSourceContextHolder.setDateSoureType(dataSource.value().name());
-        }
-
-        try
-        {
-            return point.proceed();
-        }
-        finally
-        {
-            // 销毁数据源 在执行方法之后
-            DynamicDataSourceContextHolder.clearDateSoureType();
-        }
-    }*/
 }

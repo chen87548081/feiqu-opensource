@@ -353,11 +353,11 @@ public class ThoughtController extends BaseController {
                 model.addAttribute("thought",thoughtWithUser);
                 model.addAttribute("oUser",thoughtUser);
             }else {
-                return "/404.html";
+                return "/404";
             }
             //如果想法被删除
             if(YesNoEnum.YES.getValue().equals(thought.getDelFlag())){
-                return "/topic-deleted.html";
+                return "/topic-deleted";
             }
             boolean isCollected = false;
             if(fqUserCache != null){
@@ -397,7 +397,7 @@ public class ThoughtController extends BaseController {
         }finally {
             JedisProviderFactory.getJedisProvider(null).release();
         }
-        return "/thought/detail.html";
+        return "/thought/detail";
     }
 
     /*
@@ -410,7 +410,7 @@ public class ThoughtController extends BaseController {
         try {
             FqUserCache user = webUtil.currentUser(request,response);
             if(user == null){
-                return "/login.html";
+                return "/login";
             }
             PageHelper.startPage(page,20);
             ThoughtExample example = new ThoughtExample();
@@ -446,7 +446,7 @@ public class ThoughtController extends BaseController {
         } catch (Exception e) {
             logger.error("thought 获取我的想法失败！",e);
         }
-        return "/thought/thoughts.html";
+        return "/thought/thoughts";
     }
 
     @PostMapping("delete")

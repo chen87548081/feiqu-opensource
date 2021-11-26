@@ -49,7 +49,7 @@ public class QuestionController extends BaseController {
         example.setOrderByClause("createtime desc");
         List list = questionService.selectWithUserByExample(example);
         model.addAttribute("list",list);
-        return "/question/index.html";
+        return "/question/index";
     }
 
     @ResponseBody

@@ -45,7 +45,7 @@ public class FqFriendLinkController extends BaseController {
             model.addAttribute("errorMsg","用户权限不足！");
             return GENERAL_CUSTOM_ERROR_URL;
         }
-        return "/friendLink/manage.html";
+        return "/friendLink/manage";
     }
     @GetMapping("/manage/list")
     @ResponseBody

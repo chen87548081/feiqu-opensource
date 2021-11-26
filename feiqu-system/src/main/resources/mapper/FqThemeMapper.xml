@@ -119,16 +119,18 @@
       order by ${orderByClause}
     </if>
   </select>
-  <select id="selectWithUserByExample" parameterType="com.feiqu.system.model.FqThemeExample" resultMap="UserResultMap">
+  <select id="selectWithUserByExample" parameterType="com.feiqu.system.pojo.condition.ThemeCondition"
+          resultMap="UserResultMap">
     select
     <if test="distinct">
       distinct
     </if>
-    aa.id, aa.user_id, aa.title, aa.create_time, aa.del_flag, aa.comment_count, aa.label, aa.type, aa.last_pub_nickname,
-    aa.last_pub_time, aa.see_count,aa.content,aa.area,bb.nickname,bb.icon
+    aa.id, aa.user_id, aa.title, aa.create_time, aa.status, aa.comment_count, aa.label, aa.type, aa.last_pub_nickname,
+    aa.last_pub_time, aa.see_count,aa.content,bb.nickname,bb.icon
     from fq_theme aa LEFT JOIN fq_user bb ON aa.user_id = bb.id
-    <if test="_parameter != null">
-      <include refid="Example_Where_Clause" />
+    where 1= 1
+    <if test="status != null">
+      and aa.status = #{status}
     </if>
     <if test="orderByClause != null">
       order by ${orderByClause}

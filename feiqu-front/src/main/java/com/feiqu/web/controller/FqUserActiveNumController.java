@@ -40,7 +40,7 @@ private FqUserActiveNumService fqUserActiveNumService;
 */
 @RequestMapping("")
 public String index() {
-return "/fqUserActiveNum/index.html";
+return "/fqUserActiveNum/index";
 }
 
 /**
@@ -48,7 +48,7 @@ return "/fqUserActiveNum/index.html";
 */
 @RequestMapping("/fqUserActiveNum_add")
 public String fqUserActiveNum_add() {
-return "/fqUserActiveNum/add.html";
+return "/fqUserActiveNum/add";
 }
 
 /**
@@ -74,7 +74,7 @@ return result;
 public Object fqUserActiveNumEdit(@PathVariable Long fqUserActiveNumId, Model model) {
     FqUserActiveNum fqUserActiveNum = fqUserActiveNumService.selectByPrimaryKey(fqUserActiveNumId);
     model.addAttribute("fqUserActiveNum",fqUserActiveNum);
-    return "/fqUserActiveNum/edit.html";
+    return "/fqUserActiveNum/edit";
 }
 
 /**

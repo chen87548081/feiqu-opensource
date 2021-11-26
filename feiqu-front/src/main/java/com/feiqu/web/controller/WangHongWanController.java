@@ -69,7 +69,7 @@ public class WangHongWanController extends BaseController {
             wangHongWanDTOS.add(wangHongWanDTO);
         });
         model.addAttribute("wangHongWans",wangHongWanDTOS);
-        return "/wh/index.html";
+        return "/wh/index";
     }
 
     /**
@@ -77,7 +77,7 @@ public class WangHongWanController extends BaseController {
      */
     @RequestMapping("/wangHongWan_add")
     public String wangHongWan_add() {
-        return "/WangHongWan/add.html";
+        return "/WangHongWan/add";
     }
 
    /* @ResponseBody
@@ -148,7 +148,7 @@ public class WangHongWanController extends BaseController {
         List<String> imgs = Arrays.asList(wangHongWan.getPicList().split(","));
         wangHongWanDTO.setImgs(imgs);
         model.addAttribute("fqTopic", wangHongWanDTO);
-        return "/wh/detail.html";
+        return "/wh/detail";
     }
 
     /**

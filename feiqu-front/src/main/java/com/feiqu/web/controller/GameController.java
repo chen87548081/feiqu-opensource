@@ -13,10 +13,10 @@ public class GameController {
 
     @GetMapping("meditation")
     public String meditation(){
-        return "/game/meditation.html";
+        return "/game/meditation";
     }
     @GetMapping("study")
     public String study(){
-        return "/game/study.html";
+        return "/game/study";
     }
 }

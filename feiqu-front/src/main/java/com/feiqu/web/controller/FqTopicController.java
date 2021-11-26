@@ -66,7 +66,7 @@ public class FqTopicController extends BaseController {
         List<FqLabel> fqLabels = fqLabelService.selectByExample(fqLabelExample);
         model.addAttribute("labels",fqLabels);
         model.addAttribute("type",type);
-        return "/fqTopic/index.html";
+        return "/fqTopic/index";
     }
 
     /**
@@ -74,7 +74,7 @@ public class FqTopicController extends BaseController {
      */
     @RequestMapping("/fqTopic_add")
     public String fqTopic_add() {
-        return "/system/FqTopic/add.html";
+        return "/system/FqTopic/add";
     }
 
     /**
@@ -125,7 +125,7 @@ public class FqTopicController extends BaseController {
             logger.error("话题详情页",e);
             return GENERAL_ERROR_URL;
         }
-        return "/fqTopic/detail.html";
+        return "/fqTopic/detail";
     }
 
     /**

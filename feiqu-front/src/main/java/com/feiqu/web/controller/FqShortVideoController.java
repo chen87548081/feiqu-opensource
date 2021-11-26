@@ -92,7 +92,7 @@ public class FqShortVideoController extends BaseController {
     public Object fqShortVideoEdit(@PathVariable Integer fqShortVideoId, Model model) {
         FqShortVideo fqShortVideo = fqShortVideoService.selectByPrimaryKey(fqShortVideoId);
         model.addAttribute("fqShortVideo", fqShortVideo);
-        return "/system/FqShortVideo/edit.html";
+        return "/system/FqShortVideo/edit";
     }
 
     /**

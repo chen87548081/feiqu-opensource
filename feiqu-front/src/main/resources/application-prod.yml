@@ -45,7 +45,7 @@ server:
  
 # 日志配置
 logging:
-  config: classpath:log4j.properties
+  config: classpath:log4j2.xml
 
 
 # 用户配置

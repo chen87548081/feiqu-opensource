@@ -62,7 +62,7 @@ public class CommentController extends BaseController {
         } catch (Exception e) {
             logger.error("thought 获取我的回复失败！",e);
         }
-        return "/comment/detail.html";
+        return "/comment/comments";
     }
 
     @PostMapping(value = "/my/{page}")

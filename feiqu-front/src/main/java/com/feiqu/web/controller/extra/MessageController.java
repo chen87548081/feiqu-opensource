@@ -107,7 +107,7 @@ public class MessageController extends BaseController
         List<Dialog> dialogs = messageService.selectDialogsByUserId(user.getId());
         request.setAttribute("dialogs", dialogs);
 
-        return "/user/dialogs.html";
+        return "/user/dialogs";
     }
 
     /*
@@ -144,6 +144,6 @@ public class MessageController extends BaseController
         request.setAttribute("messages", messages);
         request.setAttribute("pageIndex", pageIndex);
         request.setAttribute("pageSize", CommonConstant.DEAULT_PAGE_SIZE);
-        return "/user/msgs.html";
+        return "/user/msgs";
     }
 }

@@ -54,7 +54,7 @@ public class ApiDocModuleController extends BaseController {
         }*/
         model.addAttribute("apiDocProject", JSON.toJSON(apiDocProject));
         model.addAttribute("projectId", projectId);
-        return "/apiDocModule/index.html";
+        return "/apiDocModule/index";
     }
 
     /**
@@ -62,7 +62,7 @@ public class ApiDocModuleController extends BaseController {
      */
     @RequestMapping("/apiDocModule_add")
     public String apiDocModule_add() {
-        return "/apiDocModule/add.html";
+        return "/apiDocModule/add";
     }
 
     /**
@@ -88,7 +88,7 @@ public class ApiDocModuleController extends BaseController {
     public Object apiDocModuleEdit(@PathVariable Long apiDocModuleId, Model model) {
         ApiDocModule apiDocModule = apiDocModuleService.selectByPrimaryKey(apiDocModuleId);
         model.addAttribute("apiDocModule", apiDocModule);
-        return "/apiDocModule/edit.html";
+        return "/apiDocModule/edit";
     }
 
     /**

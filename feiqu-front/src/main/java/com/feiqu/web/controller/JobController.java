@@ -86,7 +86,7 @@ public class JobController extends BaseController {
         }
         request.setAttribute("jobTalkList",jobTalkList);
         request.setAttribute("pageIndex",pageIndex);
-        return "/job/index.html";
+        return "/job/index";
     }
 
     @ResponseBody
@@ -136,7 +136,7 @@ public class JobController extends BaseController {
         }
 
 
-        return "job/detail.html";
+        return "job/detail";
     }
 
     @ResponseBody

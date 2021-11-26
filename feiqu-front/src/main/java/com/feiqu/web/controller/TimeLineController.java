@@ -91,6 +91,6 @@ public class TimeLineController extends BaseController {
             }
         }
         request.setAttribute("map", map);
-        return "/user/timeline.html";
+        return "/user/timeline";
     }
 }

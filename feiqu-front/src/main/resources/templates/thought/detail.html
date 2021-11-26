@@ -81,7 +81,7 @@ include("/common/_headwithlogin.html",{user:user,isLogin:isLogin}){}
                             <cite class="c-nickname">${comment.postNickname}</cite></a>${printTime(comment.createTime)}
                             <span class="floor">${commentLP.index}楼</span></p>
                         <a lay-data="${comment.id}" href="javascript:;" class="c-position-rt">回复</a>
-                        <div class="t-content">${emojiShow(comment.content)}</div>
+                        <div class="t-content word-deal">${emojiShow(comment.content)}</div>
                     </li>
                     <%}%>
                 </ul>

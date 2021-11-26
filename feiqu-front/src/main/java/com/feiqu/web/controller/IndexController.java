@@ -1,6 +1,7 @@
 package com.feiqu.web.controller;
 
 import cn.hutool.captcha.CaptchaUtil;
+import com.feiqu.common.enums.UserStatusEnum;
 import com.feiqu.framwork.util.WebUtil;
 import com.feiqu.framwork.web.base.BaseController;
 import com.feiqu.framwork.constant.CommonConstant;
@@ -15,6 +16,7 @@ import com.google.common.collect.Maps;
 import cn.hutool.captcha.LineCaptcha;
 import cn.hutool.log.Log;
 import cn.hutool.log.LogFactory;
+import com.mysql.cj.x.protobuf.MysqlxDatatypes;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -81,9 +83,9 @@ public class IndexController extends BaseController {
             model.addAttribute("activeUserList",CommonConstant.FQ_ACTIVE_USER_LIST);
         }catch (Exception e){
            logger.error("主页 获取数据出错",e);
-           return "/error.html";
+           return "/error";
         }
-        return "/index.html";
+        return "/index";
     }
 
     @RequestMapping(value = "/superGeek")
@@ -133,12 +135,12 @@ public class IndexController extends BaseController {
             map.put(label.getId(),label.getName());
         }
         model.addAttribute("labels",map);
-        return "/superGeek.html";
+        return "/superGeek";
     }
 
     @GetMapping("about")
     public String about(){
-        return "/about.html";
+        return "/about";
     }
 
     @GetMapping(value = "/captcha")
@@ -155,12 +157,21 @@ public class IndexController extends BaseController {
     }
 
     @GetMapping("jump")
-    public String about(String username){
+    public String about(String username,Model model){
         FqUserExample example = new FqUserExample();
         example.createCriteria().andNicknameEqualTo(username);
         FqUser fqUser = fqUserService.selectFirstByExample(example);
         if(fqUser == null){
             return "redirect:/";
+        }
+        if(UserStatusEnum.DEL.getValue().equals(fqUser.getStatus())){
+            model.addAttribute(CommonConstant.GENERAL_CUSTOM_ERROR_CODE,"用户已经被删除");
+            return GENERAL_CUSTOM_ERROR_URL;
+        }else if(UserStatusEnum.FROZEN.getValue().equals(fqUser.getStatus())){
+            model.addAttribute(CommonConstant.GENERAL_CUSTOM_ERROR_CODE,"用户已经被禁用");
+            return GENERAL_CUSTOM_ERROR_URL;
+        }else if(UserStatusEnum.NORMAL.getValue().equals(fqUser.getStatus())){
+            return "redirect:/u/"+fqUser.getId()+"/peopleIndex";
         }
         return "redirect:/u/"+fqUser.getId()+"/peopleIndex";
     }

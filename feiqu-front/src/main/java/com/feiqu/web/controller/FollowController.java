@@ -143,13 +143,13 @@ public class FollowController extends BaseController {
     public String following(HttpServletRequest request, HttpServletResponse response, Model model){
         FqUserCache user = webUtil.currentUser(request,response);
         if(user == null){
-            return "/login.html";
+            return "/login";
         }
         UserFollowExample example = new UserFollowExample();
         example.createCriteria().andDelFlagEqualTo(YesNoEnum.NO.getValue()).andFollowerUserIdEqualTo(user.getId());
         List<FollowUserResponse> follows = userFollowService.selectFollowees(example);
         model.addAttribute("follows",follows);
-        return "/follow/following.html";
+        return "/follow/following";
     }
     /*
     我的粉丝
@@ -158,12 +158,12 @@ public class FollowController extends BaseController {
     public String fans(HttpServletRequest request, HttpServletResponse response, Model model){
         FqUserCache user = webUtil.currentUser(request,response);
         if(user == null){
-            return "/login.html";
+            return "/login";
         }
         UserFollowExample example = new UserFollowExample();
         example.createCriteria().andDelFlagEqualTo(YesNoEnum.NO.getValue()).andFollowedUserIdEqualTo(user.getId());
         List<FollowUserResponse> fans = userFollowService.selectFans(example);
         model.addAttribute("fans",fans);
-        return "/follow/fans.html";
+        return "/follow/fans";
     }
 }

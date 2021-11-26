@@ -50,14 +50,14 @@ public class ApiDocProjectController extends BaseController {
         if(fqUserCache == null){
             return USER_LOGIN_REDIRECT_URL;
         }
-        return "/apiDocProject/index.html";
+        return "/apiDocProject/index";
     }
 
     @GetMapping("/detail/{id}")
     public String detail(@PathVariable Long id,Model model) {
         ApiDocProject apiDocProject = apiDocProjectService.selectByPrimaryKey(id);
         model.addAttribute("apiDocProject",apiDocProject);
-        return "/apiDocProject/detail.html";
+        return "/apiDocProject/detail";
     }
 
     @GetMapping("/public")
@@ -66,7 +66,7 @@ public class ApiDocProjectController extends BaseController {
         if(fqUserCache == null){
             return USER_LOGIN_REDIRECT_URL;
         }
-        return "/apiDocProject/public.html";
+        return "/apiDocProject/public";
     }
 
     @GetMapping("/introduce")
@@ -75,7 +75,7 @@ public class ApiDocProjectController extends BaseController {
         if(fqUserCache == null){
             return USER_LOGIN_REDIRECT_URL;
         }
-        return "/apiDocProject/introduce.html";
+        return "/apiDocProject/introduce";
     }
 
     /**
@@ -84,7 +84,7 @@ public class ApiDocProjectController extends BaseController {
      */
     @GetMapping("/joined")
     public String joined() {
-        return "/apiDocProject/joined.html";
+        return "/apiDocProject/joined";
     }
 
     /**
@@ -92,7 +92,7 @@ public class ApiDocProjectController extends BaseController {
      */
     @RequestMapping("/apiDocProject_add")
     public String apiDocProject_add() {
-        return "/apiDocProject/add.html";
+        return "/apiDocProject/add";
     }
 
     /**
@@ -168,7 +168,7 @@ public class ApiDocProjectController extends BaseController {
     public Object apiDocProjectEdit(@PathVariable Long apiDocProjectId, Model model) {
         ApiDocProject apiDocProject = apiDocProjectService.selectByPrimaryKey(apiDocProjectId);
         model.addAttribute("apiDocProject", apiDocProject);
-        return "/apiDocProject/edit.html";
+        return "/apiDocProject/edit";
     }
 
     /**
